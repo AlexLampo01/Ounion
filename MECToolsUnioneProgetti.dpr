@@ -2,7 +2,8 @@ program MECToolsUnioneProgetti;
 
 uses
   Vcl.Forms,
-  SchermataIniziale in 'SchermataIniziale.pas' {fScegliCosaFare};
+  SchermataIniziale in 'SchermataIniziale.pas' {fScegliCosaFare},
+  InizializzaProgetto in 'InizializzaProgetto.pas' {Form1};
 
 {$R *.res}
 
