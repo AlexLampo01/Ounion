@@ -1,7 +1,7 @@
-object Form1: TForm1
+object fInizializzaProgetto: TfInizializzaProgetto
   Left = 0
   Top = 0
-  Caption = 'Form1'
+  Caption = 'Inizializza Progetto'
   ClientHeight = 504
   ClientWidth = 619
   Color = clBtnFace
@@ -18,6 +18,7 @@ object Form1: TForm1
     Height = 504
     Align = alLeft
     TabOrder = 0
+    ExplicitHeight = 503
     object cbVersione: TComboBox
       Left = 40
       Top = 82
@@ -25,22 +26,26 @@ object Form1: TForm1
       Height = 23
       TabOrder = 0
       Text = 'Versione OS1'
+      OnEnter = cbVersioneEnter
     end
     object cbServer: TComboBox
-      Left = 40
-      Top = 246
-      Width = 145
-      Height = 23
-      TabOrder = 1
-      Text = 'Server'
-    end
-    object cbDatabase: TComboBox
       Left = 40
       Top = 160
       Width = 145
       Height = 23
+      TabOrder = 1
+      Text = 'Server'
+      OnEnter = cbServerEnter
+    end
+    object cbDatabase: TComboBox
+      Left = 40
+      Top = 246
+      Width = 145
+      Height = 23
       TabOrder = 2
       Text = 'Database'
+      OnChange = cbDatabaseChange
+      OnEnter = cbDatabaseEnter
     end
     object cbDatabaseDitta: TComboBox
       Left = 40
@@ -49,10 +54,18 @@ object Form1: TForm1
       Height = 23
       TabOrder = 3
       Text = 'Database Ditta'
+      OnEnter = cbDatabaseDittaEnter
     end
-    object BitBtn1: TBitBtn
-      Left = 156
-      Top = 410
+  end
+  object Panel2: TPanel
+    Left = 224
+    Top = 0
+    Width = 395
+    Height = 41
+    TabOrder = 1
+    object btnCrea: TBitBtn
+      Left = 334
+      Top = 8
       Width = 49
       Height = 27
       Caption = 'Crea '
@@ -83,7 +96,64 @@ object Form1: TForm1
         C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C060DF
         6090B090C0C0C04040403F3F3F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F
         7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F202020}
-      TabOrder = 4
+      TabOrder = 0
+      OnClick = btnCreaClick
     end
+    object cbProgettoGiaEsistente: TCheckBox
+      Left = 7
+      Top = 13
+      Width = 138
+      Height = 17
+      Caption = 'Progetto Gi'#224' Esistente'
+      TabOrder = 1
+    end
+  end
+  object dbDMIDatabasesMec: TXDatabase
+    ConnectionName = 'Devart SQL Server'
+    DriverName = 'DevartSQLServer'
+    LoginPrompt = False
+    Params.Strings = (
+      'BlobSize=-1'
+      'SchemaOverride=%.dbo'
+      'HostName='
+      'DataBase='
+      'DriverName=DevartSQLServer'
+      'User_Name='
+      'Password='
+      'LongStrings=True'
+      'EnableBCD=True'
+      'FetchAll=True'
+      'UseUnicode=True'
+      'IPVersion=IPv4')
+    DatabaseName = 'MECToolsDatabaseDMI'
+    TipoDataBase = tdbSconosciuto
+    UsoMaiuscole = umNessuno
+    Left = 71
+    Top = 8
+  end
+  object qDatabase: TXQuery
+    ReadOnly = True
+    DatabaseName = 'MECToolsDatabaseDMI'
+    SQL.Strings = (
+      'SELECT name AS DatabaseName'
+      'FROM sys.databases'
+      'ORDER BY name;')
+    Params = <>
+    Esegui = True
+    UsaDizionario = False
+    XSQLIndex = 0
+    Left = 19
+    Top = 8
+    object qDatabaseDatabaseName: TXStringField
+      FieldName = 'DatabaseName'
+      Size = 128
+    end
+  end
+  object odSceltaProgettoEsistente: TFileOpenDialog
+    FavoriteLinks = <>
+    FileTypes = <>
+    Options = [fdoPickFolders]
+    Left = 139
+    Top = 8
   end
 end

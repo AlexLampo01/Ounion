@@ -33,9 +33,9 @@ uses
 procedure TfScegliCosaFare.imgInizializzaProgettoClick(Sender: TObject);
 begin
 
-    if not Assigned(InizializzaProgetto.Form1) then
-        InizializzaProgetto.Form1 := InizializzaProgetto.TForm1.Create(Self);
-    with InizializzaProgetto.Form1 do
+    if not Assigned(InizializzaProgetto.fInizializzaProgetto) then
+        InizializzaProgetto.fInizializzaProgetto := InizializzaProgetto.TfInizializzaProgetto.Create(Self);
+    with InizializzaProgetto.fInizializzaProgetto do
     begin
         Parent := pnlCentrale;
         BorderStyle := bsNone;

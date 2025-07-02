@@ -103,7 +103,7 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="InizializzaProgetto.pas">
-            <Form>Form1</Form>
+            <Form>fInizializzaProgetto</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Base">
