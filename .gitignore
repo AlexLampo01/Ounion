@@ -1,0 +1,26 @@
+# File binari e compilati
+*.dcu
+*.exe
+*.dll
+*.tds
+*.map
+*.obj
+*.bpl
+*.dcp
+*.bpi
+
+# File temporanei
+*.~*
+*.bak
+*.tmp
+*.log
+*.local
+*.identcache
+*.dsk
+*.tvsconfig
+__history/
+__recovery/
+
+# File specifici RAD Studio
+*.dproj.local
+*.cfg
