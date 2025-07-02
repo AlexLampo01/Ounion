@@ -10,23 +10,47 @@ uses
 type
   TfInizializzaProgetto = class(TForm)
     cbVersione: TComboBox;
-    Panel1: TPanel;
+    pnlCheckbox: TPanel;
     cbServer: TComboBox;
     cbDatabase: TComboBox;
     cbDatabaseDitta: TComboBox;
     dbDMIDatabasesMec: TXDatabase;
     qDatabase: TXQuery;
     qDatabaseDatabaseName: TXStringField;
-    btnCrea: TBitBtn;
-    cbProgettoGiaEsistente: TCheckBox;
-    Panel2: TPanel;
+    btnProgettoGiaEsistente: TBitBtn;
     odSceltaProgettoEsistente: TFileOpenDialog;
+    lblUsername: TLabel;
+    edUsername: TEdit;
+    lblPassword: TLabel;
+    edPassword: TEdit;
+    cbRicordami: TCheckBox;
+    btnConfermaUsername: TBitBtn;
+    Panel3: TPanel;
+    pnlUsernamePassword: TPanel;
+    pnlRichiestaNome: TPanel;
+    Label1: TLabel;
+    edNomeProgetto: TEdit;
+    cbVersioneAuto: TCheckBox;
+    cbModificaDitta: TCheckBox;
+    cbInizializzaGit: TCheckBox;
+    btnConfermaNome: TBitBtn;
+    lblVersioneOS1: TLabel;
+    lblServer: TLabel;
+    lblDatabase: TLabel;
+    lblDatabaseDitta: TLabel;
+    Panel1: TPanel;
+    Label2: TLabel;
     procedure cbVersioneEnter(Sender: TObject);
     procedure cbServerEnter(Sender: TObject);
     procedure cbDatabaseEnter(Sender: TObject);
     procedure cbDatabaseChange(Sender: TObject);
-    procedure btnCreaClick(Sender: TObject);
     procedure cbDatabaseDittaEnter(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure btnConfermaUsernameClick(Sender: TObject);
+    procedure cbServerChange(Sender: TObject);
+    procedure cbVersioneChange(Sender: TObject);
+    procedure cbDatabaseDittaChange(Sender: TObject);
+    procedure btnProgettoGiaEsistenteClick(Sender: TObject);
   private
     procedure RiempiComboBox(Percorso : String);
     function GetServer: TStringList;
@@ -42,9 +66,12 @@ type
     procedure OpenFork;
     function GetWindowsUsername: String;
     function CreaGitIgnore(Percorso: String): Boolean;
+    procedure CreaFileIni;
+    procedure ReadFileIni;
+    procedure ControllaCheckBox;
   public
     Percorso, Server, Password, Username, NomeScelto, NumeroUtente, NomeDitta : String;
-    ConfermataForm, StatoInizializzaGit : Boolean;
+    ConfermataForm, StatoInizializzaGit, MostratiDatiUsernamePassword : Boolean;
   end;
 
 var
@@ -57,39 +84,16 @@ uses
 
 {$R *.dfm}
 
-procedure TfInizializzaProgetto.btnCreaClick(Sender: TObject);
-begin
-    if cbServer.Text = 'Server' then
-    begin
-        ShowMessage('Seleziona un server');
-    end
-    else if (Username = '') or (Password = '') then
-    begin
-       //TfUsernamePassword.Create(nil);
-    end
-    else
-    begin
-        if not cbprogettoGiaEsistente.Checked then
-            CreaCopiaProgetto(Percorso)
-        else
-            SelezionaCartellaProgetto;
-        if NomeScelto <> '' then
-        begin
-            CreaConfig(Percorso);
-            SistemaRegSetUp;
-            ShowMessage('Ricorda di mettere la password nel RegSetUp!');
-            if StatoInizializzaGit then
-            begin
-                InizializzaGit;
-            end;
-            OpenRegSetUp;
-        end;
-    end;
-end;
-
 procedure TfInizializzaProgetto.cbDatabaseChange(Sender: TObject);
 begin
-    //TfUsernamePassword.Create(nil);
+    lblDatabase.Visible := True;
+    ControllaCheckBox;
+end;
+
+procedure TfInizializzaProgetto.cbDatabaseDittaChange(Sender: TObject);
+begin
+    lblDatabaseDitta.Visible := True;
+    ControllaCheckBox;
 end;
 
 procedure TfInizializzaProgetto.cbDatabaseDittaEnter(Sender: TObject);
@@ -143,6 +147,16 @@ begin
     else
         ShowMessage('Server non selezionato!');
 end;
+procedure TfInizializzaProgetto.cbServerChange(Sender: TObject);
+begin
+    MostratiDatiUsernamePassword    := True;
+    pnlUsernamePassword.Align       := alTop;
+    pnlUsernamePassword.Visible     := True;
+    lblServer.Visible               := True;
+    ControllaCheckBox;
+    ReadFileIni;
+end;
+
 procedure TfInizializzaProgetto.cbServerEnter(Sender: TObject);
 var
     Server : TStringList;
@@ -154,6 +168,12 @@ begin
     finally
         Server.Free;
     end;
+end;
+
+procedure TfInizializzaProgetto.cbVersioneChange(Sender: TObject);
+begin
+    lblVersioneOS1.Visible := True;
+    ControllaCheckBox;
 end;
 
 procedure TfInizializzaProgetto.cbVersioneEnter(Sender: TObject);
@@ -255,7 +275,7 @@ begin
       end;
       if Base <> '' then
       begin
-          //TfNomeProgetto.Create(nil);
+          //TODO: Sistemare tutta la questione del file
           if NomeScelto <> '' then
           begin
               if ConfermataForm then
@@ -410,6 +430,43 @@ begin
     end;
 end;
 
+procedure TfInizializzaProgetto.btnConfermaUsernameClick(Sender: TObject);
+var
+    Errore : String;
+begin
+    if edUsername.Text <> '' then
+        Username := edUsername.Text
+    else
+        Errore := Errore + 'Non hai inserito Username, ';
+    if edPassword.Text <> '' then
+        Password := edPassword.Text
+    else
+        Errore := Errore + 'Non hai inserito Password, ';
+
+    if Errore <> '' then
+    begin
+        if Trim(Errore).EndsWith(',') then
+            Errore := Copy(Errore, 1, Length(Errore) - 2);
+        ShowMessage(Errore);
+    end;
+
+    if (edUsername.Text <> '') and (edPassword.Text <> '') then
+    begin
+        if cbRicordami.Checked then
+        begin
+            CreaFileIni;
+        end;
+    end;
+
+    pnlUsernamePassword.Visible := False;
+    pnlUsernamePassword.Align   := alNone;
+end;
+
+procedure TfInizializzaProgetto.btnProgettoGiaEsistenteClick(Sender: TObject);
+begin
+    SelezionaCartellaProgetto;
+end;
+
 procedure TfInizializzaProgetto.CancellaDatabaseTemp(Codice: TStringList);
 var
     i, j, IndiceMassimo: Integer;
@@ -494,6 +551,15 @@ begin
         end;
         InizializzaDMI(CartellaSelezionata);
    end;
+end;
+
+procedure TfInizializzaProgetto.ControllaCheckBox;
+begin
+    if (cbVersione.Text <> 'Versione OS1') and (cbServer.Text <> 'Server') and (cbDatabase.Text <> 'Database') and (cbDatabaseDitta.Text <> 'Database Ditta')  then
+    begin
+        pnlRichiestaNome.Align   := alTop;
+        pnlRichiestaNome.Visible := True;
+    end;
 end;
 
 procedure TfInizializzaProgetto.CreaConfig(Percorso : String);
@@ -776,6 +842,52 @@ begin
         Result := True
     else
         Result := False;
+end;
+
+procedure TfInizializzaProgetto.FormCreate(Sender: TObject);
+begin
+    MostratiDatiUsernamePassword := False;
+end;
+
+procedure TfInizializzaProgetto.CreaFileIni;
+var
+    Utente, Percorso, Cartella : String;
+    Ini: TIniFile;
+begin
+    Utente := GetWindowsUsername;
+    Cartella := 'C:\Users\'+ Utente + '\AppData\Roaming\MECTools\MECToolsInizializzazione\';
+    Percorso := Cartella + 'Dati.ini';
+    if not DirectoryExists(Cartella) then
+        ForceDirectories(Cartella);
+        Ini := TIniFile.Create(Percorso);
+        try
+            Ini.WriteString(Server, 'Username', edUsername.Text);
+            Ini.WriteString(Server, 'Password', edPassword.Text);
+        finally
+            Ini.Free;
+        end;
+end;
+
+procedure TfInizializzaProgetto.ReadFileIni;
+var
+    Ini: TIniFile;
+    Utente, Username, Password, Percorso, Cartella : String;
+begin
+    Utente := GetWindowsUsername;
+    Cartella := 'C:\Users\'+ Utente + '\AppData\Roaming\MECTools\MECToolsInizializzazione\';
+    Percorso := Cartella + 'Dati.ini';
+    if FileExists(Percorso) then
+    begin
+        Ini := TIniFile.Create(Percorso);
+        try
+            Username := Ini.ReadString(Server, 'Username', edUsername.Text);
+            Password := Ini.ReadString(Server, 'Password', edPassword.Text);
+        finally
+            Ini.Free;
+        end;
+    end;
+    edUsername.Text := Username;
+    edPassword.Text := Password;
 end;
 
 end.

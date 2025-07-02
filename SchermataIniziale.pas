@@ -4,16 +4,16 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Buttons;
 
 type
   TfScegliCosaFare = class(TForm)
     Panel1: TPanel;
-    imgInizializzaProgetto: TImage;
-    Image2: TImage;
     Image3: TImage;
     pnlCentrale: TPanel;
-    procedure imgInizializzaProgettoClick(Sender: TObject);
+    btnInizializzaProgetto: TBitBtn;
+    btnSpostaCartella: TBitBtn;
+    procedure btnInizializzaProgettoClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -30,7 +30,7 @@ uses
 
 {$R *.dfm}
 
-procedure TfScegliCosaFare.imgInizializzaProgettoClick(Sender: TObject);
+procedure TfScegliCosaFare.btnInizializzaProgettoClick(Sender: TObject);
 begin
 
     if not Assigned(InizializzaProgetto.fInizializzaProgetto) then
