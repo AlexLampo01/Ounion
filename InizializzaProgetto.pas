@@ -549,7 +549,9 @@ begin
                 break;
             end;
         end;
-        InizializzaDMI(CartellaSelezionata);
+        //InizializzaDMI(CartellaSelezionata);
+        edNomeProgetto.Enabled := False;
+        edNomeProgetto.Text := NomeScelto;
    end;
 end;
 
