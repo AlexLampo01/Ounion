@@ -40,6 +40,14 @@ type
     lblDatabaseDitta: TLabel;
     Panel1: TPanel;
     Label2: TLabel;
+    Label3: TLabel;
+    pnlModificaDitta: TPanel;
+    btnModificaDitta: TBitBtn;
+    edDitta: TEdit;
+    lblDitta: TLabel;
+    lblUtente: TLabel;
+    edUtente: TEdit;
+    Label4: TLabel;
     procedure cbVersioneEnter(Sender: TObject);
     procedure cbServerEnter(Sender: TObject);
     procedure cbDatabaseEnter(Sender: TObject);
@@ -51,6 +59,8 @@ type
     procedure cbVersioneChange(Sender: TObject);
     procedure cbDatabaseDittaChange(Sender: TObject);
     procedure btnProgettoGiaEsistenteClick(Sender: TObject);
+    procedure btnConfermaNomeClick(Sender: TObject);
+    procedure btnModificaDittaClick(Sender: TObject);
   private
     procedure RiempiComboBox(Percorso : String);
     function GetServer: TStringList;
@@ -430,6 +440,46 @@ begin
     end;
 end;
 
+procedure TfInizializzaProgetto.btnConfermaNomeClick(Sender: TObject);
+var
+    Versione, Percorso, Utente : String;
+    Ini : TIniFile;
+begin
+    if edNomeProgetto.Text <> '' then
+    begin
+        Versione := '';
+        if cbVersioneAuto.Checked then
+        begin
+            Versione := cbVersione.Text;
+            Versione := Copy(Versione, 4, Length(Versione));
+        end;
+        NomeScelto := Trim(edNomeProgetto.Text) + Versione;
+        Utente := GetWindowsUsername;
+        Percorso := 'C:\Users\'+ Utente + '\AppData\Roaming\MECTools\MECToolsInizializzazione\Impostazioni.ini';
+        Ini := TIniFile.Create(Percorso);
+        try
+            Ini.WriteBool('Modifica Ditta', 'Attivo', cbModificaDitta.Checked);
+            Ini.WriteBool('Versione Automatica', 'Attivo', cbVersioneAuto.Checked);
+            Ini.WriteBool('Git Inizializzato', 'Attivo', cbInizializzaGit.Checked);
+        finally
+            Ini.Free;
+        end;
+        if cbModificaDitta.Checked then
+        begin
+            //TfModificaDitta.Create(nil);
+            pnlModificaDitta.Align := alTop;
+            pnlModificaDitta.Visible := True;
+
+        end
+        else
+        begin
+            ConfermataForm := True;
+        end;
+    end
+    else
+        ShowMessage('Scegli un nome!');
+end;
+
 procedure TfInizializzaProgetto.btnConfermaUsernameClick(Sender: TObject);
 var
     Errore : String;
@@ -462,8 +512,37 @@ begin
     pnlUsernamePassword.Align   := alNone;
 end;
 
+procedure TfInizializzaProgetto.btnModificaDittaClick(Sender: TObject);
+var
+    Errore : String;
+    Valore : Integer;
+begin
+    if (edUtente.Text = '') or (not TryStrToInt(Trim(edUtente.Text), Valore)) then
+        Errore := Errore + 'Inserisci un numero, ';
+    if edDitta.Text = '' then
+        Errore := Errore + 'Inserisci il nome della ditta, ';
+
+    if Errore <> '' then
+    begin
+        Errore := Copy(Errore, 1, Length(Errore) - 2);
+        ShowMessage(Errore);
+    end;
+
+    if Errore = '' then
+    begin
+        NomeDitta := edDitta.Text;
+        NumeroUtente := IntToStr(Valore);
+        ConfermataForm := True;
+    end;
+
+end;
+
 procedure TfInizializzaProgetto.btnProgettoGiaEsistenteClick(Sender: TObject);
 begin
+    cbVersioneAuto.Checked   := False;
+    cbVersioneAuto.Enabled   := False;
+    cbInizializzaGit.Checked := False;
+    cbInizializzaGit.Enabled := False;
     SelezionaCartellaProgetto;
 end;
 

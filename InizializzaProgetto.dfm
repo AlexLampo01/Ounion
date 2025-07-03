@@ -100,7 +100,8 @@ object fInizializzaProgetto: TfInizializzaProgetto
     Height = 504
     Align = alClient
     TabOrder = 1
-    ExplicitWidth = 396
+    ExplicitLeft = 231
+    ExplicitTop = -8
     object pnlUsernamePassword: TPanel
       Left = 0
       Top = 68
@@ -110,35 +111,48 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Visible = False
       object lblUsername: TLabel
         Left = 14
-        Top = 18
+        Top = 35
         Width = 59
         Height = 15
         Caption = 'Username: '
       end
       object lblPassword: TLabel
         Left = 14
-        Top = 50
+        Top = 67
         Width = 56
         Height = 15
         Caption = 'Password: '
       end
+      object Label3: TLabel
+        Left = 129
+        Top = 5
+        Width = 143
+        Height = 21
+        Caption = 'Credenziali Server '
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
       object edPassword: TEdit
         Left = 82
-        Top = 47
+        Top = 64
         Width = 307
         Height = 23
         TabOrder = 0
       end
       object edUsername: TEdit
         Left = 82
-        Top = 15
+        Top = 32
         Width = 307
         Height = 23
         TabOrder = 1
       end
       object cbRicordami: TCheckBox
         Left = 14
-        Top = 85
+        Top = 102
         Width = 81
         Height = 17
         Caption = 'Ricordami'
@@ -148,7 +162,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       end
       object btnConfermaUsername: TBitBtn
         Left = 312
-        Top = 80
+        Top = 97
         Width = 77
         Height = 27
         Caption = 'Conferma'
@@ -235,7 +249,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         TabOrder = 3
       end
       object btnConfermaNome: TBitBtn
-        Left = 296
+        Left = 311
         Top = 88
         Width = 77
         Height = 27
@@ -268,6 +282,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
           6090B090C0C0C04040403F3F3F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F
           7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F202020}
         TabOrder = 4
+        OnClick = btnConfermaNomeClick
       end
       object btnProgettoGiaEsistente: TBitBtn
         Left = 13
@@ -313,11 +328,12 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Height = 56
       Align = alTop
       TabOrder = 2
+      ExplicitWidth = 395
       object Label2: TLabel
         Left = 91
         Top = 9
-        Width = 236
-        Height = 41
+        Width = 234
+        Height = 28
         Alignment = taCenter
         Caption = 'Inizializzazione Progetto'
         Font.Charset = DEFAULT_CHARSET
@@ -326,6 +342,91 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Font.Name = 'Segoe UI'
         Font.Style = [fsBold]
         ParentFont = False
+      end
+    end
+    object pnlModificaDitta: TPanel
+      Left = 1
+      Top = 348
+      Width = 400
+      Height = 129
+      TabOrder = 3
+      Visible = False
+      object lblDitta: TLabel
+        Left = 73
+        Top = 60
+        Width = 31
+        Height = 15
+        Caption = 'Ditta: '
+      end
+      object lblUtente: TLabel
+        Left = 8
+        Top = 35
+        Width = 96
+        Height = 15
+        Caption = 'Utente (Numero): '
+      end
+      object Label4: TLabel
+        Left = 143
+        Top = 4
+        Width = 114
+        Height = 21
+        Caption = 'Modifica Ditta '
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object btnModificaDitta: TBitBtn
+        Left = 311
+        Top = 92
+        Width = 77
+        Height = 27
+        Caption = 'Conferma'
+        Glyph.Data = {
+          36030000424D3603000000000000360000002800000010000000100000000100
+          1800000000000003000000000000000000000000000000000000202020404040
+          4040404040404040404040404040404040404040404040404040404040404040
+          404040404040402020207F7F7FC0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0
+          C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C04040407F7F7FC0C0C0
+          C0C0C0C0C0C0909090808080B0B0B0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0
+          C0C0C0C0C0C0C04040407F7F7FC0C0C0C0C0C0309030008000608060808080B0
+          B0B0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C04040407F7F7FC0C0C0
+          30CF30008000008000008000608060808080B0B0B0C0C0C0C0C0C0C0C0C0C0C0
+          C0C0C0C0C0C0C04040407F7F7FC0C0C000BF0000800000800000800000800060
+          8060808080B0B0B0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C04040407F7F7FC0C0C0
+          00BF00008000008000008000008000008000608060909090C0C0C0C0C0C0C0C0
+          C0C0C0C0C0C0C04040407F7F7FC0C0C000BF0000800000800020DF20009F0000
+          8000208020808080A0A0A0C0C0C0C0C0C0C0C0C0C0C0C04040407F7F7FC0C0C0
+          90CF9000BF0000800080808030EF30009F00008000208020808080B0B0B0C0C0
+          C0C0C0C0C0C0C04040407F7F7FC0C0C0C0C0C090CF9000DF00A0A0A0C0C0C030
+          EF30009F00008000608060808080B0B0B0C0C0C0C0C0C04040407F7F7FC0C0C0
+          C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C030EF30009F000080006080609090
+          90C0C0C0C0C0C04040407F7F7FC0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0
+          C0C0C0C0C030EF30009F00208020808080A0A0A0C0C0C04040407F7F7FC0C0C0
+          C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C030EF30009F002080
+          20808080C0C0C04040407F7F7FC0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0
+          C0C0C0C0C0C0C0C0C0C0C030EF30009F00608060C0C0C04040407F7F7FC0C0C0
+          C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C060DF
+          6090B090C0C0C04040403F3F3F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F
+          7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F202020}
+        TabOrder = 0
+        OnClick = btnModificaDittaClick
+      end
+      object edDitta: TEdit
+        Left = 110
+        Top = 60
+        Width = 279
+        Height = 23
+        TabOrder = 1
+      end
+      object edUtente: TEdit
+        Left = 110
+        Top = 32
+        Width = 279
+        Height = 23
+        TabOrder = 2
       end
     end
   end
