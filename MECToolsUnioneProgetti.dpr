@@ -3,7 +3,8 @@ program MECToolsUnioneProgetti;
 uses
   Vcl.Forms,
   SchermataIniziale in 'SchermataIniziale.pas' {fScegliCosaFare},
-  InizializzaProgetto in 'InizializzaProgetto.pas' {fInizializzaProgetto};
+  InizializzaProgetto in 'InizializzaProgetto.pas' {fInizializzaProgetto},
+  CopiaFileConsegna in 'CopiaFileConsegna.pas' {fCopiaFileConsegna};
 
 {$R *.res}
 

@@ -125,7 +125,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       end
       object Label3: TLabel
         Left = 129
-        Top = 5
+        Top = 3
         Width = 143
         Height = 21
         Caption = 'Credenziali Server '
@@ -223,21 +223,34 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Visible = False
       object Label1: TLabel
         Left = 13
-        Top = 16
+        Top = 40
         Width = 88
         Height = 15
         Caption = 'Nome Progetto: '
       end
+      object Label5: TLabel
+        Left = 147
+        Top = 7
+        Width = 122
+        Height = 21
+        Caption = 'Nome Progetto '
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
       object edNomeProgetto: TEdit
         Left = 107
-        Top = 13
+        Top = 37
         Width = 282
         Height = 23
         TabOrder = 0
       end
       object cbVersioneAuto: TCheckBox
         Left = 25
-        Top = 44
+        Top = 68
         Width = 100
         Height = 17
         Caption = 'Versione Auto.'
@@ -247,7 +260,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       end
       object cbModificaDitta: TCheckBox
         Left = 150
-        Top = 44
+        Top = 68
         Width = 100
         Height = 17
         Caption = 'Modifica Ditta'
@@ -257,7 +270,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       end
       object cbInizializzaGit: TCheckBox
         Left = 275
-        Top = 44
+        Top = 68
         Width = 100
         Height = 17
         Caption = 'Inizializza Git'
@@ -267,7 +280,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       end
       object btnConfermaNome: TBitBtn
         Left = 311
-        Top = 88
+        Top = 96
         Width = 77
         Height = 27
         Caption = 'Conferma'
@@ -303,7 +316,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       end
       object btnProgettoGiaEsistente: TBitBtn
         Left = 13
-        Top = 88
+        Top = 96
         Width = 165
         Height = 27
         Caption = 'Progetto Gi'#224' Esistente'
@@ -336,6 +349,23 @@ object fInizializzaProgetto: TfInizializzaProgetto
           7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F202020}
         TabOrder = 5
         OnClick = btnProgettoGiaEsistenteClick
+      end
+      object btnCloseNomeProgetto: TBitBtn
+        Left = 343
+        Top = 8
+        Width = 45
+        Height = 25
+        Glyph.Data = {
+          F6000000424DF600000000000000760000002800000010000000100000000100
+          0400000000008000000000000000000000001000000010000000000000000000
+          80000080000000808000800000008000800080800000C0C0C000808080000000
+          FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00777777777777
+          7777777780000087777777701999991077777709999999990777709999999999
+          907781999999999991870999FF999FF9990709999FF9FF999907099999FFF999
+          9907099999FFF999990709999FF9FF9999078199FF999FF99187709999999999
+          9077770999999999077777701999991077777777800000877777}
+        TabOrder = 6
+        OnClick = btnCloseNomeProgettoClick
       end
     end
     object Panel1: TPanel
@@ -370,21 +400,21 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Visible = False
       object lblDitta: TLabel
         Left = 73
-        Top = 60
+        Top = 66
         Width = 31
         Height = 15
         Caption = 'Ditta: '
       end
       object lblUtente: TLabel
         Left = 8
-        Top = 35
+        Top = 41
         Width = 96
         Height = 15
         Caption = 'Utente (Numero): '
       end
       object Label4: TLabel
         Left = 143
-        Top = 4
+        Top = 7
         Width = 114
         Height = 21
         Caption = 'Modifica Ditta '
@@ -397,7 +427,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       end
       object btnModificaDitta: TBitBtn
         Left = 311
-        Top = 92
+        Top = 98
         Width = 77
         Height = 27
         Caption = 'Conferma'
@@ -433,18 +463,34 @@ object fInizializzaProgetto: TfInizializzaProgetto
       end
       object edDitta: TEdit
         Left = 110
-        Top = 60
+        Top = 66
         Width = 279
         Height = 23
         TabOrder = 1
       end
       object edUtente: TEdit
         Left = 110
-        Top = 32
+        Top = 38
         Width = 279
         Height = 23
         TabOrder = 2
         OnExit = edUtenteExit
+      end
+      object btnCloseModificaDitta: TBitBtn
+        Left = 344
+        Top = 8
+        Width = 45
+        Height = 25
+        Glyph.Data = {
+          F6000000424DF600000000000000760000002800000010000000100000000100
+          0400000000008000000000000000000000001000000010000000000000000000
+          80000080000000808000800000008000800080800000C0C0C000808080000000
+          FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00777777777777
+          7777777780000087777777701999991077777709999999990777709999999999
+          907781999999999991870999FF999FF9990709999FF9FF999907099999FFF999
+          9907099999FFF999990709999FF9FF9999078199FF999FF99187709999999999
+          9077770999999999077777701999991077777777800000877777}
+        TabOrder = 3
       end
     end
   end

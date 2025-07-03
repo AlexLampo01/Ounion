@@ -49,6 +49,9 @@ type
     edUtente: TEdit;
     Label4: TLabel;
     btnClose: TBitBtn;
+    btnCloseNomeProgetto: TBitBtn;
+    btnCloseModificaDitta: TBitBtn;
+    Label5: TLabel;
     procedure cbVersioneEnter(Sender: TObject);
     procedure cbServerEnter(Sender: TObject);
     procedure cbDatabaseEnter(Sender: TObject);
@@ -64,6 +67,7 @@ type
     procedure btnModificaDittaClick(Sender: TObject);
     procedure edUtenteExit(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
+    procedure btnCloseNomeProgettoClick(Sender: TObject);
   private
     procedure RiempiComboBox(Percorso : String);
     function GetServer: TStringList;
@@ -453,12 +457,29 @@ end;
 
 procedure TfInizializzaProgetto.btnCloseClick(Sender: TObject);
 begin
-    Username := '';
-    Password := '';
+    Username                    := '';
+    Password                    := '';
     cbServer.Text               := 'Server';
     lblServer.Visible           := False;
     pnlUsernamePassword.Visible := False;
     pnlUsernamePassword.Align   := alNone;
+end;
+
+procedure TfInizializzaProgetto.btnCloseNomeProgettoClick(Sender: TObject);
+begin
+    NomeScelto                  := '';
+    Username                    := '';
+    Password                    := '';
+    cbVersione.Text             := 'Versione OS1';
+    cbServer.Text               := 'Server';
+    cbDatabase.Text             := 'Database';
+    cbDatabaseDitta.Text        := 'Database Ditta';
+    lblVersioneOS1.Visible      := False;
+    lblServer.Visible           := False;
+    lblDatabase.Visible         := False;
+    lblDatabaseDitta.Visible    := False;
+    pnlRichiestaNome.Visible    := False;
+    pnlRichiestaNome.Align      := alNone;
 end;
 
 procedure TfInizializzaProgetto.btnConfermaNomeClick(Sender: TObject);

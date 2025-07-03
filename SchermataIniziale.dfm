@@ -2,8 +2,8 @@ object fScegliCosaFare: TfScegliCosaFare
   Left = 0
   Top = 0
   Caption = 'Scegli Cosa Fare'
-  ClientHeight = 595
-  ClientWidth = 631
+  ClientHeight = 594
+  ClientWidth = 627
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,11 +14,10 @@ object fScegliCosaFare: TfScegliCosaFare
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 631
+    Width = 627
     Height = 53
     Align = alTop
     TabOrder = 0
-    ExplicitWidth = 627
     object Image3: TImage
       Left = 572
       Top = 2
@@ -811,16 +810,15 @@ object fScegliCosaFare: TfScegliCosaFare
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         FFFFFFFFFFFFFFFFFFFF}
       TabOrder = 1
+      OnClick = btnSpostaCartellaClick
     end
   end
   object pnlCentrale: TPanel
     Left = 0
     Top = 53
-    Width = 631
-    Height = 542
+    Width = 627
+    Height = 541
     Align = alClient
     TabOrder = 1
-    ExplicitWidth = 627
-    ExplicitHeight = 541
   end
 end
