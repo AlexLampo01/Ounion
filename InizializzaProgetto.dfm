@@ -100,8 +100,8 @@ object fInizializzaProgetto: TfInizializzaProgetto
     Height = 504
     Align = alClient
     TabOrder = 1
-    ExplicitLeft = 231
-    ExplicitTop = -8
+    ExplicitWidth = 397
+    ExplicitHeight = 503
     object pnlUsernamePassword: TPanel
       Left = 0
       Top = 68
@@ -195,6 +195,23 @@ object fInizializzaProgetto: TfInizializzaProgetto
           7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F202020}
         TabOrder = 3
         OnClick = btnConfermaUsernameClick
+      end
+      object btnClose: TBitBtn
+        Left = 344
+        Top = 4
+        Width = 45
+        Height = 25
+        Glyph.Data = {
+          F6000000424DF600000000000000760000002800000010000000100000000100
+          0400000000008000000000000000000000001000000010000000000000000000
+          80000080000000808000800000008000800080800000C0C0C000808080000000
+          FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00777777777777
+          7777777780000087777777701999991077777709999999990777709999999999
+          907781999999999991870999FF999FF9990709999FF9FF999907099999FFF999
+          9907099999FFF999990709999FF9FF9999078199FF999FF99187709999999999
+          9077770999999999077777701999991077777777800000877777}
+        TabOrder = 4
+        OnClick = btnCloseClick
       end
     end
     object pnlRichiestaNome: TPanel
@@ -427,6 +444,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Width = 279
         Height = 23
         TabOrder = 2
+        OnExit = edUtenteExit
       end
     end
   end

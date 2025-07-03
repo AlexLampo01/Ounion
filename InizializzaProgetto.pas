@@ -48,6 +48,7 @@ type
     lblUtente: TLabel;
     edUtente: TEdit;
     Label4: TLabel;
+    btnClose: TBitBtn;
     procedure cbVersioneEnter(Sender: TObject);
     procedure cbServerEnter(Sender: TObject);
     procedure cbDatabaseEnter(Sender: TObject);
@@ -61,6 +62,8 @@ type
     procedure btnProgettoGiaEsistenteClick(Sender: TObject);
     procedure btnConfermaNomeClick(Sender: TObject);
     procedure btnModificaDittaClick(Sender: TObject);
+    procedure edUtenteExit(Sender: TObject);
+    procedure btnCloseClick(Sender: TObject);
   private
     procedure RiempiComboBox(Percorso : String);
     function GetServer: TStringList;
@@ -79,9 +82,10 @@ type
     procedure CreaFileIni;
     procedure ReadFileIni;
     procedure ControllaCheckBox;
+    procedure SettaCheckBox;
   public
     Percorso, Server, Password, Username, NomeScelto, NumeroUtente, NomeDitta : String;
-    ConfermataForm, StatoInizializzaGit, MostratiDatiUsernamePassword : Boolean;
+    ConfermataForm, StatoInizializzaGit, MostratiDatiUsernamePassword, StatoModificaDitta, StatoVersioneAutomatica, ProgettoEsistente : Boolean;
   end;
 
 var
@@ -132,9 +136,17 @@ end;
 procedure TfInizializzaProgetto.cbDatabaseEnter(Sender: TObject);
 var
     DatabaseOra : String;
+    Visibile : Boolean;
 begin
     Server := cbServer.Text;
-    if Server <> 'Server' then
+    Visibile := False;
+    if pnlUsernamePassword.Visible then
+    begin
+       ShowMessage('Inserisci Username e Password del server e conferma');
+       Visibile := True;
+    end;
+
+    if (Server <> 'Server') and (not Visibile) then
     begin
         cbDatabase.Items.Clear;
         if dbDMIDatabasesMec.Connected = True then
@@ -153,9 +165,7 @@ begin
             end;
             qDatabase.Next;
         end;
-    end
-    else
-        ShowMessage('Server non selezionato!');
+    end;
 end;
 procedure TfInizializzaProgetto.cbServerChange(Sender: TObject);
 begin
@@ -163,6 +173,7 @@ begin
     pnlUsernamePassword.Align       := alTop;
     pnlUsernamePassword.Visible     := True;
     lblServer.Visible               := True;
+    Server                          := cbServer.Text;
     ControllaCheckBox;
     ReadFileIni;
 end;
@@ -440,14 +451,25 @@ begin
     end;
 end;
 
+procedure TfInizializzaProgetto.btnCloseClick(Sender: TObject);
+begin
+    Username := '';
+    Password := '';
+    cbServer.Text               := 'Server';
+    lblServer.Visible           := False;
+    pnlUsernamePassword.Visible := False;
+    pnlUsernamePassword.Align   := alNone;
+end;
+
 procedure TfInizializzaProgetto.btnConfermaNomeClick(Sender: TObject);
 var
-    Versione, Percorso, Utente : String;
+    Versione, PercorsoImpostazioni, Utente, Percorso : String;
     Ini : TIniFile;
 begin
     if edNomeProgetto.Text <> '' then
     begin
         Versione := '';
+        Percorso := 'C:\OSItalia';
         if cbVersioneAuto.Checked then
         begin
             Versione := cbVersione.Text;
@@ -455,8 +477,8 @@ begin
         end;
         NomeScelto := Trim(edNomeProgetto.Text) + Versione;
         Utente := GetWindowsUsername;
-        Percorso := 'C:\Users\'+ Utente + '\AppData\Roaming\MECTools\MECToolsInizializzazione\Impostazioni.ini';
-        Ini := TIniFile.Create(Percorso);
+        PercorsoImpostazioni := 'C:\Users\'+ Utente + '\AppData\Roaming\MECTools\MECToolsInizializzazione\Impostazioni.ini';
+        Ini := TIniFile.Create(PercorsoImpostazioni);
         try
             Ini.WriteBool('Modifica Ditta', 'Attivo', cbModificaDitta.Checked);
             Ini.WriteBool('Versione Automatica', 'Attivo', cbVersioneAuto.Checked);
@@ -466,7 +488,6 @@ begin
         end;
         if cbModificaDitta.Checked then
         begin
-            //TfModificaDitta.Create(nil);
             pnlModificaDitta.Align := alTop;
             pnlModificaDitta.Visible := True;
 
@@ -478,6 +499,34 @@ begin
     end
     else
         ShowMessage('Scegli un nome!');
+    if ConfermataForm then
+    begin
+        if cbServer.Text = 'Server' then
+        begin
+            ShowMessage('Seleziona un server');
+        end
+        else if (Username = '') or (Password = '') then
+        begin
+           //TfUsernamePassword.Create(nil);
+        end
+        else
+        begin
+            if not ProgettoEsistente then
+                CreaCopiaProgetto(Percorso);
+            if NomeScelto <> '' then
+            begin
+                CreaConfig(Percorso);
+                SistemaRegSetUp;
+                ShowMessage('Ricorda di mettere la password nel RegSetUp!');
+                if StatoInizializzaGit then
+                begin
+                    InizializzaGit;
+                end;
+                OpenRegSetUp;
+            end;
+        end;
+
+end;
 end;
 
 procedure TfInizializzaProgetto.btnConfermaUsernameClick(Sender: TObject);
@@ -543,6 +592,7 @@ begin
     cbVersioneAuto.Enabled   := False;
     cbInizializzaGit.Checked := False;
     cbInizializzaGit.Enabled := False;
+    ProgettoEsistente        := True;
     SelezionaCartellaProgetto;
 end;
 
@@ -634,12 +684,33 @@ begin
    end;
 end;
 
+procedure TfInizializzaProgetto.SettaCheckBox;
+var
+    Ini : TIniFile;
+    Percorso, Utente : String;
+begin
+    Utente := GetWindowsUsername;
+    Percorso := 'C:\Users\'+ Utente + '\AppData\Roaming\MECTools\MECToolsInizializzazione\Impostazioni.ini';
+    Ini := TIniFile.Create(Percorso);
+    try
+       cbModificaDitta.Checked := Ini.ReadBool('Modifica Ditta', 'Attivo', True);
+       cbVersioneAuto.Checked  := Ini.ReadBool('Versione Automatica', 'Attivo', True);
+       cbInizializzaGit.Checked := Ini.ReadBool('Git Inizializzato', 'Attivo', True);
+       StatoModificaDitta := Ini.ReadBool('Modifica Ditta', 'Attivo', True);
+       StatoVersioneAutomatica := Ini.ReadBool('Versione Automatica', 'Attivo', True);
+       StatoInizializzaGit := Ini.ReadBool('Git Inizializzato', 'Attivo', True);
+    finally
+        Ini.Free;
+    end;
+end;
+
 procedure TfInizializzaProgetto.ControllaCheckBox;
 begin
     if (cbVersione.Text <> 'Versione OS1') and (cbServer.Text <> 'Server') and (cbDatabase.Text <> 'Database') and (cbDatabaseDitta.Text <> 'Database Ditta')  then
     begin
         pnlRichiestaNome.Align   := alTop;
         pnlRichiestaNome.Visible := True;
+        SettaCheckBox;
     end;
 end;
 
@@ -925,9 +996,18 @@ begin
         Result := False;
 end;
 
+procedure TfInizializzaProgetto.edUtenteExit(Sender: TObject);
+var
+    Valore : Integer;
+begin
+    if not TryStrToInt(Trim(edUtente.Text), Valore) then
+        ShowMessage('Scrivi un numero!');
+end;
+
 procedure TfInizializzaProgetto.FormCreate(Sender: TObject);
 begin
     MostratiDatiUsernamePassword := False;
+    ProgettoEsistente            := False;
 end;
 
 procedure TfInizializzaProgetto.CreaFileIni;
@@ -953,16 +1033,41 @@ procedure TfInizializzaProgetto.ReadFileIni;
 var
     Ini: TIniFile;
     Utente, Username, Password, Percorso, Cartella : String;
+    Section : TStringList;
+    i: Integer;
+    TrovataSezione : Boolean;
 begin
     Utente := GetWindowsUsername;
+    TrovataSezione := False;
     Cartella := 'C:\Users\'+ Utente + '\AppData\Roaming\MECTools\MECToolsInizializzazione\';
     Percorso := Cartella + 'Dati.ini';
     if FileExists(Percorso) then
     begin
         Ini := TIniFile.Create(Percorso);
         try
-            Username := Ini.ReadString(Server, 'Username', edUsername.Text);
-            Password := Ini.ReadString(Server, 'Password', edPassword.Text);
+            Section := TStringList.Create;
+            try
+                Ini.ReadSections(Section);
+                for i := 0 to Section.Count - 1 do
+                begin
+                    if Section[i] = Server then
+                    begin
+                        TrovataSezione := True;
+                    end;
+                end;
+            finally
+                Section.Free;
+            end;
+            if TrovataSezione then
+            begin
+                Username := Ini.ReadString(Server, 'Username', edUsername.Text);
+                Password := Ini.ReadString(Server, 'Password', edPassword.Text);
+            end
+            else
+            begin
+                Username := '';
+                Password := '';
+            end;
         finally
             Ini.Free;
         end;
