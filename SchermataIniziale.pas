@@ -9,7 +9,6 @@ uses
 type
   TfScegliCosaFare = class(TForm)
     Panel1: TPanel;
-    Image3: TImage;
     pnlCentrale: TPanel;
     btnInizializzaProgetto: TBitBtn;
     btnSpostaCartella: TBitBtn;
