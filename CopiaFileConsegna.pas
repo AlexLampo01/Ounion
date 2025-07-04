@@ -27,7 +27,6 @@ type
     fodEsploraRisorse: TFileOpenDialog;
     cbBranch: TComboBox;
     btnAnalizzatore: TBitBtn;
-    Icons: TImageList;
     btnRestart: TBitBtn;
     procedure btnEsploraRisorseClick(Sender: TObject);
     procedure cbBranchEnter(Sender: TObject);
