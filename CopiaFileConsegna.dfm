@@ -49,6 +49,7 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
       Top = 5
       Width = 36
       Height = 25
+      Hint = 'Scegli La Cartella Del Progetto'
       Cancel = True
       DisabledImageIndex = 3
       ImageIndex = 3
@@ -72,6 +73,7 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
       Top = 31
       Width = 36
       Height = 23
+      Hint = 'Seleziona Branch'
       DisabledImageIndex = 2
       ImageIndex = 2
       Images = Icons
@@ -93,9 +95,10 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
     ExplicitWidth = 622
     object btnConferma: TBitBtn
       Left = 569
-      Top = 6
+      Top = 5
       Width = 36
       Height = 25
+      Hint = 'Copia'
       DisabledImageIndex = 4
       ImageIndex = 4
       Images = Icons
@@ -105,9 +108,10 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
     end
     object btnRestart: TBitBtn
       Left = 516
-      Top = 6
+      Top = 5
       Width = 36
       Height = 25
+      Hint = 'Restart'
       DisabledImageIndex = 5
       ImageIndex = 5
       Images = Icons
@@ -140,6 +144,7 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
         Top = 4
         Width = 41
         Height = 25
+        Hint = 'Seleziona Tutto'
         DisabledImageIndex = 1
         ImageIndex = 1
         Images = Icons
@@ -152,6 +157,7 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
         Top = 4
         Width = 41
         Height = 25
+        Hint = 'Deseleziona Tutto'
         DisabledImageIndex = 0
         ImageIndex = 0
         Images = Icons

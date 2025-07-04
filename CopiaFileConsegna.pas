@@ -92,7 +92,7 @@ end;
 
 procedure TfCopiaFileConsegna.btnAnalizzatoreEnter(Sender: TObject);
 begin
-    btnAnalizzatore.Hint := 'Seleziona Branch';
+    //btnAnalizzatore.Hint := 'Seleziona Branch';
     btnAnalizzatore.ShowHint := True;
 end;
 
@@ -174,7 +174,7 @@ end;
 
 procedure TfCopiaFileConsegna.btnConfermaEnter(Sender: TObject);
 begin
-    btnConferma.Hint := 'Copia';
+    //btnConferma.Hint := 'Copia';
     btnConferma.ShowHint := True;
 end;
 
@@ -216,7 +216,7 @@ end;
 
 procedure TfCopiaFileConsegna.btnDeselezionaTuttoEnter(Sender: TObject);
 begin
-    btnDeselezionaTutto.Hint := 'Deseleziona Tutto';
+    //btnDeselezionaTutto.Hint := 'Deseleziona Tutto';
     btnDeselezionaTutto.ShowHint := True;
 end;
 
@@ -256,7 +256,7 @@ end;
 
 procedure TfCopiaFileConsegna.btnEsploraRisorseEnter(Sender: TObject);
 begin
-    btnEsploraRisorse.Hint := 'Scegli La Cartella Del Progetto';
+    //btnEsploraRisorse.Hint := 'Scegli La Cartella Del Progetto';
     btnEsploraRisorse.ShowHint := True;
 end;
 
@@ -353,7 +353,7 @@ end;
 
 procedure TfCopiaFileConsegna.btnSelezionaTuttoEnter(Sender: TObject);
 begin
-    btnSelezionaTutto.Hint := 'Seleziona Tutto';
+    //btnSelezionaTutto.Hint := 'Seleziona Tutto';
     btnSelezionaTutto.ShowHint := True;
 end;
 

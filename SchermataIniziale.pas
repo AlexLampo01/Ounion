@@ -29,7 +29,7 @@ var
 implementation
 
 uses
-    InizializzaProgetto, CopiaFileConsegna;
+    InizializzaProgetto, CopiaFileConsegna, Offuscatore;
 
 {$R *.dfm}
 
@@ -58,7 +58,6 @@ end;
 
 procedure TfScegliCosaFare.btnInizializzaProgettoEnter(Sender: TObject);
 begin
-    btnInizializzaProgetto.Hint := 'Inizializza Progetto';
     btnInizializzaProgetto.ShowHint := True;
 end;
 
@@ -87,7 +86,6 @@ end;
 
 procedure TfScegliCosaFare.btnSpostaCartellaEnter(Sender: TObject);
 begin
-    btnSpostaCartella.Hint := 'Copia File Per Consegna';
     btnSpostaCartella.ShowHint := True;
 end;
 

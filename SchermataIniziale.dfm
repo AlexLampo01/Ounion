@@ -3,8 +3,8 @@ object fScegliCosaFare: TfScegliCosaFare
   Top = 0
   BorderStyle = bsDialog
   Caption = 'Scegli Cosa Fare'
-  ClientHeight = 592
-  ClientWidth = 619
+  ClientHeight = 591
+  ClientWidth = 615
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,7 +17,7 @@ object fScegliCosaFare: TfScegliCosaFare
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 619
+    Width = 615
     Height = 53
     Align = alTop
     TabOrder = 0
@@ -26,6 +26,7 @@ object fScegliCosaFare: TfScegliCosaFare
       Top = 3
       Width = 45
       Height = 45
+      Hint = 'Inizializza Progetto'
       Glyph.Data = {
         E61F0000424DE61F000000000000360000002800000034000000340000000100
         180000000000B01F0000C40E0000C40E000000000000000000009205FF9205FF
@@ -292,6 +293,7 @@ object fScegliCosaFare: TfScegliCosaFare
       Top = 3
       Width = 45
       Height = 45
+      Hint = 'Copia File Per Consegna'
       Glyph.Data = {
         E61F0000424DE61F000000000000360000002800000034000000340000000100
         180000000000B01F0000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -557,8 +559,8 @@ object fScegliCosaFare: TfScegliCosaFare
   object pnlCentrale: TPanel
     Left = 0
     Top = 53
-    Width = 619
-    Height = 539
+    Width = 615
+    Height = 538
     Align = alClient
     TabOrder = 1
   end

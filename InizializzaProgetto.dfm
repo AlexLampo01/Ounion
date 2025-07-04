@@ -19,10 +19,11 @@ object fInizializzaProgetto: TfInizializzaProgetto
     Height = 504
     Align = alLeft
     TabOrder = 0
-    ExplicitHeight = 503
+    ExplicitLeft = 3
+    ExplicitTop = -2
     object lblVersioneOS1: TLabel
       Left = 40
-      Top = 61
+      Top = 112
       Width = 68
       Height = 15
       Caption = 'Versione OS1'
@@ -30,7 +31,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
     end
     object lblServer: TLabel
       Left = 40
-      Top = 139
+      Top = 190
       Width = 32
       Height = 15
       Caption = 'Server'
@@ -38,7 +39,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
     end
     object lblDatabase: TLabel
       Left = 40
-      Top = 225
+      Top = 276
       Width = 48
       Height = 15
       Caption = 'Database'
@@ -46,15 +47,48 @@ object fInizializzaProgetto: TfInizializzaProgetto
     end
     object lblDatabaseDitta: TLabel
       Left = 40
-      Top = 307
+      Top = 358
       Width = 76
       Height = 15
       Caption = 'Database Ditta'
       Visible = False
     end
+    object Label6: TLabel
+      Left = 40
+      Top = 10
+      Width = 132
+      Height = 21
+      Caption = 'Cosa Inizializzare'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object Label7: TLabel
+      Left = 0
+      Top = 60
+      Width = 225
+      Height = 15
+      Caption = '---------------------------------------------'
+    end
+    object Label8: TLabel
+      Left = 40
+      Top = 71
+      Width = 123
+      Height = 21
+      Caption = 'Seleziona Valori'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
     object cbVersione: TComboBox
       Left = 40
-      Top = 82
+      Top = 133
       Width = 145
       Height = 23
       TabOrder = 0
@@ -64,7 +98,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
     end
     object cbServer: TComboBox
       Left = 40
-      Top = 160
+      Top = 211
       Width = 145
       Height = 23
       TabOrder = 1
@@ -74,7 +108,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
     end
     object cbDatabase: TComboBox
       Left = 40
-      Top = 246
+      Top = 297
       Width = 145
       Height = 23
       TabOrder = 2
@@ -84,13 +118,33 @@ object fInizializzaProgetto: TfInizializzaProgetto
     end
     object cbDatabaseDitta: TComboBox
       Left = 40
-      Top = 328
+      Top = 379
       Width = 145
       Height = 23
       TabOrder = 3
       Text = 'Database Ditta'
       OnChange = cbDatabaseDittaChange
       OnEnter = cbDatabaseDittaEnter
+    end
+    object cbRegSetUp: TCheckBox
+      Left = 9
+      Top = 40
+      Width = 97
+      Height = 17
+      Caption = 'RegSetUp'
+      Checked = True
+      State = cbChecked
+      TabOrder = 4
+    end
+    object cbLauncher: TCheckBox
+      Left = 116
+      Top = 40
+      Width = 97
+      Height = 17
+      Caption = 'Launcher'
+      Checked = True
+      State = cbChecked
+      TabOrder = 5
     end
   end
   object Panel3: TPanel
@@ -590,6 +644,18 @@ object fInizializzaProgetto: TfInizializzaProgetto
         OnEnter = btnCloseModificaDittaEnter
       end
     end
+    object pbLoading: TProgressBar
+      Left = 1
+      Top = 486
+      Width = 399
+      Height = 17
+      Align = alBottom
+      TabOrder = 4
+      Visible = False
+      ExplicitLeft = 26
+      ExplicitTop = 479
+      ExplicitWidth = 150
+    end
   end
   object dbDMIDatabasesMec: TXDatabase
     ConnectionName = 'Devart SQL Server'
@@ -611,8 +677,8 @@ object fInizializzaProgetto: TfInizializzaProgetto
     DatabaseName = 'MECToolsDatabaseDMI'
     TipoDataBase = tdbSconosciuto
     UsoMaiuscole = umNessuno
-    Left = 115
-    Top = 364
+    Left = 107
+    Top = 456
   end
   object qDatabase: TXQuery
     ReadOnly = True
@@ -625,8 +691,8 @@ object fInizializzaProgetto: TfInizializzaProgetto
     Esegui = True
     UsaDizionario = False
     XSQLIndex = 0
-    Left = 63
-    Top = 364
+    Left = 39
+    Top = 456
     object qDatabaseDatabaseName: TXStringField
       FieldName = 'DatabaseName'
       Size = 128
@@ -636,7 +702,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
     FavoriteLinks = <>
     FileTypes = <>
     Options = [fdoPickFolders]
-    Left = 167
-    Top = 364
+    Left = 71
+    Top = 452
   end
 end

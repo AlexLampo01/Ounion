@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Buttons,
-  DBXDevartSQLServer, Data.DB, XTable, XDBClient, Data.SqlExpr;
+  DBXDevartSQLServer, Data.DB, XTable, XDBClient, Data.SqlExpr, Vcl.ComCtrls;
 
 type
   TfInizializzaProgetto = class(TForm)
@@ -52,6 +52,12 @@ type
     btnCloseNomeProgetto: TBitBtn;
     btnCloseModificaDitta: TBitBtn;
     Label5: TLabel;
+    cbRegSetUp: TCheckBox;
+    cbLauncher: TCheckBox;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    pbLoading: TProgressBar;
     procedure cbVersioneEnter(Sender: TObject);
     procedure cbServerEnter(Sender: TObject);
     procedure cbDatabaseEnter(Sender: TObject);
@@ -90,6 +96,7 @@ type
     procedure ReadFileIni;
     procedure ControllaCheckBox;
     procedure SettaCheckBox;
+    procedure Reset;
   public
     Percorso, Server, Password, Username, NomeScelto, NumeroUtente, NomeDitta : String;
     ConfermataForm, StatoInizializzaGit, MostratiDatiUsernamePassword, StatoModificaDitta, StatoVersioneAutomatica, ProgettoEsistente : Boolean;
@@ -507,7 +514,9 @@ procedure TfInizializzaProgetto.btnConfermaNomeClick(Sender: TObject);
 var
     Versione, PercorsoImpostazioni, Utente, Percorso : String;
     Ini : TIniFile;
+  i: Integer;
 begin
+    pbLoading.Position := 0;
     if edNomeProgetto.Text <> '' then
     begin
         Versione := '';
@@ -553,22 +562,39 @@ begin
         end
         else
         begin
+            pbLoading.Visible := True;
+            for i := 1 to 100 do
+            begin
+                pbLoading.Position := i;
+                Sleep(100);
+                if pbLoading.Position = 100 then
+                begin
+                    Break;
+                end;
+            end;
+            pbLoading.Visible := False;
             if not ProgettoEsistente then
                 CreaCopiaProgetto(Percorso);
             if NomeScelto <> '' then
             begin
-                CreaConfig(Percorso);
-                SistemaRegSetUp;
-                ShowMessage('Ricorda di mettere la password nel RegSetUp!');
+                if cbLauncher.Checked then
+                    CreaConfig(Percorso);
+                if cbRegSetUp.Checked then
+                begin
+                    SistemaRegSetUp;
+                    ShowMessage('Ricorda di mettere la password nel RegSetUp!');
+                end;
                 if StatoInizializzaGit then
                 begin
                     InizializzaGit;
                 end;
-                OpenRegSetUp;
+                if cbRegSetUp.Checked then
+                    OpenRegSetUp;
             end;
+            Reset;
         end;
 
-end;
+    end;
 end;
 
 procedure TfInizializzaProgetto.btnConfermaUsernameClick(Sender: TObject);
@@ -1117,6 +1143,27 @@ begin
     end;
     edUsername.Text := Username;
     edPassword.Text := Password;
+end;
+
+procedure TfInizializzaProgetto.Reset;
+begin
+    Percorso     := '';
+    Server       := '';
+    Password     := '';
+    Username     := '';
+    NomeScelto   := '';
+    NumeroUtente := '';
+    NomeDitta    := '';
+    cbVersione.Text             := 'Versione OS1';
+    cbServer.Text               := 'Server';
+    cbDatabase.Text             := 'Database';
+    cbDatabaseDitta.Text        := 'Database Ditta';
+    lblVersioneOS1.Visible      := False;
+    lblServer.Visible           := False;
+    lblDatabase.Visible         := False;
+    lblDatabaseDitta.Visible    := False;
+    pnlRichiestaNome.Visible    := False;
+    pnlRichiestaNome.Align      := alNone;
 end;
 
 end.
