@@ -99,7 +99,8 @@ type
     procedure Reset;
   public
     Percorso, Server, Password, Username, NomeScelto, NumeroUtente, NomeDitta : String;
-    ConfermataForm, StatoInizializzaGit, MostratiDatiUsernamePassword, StatoModificaDitta, StatoVersioneAutomatica, ProgettoEsistente : Boolean;
+    ConfermataForm, StatoInizializzaGit, MostratiDatiUsernamePassword, StatoModificaDitta,
+    StatoVersioneAutomatica, ProgettoEsistente, ChiudiModificaDitta : Boolean;
   end;
 
 var
@@ -108,7 +109,7 @@ var
 implementation
 
 uses
-    System.IOUtils{, RichiestaNome, UsernamePassword}, IniFiles, System.Win.Registry, ShellApi;
+    System.IOUtils, IniFiles, System.Win.Registry, ShellApi;
 
 {$R *.dfm}
 
@@ -502,6 +503,12 @@ begin
     lblDatabaseDitta.Visible    := False;
     pnlRichiestaNome.Visible    := False;
     pnlRichiestaNome.Align      := alNone;
+    cbInizializzaGit.Enabled    := True;
+    cbVersioneAuto.Enabled      := True;
+    edNomeProgetto.Enabled      := True;
+    ProgettoEsistente           := False;
+    edNomeProgetto.Text         := '';
+    //SettaCheckBox;
 end;
 
 procedure TfInizializzaProgetto.btnCloseNomeProgettoEnter(Sender: TObject);
@@ -534,14 +541,15 @@ begin
             Ini.WriteBool('Modifica Ditta', 'Attivo', cbModificaDitta.Checked);
             Ini.WriteBool('Versione Automatica', 'Attivo', cbVersioneAuto.Checked);
             Ini.WriteBool('Git Inizializzato', 'Attivo', cbInizializzaGit.Checked);
+            Ini.WriteBool('RegSetUp', 'Attivo', cbRegSetUp.Checked);
+            Ini.WriteBool('InitLaucher', 'Attivo', cbLauncher.Checked);
         finally
             Ini.Free;
         end;
-        if cbModificaDitta.Checked then
+        if (not ChiudiModificaDitta) and (cbModificaDitta.Checked) then
         begin
             pnlModificaDitta.Align := alTop;
             pnlModificaDitta.Visible := True;
-
         end
         else
         begin
@@ -584,15 +592,15 @@ begin
                     SistemaRegSetUp;
                     ShowMessage('Ricorda di mettere la password nel RegSetUp!');
                 end;
-                if StatoInizializzaGit then
+                if cbInizializzaGit.Checked then
                 begin
                     InizializzaGit;
                 end;
                 if cbRegSetUp.Checked then
                     OpenRegSetUp;
             end;
-            Reset;
         end;
+        Reset;
 
     end;
 end;
@@ -650,6 +658,10 @@ begin
         NomeDitta := edDitta.Text;
         NumeroUtente := IntToStr(Valore);
         ConfermataForm := True;
+        ChiudiModificaDitta := True;
+        pnlModificaDitta.Visible := False;
+        pnlModificaDitta.Align := alNone;
+        btnConfermaNome.Click;
     end;
 
 end;
@@ -742,7 +754,7 @@ begin
             if PrendoNome and (i = Length(CartellaSelezionata)) then
             begin
                 NomeScelto := RicostruzioneNome;
-                StatoInizializzaGit := True;
+                //StatoInizializzaGit := True;
                 break;
             end;
         end;
@@ -761,12 +773,14 @@ begin
     Percorso := 'C:\Users\'+ Utente + '\AppData\Roaming\MECTools\MECToolsInizializzazione\Impostazioni.ini';
     Ini := TIniFile.Create(Percorso);
     try
-       cbModificaDitta.Checked := Ini.ReadBool('Modifica Ditta', 'Attivo', True);
-       cbVersioneAuto.Checked  := Ini.ReadBool('Versione Automatica', 'Attivo', True);
+       cbModificaDitta.Checked  := Ini.ReadBool('Modifica Ditta', 'Attivo', True);
+       cbVersioneAuto.Checked   := Ini.ReadBool('Versione Automatica', 'Attivo', True);
        cbInizializzaGit.Checked := Ini.ReadBool('Git Inizializzato', 'Attivo', True);
-       StatoModificaDitta := Ini.ReadBool('Modifica Ditta', 'Attivo', True);
-       StatoVersioneAutomatica := Ini.ReadBool('Versione Automatica', 'Attivo', True);
-       StatoInizializzaGit := Ini.ReadBool('Git Inizializzato', 'Attivo', True);
+       cbModificaDitta.Checked  := Ini.ReadBool('Modifica Ditta', 'Attivo', True);
+       cbVersioneAuto.Checked   := Ini.ReadBool('Versione Automatica', 'Attivo', True);
+       cbInizializzaGit.Checked := Ini.ReadBool('Git Inizializzato', 'Attivo', True);
+       cbRegSetUp.Checked       := Ini.ReadBool('RegSetUp', 'Attivo', True);
+       cbLauncher.Checked       := Ini.ReadBool('InitLaucher', 'Attivo', True);
     finally
         Ini.Free;
     end;
@@ -778,7 +792,6 @@ begin
     begin
         pnlRichiestaNome.Align   := alTop;
         pnlRichiestaNome.Visible := True;
-        SettaCheckBox;
     end;
 end;
 
@@ -989,7 +1002,6 @@ begin
     PercorsoRegSetUp := 'C:\OSItalia\'+ cbVersione.Text + '\OS1RegSetup.exe';
     Sleep(1000);
     ShellExecute (0, 'open', PChar(PercorsoRegSetUp), nil, nil, SW_SHOWNORMAL);
-    Close;
 end;
 
 procedure TfInizializzaProgetto.OpenFork;
@@ -1076,7 +1088,9 @@ procedure TfInizializzaProgetto.FormCreate(Sender: TObject);
 begin
     MostratiDatiUsernamePassword := False;
     ProgettoEsistente            := False;
+    ChiudiModificaDitta          := False;
     Self.ShowHint                := True;
+    SettaCheckBox;
 end;
 
 procedure TfInizializzaProgetto.CreaFileIni;
@@ -1147,23 +1161,34 @@ end;
 
 procedure TfInizializzaProgetto.Reset;
 begin
-    Percorso     := '';
-    Server       := '';
-    Password     := '';
-    Username     := '';
-    NomeScelto   := '';
-    NumeroUtente := '';
-    NomeDitta    := '';
-    cbVersione.Text             := 'Versione OS1';
-    cbServer.Text               := 'Server';
-    cbDatabase.Text             := 'Database';
-    cbDatabaseDitta.Text        := 'Database Ditta';
-    lblVersioneOS1.Visible      := False;
-    lblServer.Visible           := False;
-    lblDatabase.Visible         := False;
-    lblDatabaseDitta.Visible    := False;
-    pnlRichiestaNome.Visible    := False;
-    pnlRichiestaNome.Align      := alNone;
+    Percorso                     := '';
+    Server                       := '';
+    Password                     := '';
+    Username                     := '';
+    NomeScelto                   := '';
+    NumeroUtente                 := '';
+    NomeDitta                    := '';
+    cbVersione.Text              := 'Versione OS1';
+    cbServer.Text                := 'Server';
+    cbDatabase.Text              := 'Database';
+    cbDatabaseDitta.Text         := 'Database Ditta';
+    lblVersioneOS1.Visible       := False;
+    lblServer.Visible            := False;
+    lblDatabase.Visible          := False;
+    lblDatabaseDitta.Visible     := False;
+    pnlRichiestaNome.Visible     := False;
+    pnlRichiestaNome.Align       := alNone;
+    ConfermataForm               := False;
+    StatoInizializzaGit          := False;
+    MostratiDatiUsernamePassword := False;
+    StatoModificaDitta           := False;
+    StatoVersioneAutomatica      := False;
+    ProgettoEsistente            := False;
+    ChiudiModificaDitta          := False;
+    cbInizializzaGit.Enabled     := True;
+    cbVersioneAuto.Enabled       := True;
+    //SettaCheckBox;
+    Close;
 end;
 
 end.

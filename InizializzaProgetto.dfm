@@ -19,11 +19,10 @@ object fInizializzaProgetto: TfInizializzaProgetto
     Height = 504
     Align = alLeft
     TabOrder = 0
-    ExplicitLeft = 3
-    ExplicitTop = -2
+    ExplicitHeight = 503
     object lblVersioneOS1: TLabel
       Left = 40
-      Top = 112
+      Top = 165
       Width = 68
       Height = 15
       Caption = 'Versione OS1'
@@ -31,7 +30,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
     end
     object lblServer: TLabel
       Left = 40
-      Top = 190
+      Top = 243
       Width = 32
       Height = 15
       Caption = 'Server'
@@ -39,7 +38,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
     end
     object lblDatabase: TLabel
       Left = 40
-      Top = 276
+      Top = 329
       Width = 48
       Height = 15
       Caption = 'Database'
@@ -47,7 +46,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
     end
     object lblDatabaseDitta: TLabel
       Left = 40
-      Top = 358
+      Top = 411
       Width = 76
       Height = 15
       Caption = 'Database Ditta'
@@ -68,14 +67,14 @@ object fInizializzaProgetto: TfInizializzaProgetto
     end
     object Label7: TLabel
       Left = 0
-      Top = 60
+      Top = 103
       Width = 225
       Height = 15
       Caption = '---------------------------------------------'
     end
     object Label8: TLabel
       Left = 40
-      Top = 71
+      Top = 128
       Width = 123
       Height = 21
       Caption = 'Seleziona Valori'
@@ -88,7 +87,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
     end
     object cbVersione: TComboBox
       Left = 40
-      Top = 133
+      Top = 186
       Width = 145
       Height = 23
       TabOrder = 0
@@ -98,7 +97,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
     end
     object cbServer: TComboBox
       Left = 40
-      Top = 211
+      Top = 264
       Width = 145
       Height = 23
       TabOrder = 1
@@ -108,7 +107,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
     end
     object cbDatabase: TComboBox
       Left = 40
-      Top = 297
+      Top = 350
       Width = 145
       Height = 23
       TabOrder = 2
@@ -118,7 +117,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
     end
     object cbDatabaseDitta: TComboBox
       Left = 40
-      Top = 379
+      Top = 432
       Width = 145
       Height = 23
       TabOrder = 3
@@ -145,6 +144,36 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Checked = True
       State = cbChecked
       TabOrder = 5
+    end
+    object cbInizializzaGit: TCheckBox
+      Left = 9
+      Top = 63
+      Width = 100
+      Height = 17
+      Caption = 'Inizializza Git'
+      Checked = True
+      State = cbChecked
+      TabOrder = 6
+    end
+    object cbVersioneAuto: TCheckBox
+      Left = 115
+      Top = 63
+      Width = 100
+      Height = 17
+      Caption = 'Versione Auto.'
+      Checked = True
+      State = cbChecked
+      TabOrder = 7
+    end
+    object cbModificaDitta: TCheckBox
+      Left = 9
+      Top = 86
+      Width = 100
+      Height = 17
+      Caption = 'Modifica Ditta'
+      Checked = True
+      State = cbChecked
+      TabOrder = 8
     end
   end
   object Panel3: TPanel
@@ -303,36 +332,6 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Height = 23
         TabOrder = 0
       end
-      object cbVersioneAuto: TCheckBox
-        Left = 25
-        Top = 68
-        Width = 100
-        Height = 17
-        Caption = 'Versione Auto.'
-        Checked = True
-        State = cbChecked
-        TabOrder = 1
-      end
-      object cbModificaDitta: TCheckBox
-        Left = 150
-        Top = 68
-        Width = 100
-        Height = 17
-        Caption = 'Modifica Ditta'
-        Checked = True
-        State = cbChecked
-        TabOrder = 2
-      end
-      object cbInizializzaGit: TCheckBox
-        Left = 275
-        Top = 68
-        Width = 100
-        Height = 17
-        Caption = 'Inizializza Git'
-        Checked = True
-        State = cbChecked
-        TabOrder = 3
-      end
       object btnConfermaNome: TBitBtn
         Left = 311
         Top = 96
@@ -366,7 +365,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
           C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C060DF
           6090B090C0C0C04040403F3F3F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F
           7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F202020}
-        TabOrder = 4
+        TabOrder = 1
         OnClick = btnConfermaNomeClick
       end
       object btnProgettoGiaEsistente: TBitBtn
@@ -496,7 +495,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
           FF8711FF8711FF8711FF8711FF8711FF8711FF8711FF8711FF8711FF8711FF87
           11FF8711FF8711FF8711FF8711FF8711FF8711FF8711FF8711FF8711FF8711FF
           8711FF8711FF8711FF8711FF8711FF8711FF8711FF8711FF8711FF000000}
-        TabOrder = 5
+        TabOrder = 2
         OnClick = btnProgettoGiaEsistenteClick
       end
       object btnCloseNomeProgetto: TBitBtn
@@ -513,7 +512,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
           907781999999999991870999FF999FF9990709999FF9FF999907099999FFF999
           9907099999FFF999990709999FF9FF9999078199FF999FF99187709999999999
           9077770999999999077777701999991077777777800000877777}
-        TabOrder = 6
+        TabOrder = 3
         OnClick = btnCloseNomeProgettoClick
         OnEnter = btnCloseNomeProgettoEnter
       end
@@ -577,7 +576,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       end
       object btnModificaDitta: TBitBtn
         Left = 311
-        Top = 98
+        Top = 95
         Width = 77
         Height = 27
         Caption = 'Conferma'
@@ -652,9 +651,8 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Align = alBottom
       TabOrder = 4
       Visible = False
-      ExplicitLeft = 26
-      ExplicitTop = 479
-      ExplicitWidth = 150
+      ExplicitTop = 485
+      ExplicitWidth = 395
     end
   end
   object dbDMIDatabasesMec: TXDatabase

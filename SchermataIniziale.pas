@@ -29,7 +29,7 @@ var
 implementation
 
 uses
-    InizializzaProgetto, CopiaFileConsegna, Offuscatore;
+    InizializzaProgetto, CopiaFileConsegna;
 
 {$R *.dfm}
 
