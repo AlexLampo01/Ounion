@@ -12,11 +12,13 @@ type
     pnlCentrale: TPanel;
     btnInizializzaProgetto: TBitBtn;
     btnSpostaCartella: TBitBtn;
+    btnInformazioniSu: TBitBtn;
     procedure btnInizializzaProgettoClick(Sender: TObject);
     procedure btnSpostaCartellaClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnInizializzaProgettoEnter(Sender: TObject);
     procedure btnSpostaCartellaEnter(Sender: TObject);
+    procedure btnInformazioniSuClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -29,9 +31,42 @@ var
 implementation
 
 uses
-    InizializzaProgetto, CopiaFileConsegna;
+    InizializzaProgetto, CopiaFileConsegna, About;
 
 {$R *.dfm}
+
+procedure TfScegliCosaFare.btnInformazioniSuClick(Sender: TObject);
+begin
+   if not Assigned(About.fInformazioniSu) then
+        About.fInformazioniSu := About.TfInformazioniSu.Create(Self);
+    with About.fInformazioniSu do
+    begin
+        Parent := pnlCentrale;
+        BorderStyle := bsNone;
+        Align := alClient;
+        Visible := True;
+    end;
+    if Assigned(CopiaFileConsegna.fCopiaFileConsegna) then
+    begin
+        with CopiaFileConsegna.fCopiaFileConsegna do
+        begin
+            Parent := pnlCentrale;
+            BorderStyle := bsNone;
+            Align := alNone;
+            Visible := False;
+        end;
+    end;
+    if Assigned(InizializzaProgetto.fInizializzaProgetto) then
+    begin
+        with InizializzaProgetto.fInizializzaProgetto do
+        begin
+            Parent := pnlCentrale;
+            BorderStyle := bsNone;
+            Align := alNone;
+            Visible := False;
+        end;
+    end;
+end;
 
 procedure TfScegliCosaFare.btnInizializzaProgettoClick(Sender: TObject);
 begin
@@ -53,6 +88,13 @@ begin
             Align := alNone;
             Visible := False;
         end;
+    end;
+    with About.fInformazioniSu do
+    begin
+        Parent := pnlCentrale;
+        BorderStyle := bsNone;
+        Align := alNone;
+        Visible := False;
     end;
 end;
 
@@ -81,6 +123,13 @@ begin
             Align := alNone;
             Visible := False;
         end;
+    end;
+    with About.fInformazioniSu do
+    begin
+        Parent := pnlCentrale;
+        BorderStyle := bsNone;
+        Align := alNone;
+        Visible := False;
     end;
 end;
 

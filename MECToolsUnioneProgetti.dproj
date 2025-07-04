@@ -114,6 +114,14 @@
             <Form>fCopiaFileConsegna</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="About.pas">
+            <Form>fInformazioniSu</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Questions.pas">
+            <Form>tQuestions</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
