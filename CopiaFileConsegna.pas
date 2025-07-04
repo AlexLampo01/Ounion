@@ -38,6 +38,13 @@ type
     procedure sgFileConfermatiDblClick(Sender: TObject);
     procedure btnConfermaClick(Sender: TObject);
     procedure btnRestartClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure btnEsploraRisorseEnter(Sender: TObject);
+    procedure btnAnalizzatoreEnter(Sender: TObject);
+    procedure btnSelezionaTuttoEnter(Sender: TObject);
+    procedure btnDeselezionaTuttoEnter(Sender: TObject);
+    procedure btnRestartEnter(Sender: TObject);
+    procedure btnConfermaEnter(Sender: TObject);
   private
     function RecuperaRemote(Percorso: String): TStringList;
     function RecuperaBranch(Percorso: String): TStringList;
@@ -81,6 +88,12 @@ begin
     FileList.Free;
     FileListTemp.Free;
    end;
+end;
+
+procedure TfCopiaFileConsegna.btnAnalizzatoreEnter(Sender: TObject);
+begin
+    btnAnalizzatore.Hint := 'Seleziona Branch';
+    btnAnalizzatore.ShowHint := True;
 end;
 
 procedure TfCopiaFileConsegna.btnConfermaClick(Sender: TObject);
@@ -159,6 +172,12 @@ begin
     end;
 end;
 
+procedure TfCopiaFileConsegna.btnConfermaEnter(Sender: TObject);
+begin
+    btnConferma.Hint := 'Copia';
+    btnConferma.ShowHint := True;
+end;
+
 procedure TfCopiaFileConsegna.btnDeselezionaTuttoClick(Sender: TObject);
 var
     i, j, UltimaRiga: Integer;
@@ -195,6 +214,12 @@ begin
     end;
 end;
 
+procedure TfCopiaFileConsegna.btnDeselezionaTuttoEnter(Sender: TObject);
+begin
+    btnDeselezionaTutto.Hint := 'Deseleziona Tutto';
+    btnDeselezionaTutto.ShowHint := True;
+end;
+
 procedure TfCopiaFileConsegna.btnEsploraRisorseClick(Sender: TObject);
 var
     CartellaConGit : String;
@@ -229,6 +254,12 @@ begin
     end;
 end;
 
+procedure TfCopiaFileConsegna.btnEsploraRisorseEnter(Sender: TObject);
+begin
+    btnEsploraRisorse.Hint := 'Scegli La Cartella Del Progetto';
+    btnEsploraRisorse.ShowHint := True;
+end;
+
 procedure TfCopiaFileConsegna.btnRestartClick(Sender: TObject);
 var
     i: integer;
@@ -249,6 +280,12 @@ begin
     btnEsploraRisorse.Enabled := True;
     lblPercorso.Caption := '';
     cbBranch.Items.Clear;
+end;
+
+procedure TfCopiaFileConsegna.btnRestartEnter(Sender: TObject);
+begin
+    btnRestart.Hint := 'Restart';
+    btnRestart.ShowHint := True;
 end;
 
 procedure TfCopiaFileConsegna.btnSelezionaTuttoClick(Sender: TObject);
@@ -312,6 +349,12 @@ begin
     finally
      FileConEliminazione.Free;
     end;
+end;
+
+procedure TfCopiaFileConsegna.btnSelezionaTuttoEnter(Sender: TObject);
+begin
+    btnSelezionaTutto.Hint := 'Seleziona Tutto';
+    btnSelezionaTutto.ShowHint := True;
 end;
 
 procedure TfCopiaFileConsegna.cbBranchEnter(Sender: TObject);
@@ -738,6 +781,11 @@ begin
     CostruzionePercorso := IncludeTrailingPathDelimiter(Trim(Percorso)) + Trim(FileDaCercare);
     CostruzionePercorso := StringReplace(CostruzionePercorso, '/', '\', [rfReplaceAll]);
     Trovato := CostruzionePercorso;
+end;
+
+procedure TfCopiaFileConsegna.FormCreate(Sender: TObject);
+begin
+    Self.ShowHint := True;
 end;
 
 end.

@@ -212,6 +212,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
           9077770999999999077777701999991077777777800000877777}
         TabOrder = 4
         OnClick = btnCloseClick
+        OnEnter = btnCloseEnter
       end
     end
     object pnlRichiestaNome: TPanel
@@ -460,6 +461,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
           9077770999999999077777701999991077777777800000877777}
         TabOrder = 6
         OnClick = btnCloseNomeProgettoClick
+        OnEnter = btnCloseNomeProgettoEnter
       end
     end
     object Panel1: TPanel
@@ -585,6 +587,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
           9907099999FFF999990709999FF9FF9999078199FF999FF99187709999999999
           9077770999999999077777701999991077777777800000877777}
         TabOrder = 3
+        OnEnter = btnCloseModificaDittaEnter
       end
     end
   end

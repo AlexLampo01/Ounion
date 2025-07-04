@@ -14,6 +14,9 @@ type
     btnSpostaCartella: TBitBtn;
     procedure btnInizializzaProgettoClick(Sender: TObject);
     procedure btnSpostaCartellaClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure btnInizializzaProgettoEnter(Sender: TObject);
+    procedure btnSpostaCartellaEnter(Sender: TObject);
   private
     { Private declarations }
   public
@@ -53,6 +56,12 @@ begin
     end;
 end;
 
+procedure TfScegliCosaFare.btnInizializzaProgettoEnter(Sender: TObject);
+begin
+    btnInizializzaProgetto.Hint := 'Inizializza Progetto';
+    btnInizializzaProgetto.ShowHint := True;
+end;
+
 procedure TfScegliCosaFare.btnSpostaCartellaClick(Sender: TObject);
 begin
     if not Assigned(CopiaFileConsegna.fCopiaFileConsegna) then
@@ -74,6 +83,17 @@ begin
             Visible := False;
         end;
     end;
+end;
+
+procedure TfScegliCosaFare.btnSpostaCartellaEnter(Sender: TObject);
+begin
+    btnSpostaCartella.Hint := 'Copia File Per Consegna';
+    btnSpostaCartella.ShowHint := True;
+end;
+
+procedure TfScegliCosaFare.FormCreate(Sender: TObject);
+begin
+    Self.ShowHint := True;
 end;
 
 end.

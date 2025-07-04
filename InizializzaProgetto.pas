@@ -68,6 +68,9 @@ type
     procedure edUtenteExit(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure btnCloseNomeProgettoClick(Sender: TObject);
+    procedure btnCloseEnter(Sender: TObject);
+    procedure btnCloseNomeProgettoEnter(Sender: TObject);
+    procedure btnCloseModificaDittaEnter(Sender: TObject);
   private
     procedure RiempiComboBox(Percorso : String);
     function GetServer: TStringList;
@@ -465,6 +468,18 @@ begin
     pnlUsernamePassword.Align   := alNone;
 end;
 
+procedure TfInizializzaProgetto.btnCloseEnter(Sender: TObject);
+begin
+    btnClose.Hint := 'Chiudi';
+    btnClose.ShowHint := True;
+end;
+
+procedure TfInizializzaProgetto.btnCloseModificaDittaEnter(Sender: TObject);
+begin
+    btnCloseModificaDitta.Hint := 'Chiudi';
+    btnCloseModificaDitta.ShowHint := True;
+end;
+
 procedure TfInizializzaProgetto.btnCloseNomeProgettoClick(Sender: TObject);
 begin
     NomeScelto                  := '';
@@ -480,6 +495,12 @@ begin
     lblDatabaseDitta.Visible    := False;
     pnlRichiestaNome.Visible    := False;
     pnlRichiestaNome.Align      := alNone;
+end;
+
+procedure TfInizializzaProgetto.btnCloseNomeProgettoEnter(Sender: TObject);
+begin
+    btnCloseNomeProgetto.Hint := 'Chiudi';
+    btnCloseNomeProgetto.ShowHint := True;
 end;
 
 procedure TfInizializzaProgetto.btnConfermaNomeClick(Sender: TObject);
@@ -1029,6 +1050,7 @@ procedure TfInizializzaProgetto.FormCreate(Sender: TObject);
 begin
     MostratiDatiUsernamePassword := False;
     ProgettoEsistente            := False;
+    Self.ShowHint                := True;
 end;
 
 procedure TfInizializzaProgetto.CreaFileIni;

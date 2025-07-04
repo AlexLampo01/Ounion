@@ -3,8 +3,8 @@ object fScegliCosaFare: TfScegliCosaFare
   Top = 0
   BorderStyle = bsDialog
   Caption = 'Scegli Cosa Fare'
-  ClientHeight = 593
-  ClientWidth = 623
+  ClientHeight = 592
+  ClientWidth = 619
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,15 +12,15 @@ object fScegliCosaFare: TfScegliCosaFare
   Font.Name = 'Segoe UI'
   Font.Style = []
   Position = poScreenCenter
+  OnCreate = FormCreate
   TextHeight = 15
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 623
+    Width = 619
     Height = 53
     Align = alTop
     TabOrder = 0
-    ExplicitWidth = 619
     object btnInizializzaProgetto: TBitBtn
       Left = 16
       Top = 3
@@ -285,6 +285,7 @@ object fScegliCosaFare: TfScegliCosaFare
         FF9205FF9205FF9205FF}
       TabOrder = 0
       OnClick = btnInizializzaProgettoClick
+      OnEnter = btnInizializzaProgettoEnter
     end
     object btnSpostaCartella: TBitBtn
       Left = 80
@@ -550,16 +551,15 @@ object fScegliCosaFare: TfScegliCosaFare
         FFFFFFFFFFFFFFFFFFFF}
       TabOrder = 1
       OnClick = btnSpostaCartellaClick
+      OnEnter = btnSpostaCartellaEnter
     end
   end
   object pnlCentrale: TPanel
     Left = 0
     Top = 53
-    Width = 623
-    Height = 540
+    Width = 619
+    Height = 539
     Align = alClient
     TabOrder = 1
-    ExplicitWidth = 619
-    ExplicitHeight = 539
   end
 end
