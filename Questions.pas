@@ -161,6 +161,11 @@ begin
         Width := Canvas.TextWidth(Caption) + 20;
       end;
     end;
+    lblQuestion.Visible := True;
+    btnRisposta1.Visible := True;
+    btnRisposta2.Visible := True;
+    btnRisposta3.Visible := True;
+    btnRisposta4.Visible := True;
 
   finally
     ListaBottoni.Free;
@@ -182,7 +187,7 @@ begin
     DomandeConRisposteSeparate := TStringList.Create;
     try
         repeat
-            RandomQuestion := Random(11);
+            RandomQuestion := Random(21);
             if DomandeUscite.IndexOf(RandomQuestion.ToString) = - 1 then
             begin
                 DomandeUscite.Add(RandomQuestion.ToString);
@@ -203,7 +208,7 @@ end;
 
 procedure TtQuestions.StrutturaDomande(DomandeERisposte : TStringList);
 begin
-    DomandeERisposte.Add('Che cos''''è una cipolla?;E'''' un ortaggio bulboso appartenente alla famiglia delle Amaryllidaceae.;E'''' un frutto simile al mango.;E''''un''''erba aromatica che cresce in acqua.;E'''' un tubero della famiglia delle solanaceae.');
+    DomandeERisposte.Add('Che cos''è una cipolla?;E'' un ortaggio bulboso appartenente alla famiglia delle Amaryllidaceae.;E'' un frutto simile al mango.;E''''un''''erba aromatica che cresce in acqua.;E'''' un tubero della famiglia delle solanaceae.');
     DomandeERisposte.Add('Quali sono le varietà più comuni di cipolla?;Bianca,Rossa,Dorata,Tropea,Giarratana.;Mela,Pera,Pesca,Albicocca.;Solo la cipolla rossa è commestibile;Solo la cipolla dorata è naturale, le altre sono OGM.');
     DomandeERisposte.Add('Come cresce la cipolla?;Sviluppa un bulbo sotterraneo e foglie fuori terra.;Galleggia sull''acqua come le ninfee.;Cresce completamente fuori dal terreno, come il mais.;Cresce su rami come un frutto.');
     DomandeERisposte.Add('Qual è la differenza tra cipolla e scalogno?;Lo scalogno è più piccolo e ha un sapore più delicato.;Lo scalogno è il seme della cipolla.;Sono identici ma hanno colore diverso.;Lo scalogno è una varità di cipolla rossa.');
@@ -213,6 +218,16 @@ begin
     DomandeERisposte.Add('Perchè la cipolla fa piangere?;Rilascia un gas che diventa acido solforico negli occhi.;Perchè è emozionata.;Perchè contiene aceto concentrato.;Perchè emete vapore acido solo quando è vecchia.');
     DomandeERisposte.Add('Come si può ridurre il bruciore agli occhi tagliando le cipolle?;Raffreddandola prima, tagliandola sott''acqua o con coltello affilato.;Indossando guanti da forno.;Immergendola nel caffè.;Tagliandola solo al buio.');
     DomandeERisposte.Add('Quanto tempo si può conservare una cipola tagliata?; 2-3 giorni in frigo in un contenitore ermatico.;Fino a 30 giorni fuori dal frigo.;Solo 6 ore, poi diventa velenosa.;Fino a una settimana anche se lasciata scoperta.');
+    DomandeERisposte.Add('La cipolla fa bene alla salute?;Sì, è ricca di antiossidanti e ha proprietà antinfiammatorie.;No, è tossica per l''uomo.;Fa solo ingrassare.;Sì, ma solo se mangiata fritta.');
+    DomandeERisposte.Add('Le cipolle aiutano contro il raffreddore?;Possono aiutare grazie alla loro proprietà antimicrobiche.;Provocano raffreddore e febbre alta.;Solo se mangiate crude a digiuno per 7 giorni.;Funzionano come antibiotici naturali sempre.');
+    DomandeERisposte.Add('Le cipolle fanno male a chi ha problemi gastrointestinali?;Possono causare gonfiore o fastidi a chi soffre di colon irritabile.;Sono l''alimento perfetto per lo stomaco.;Fanno male solo se crude.;Fanno sempre bene all''intestino in ogni caso.');
+    DomandeERisposte.Add('Le cipolle hanno calorie?;Sì, circa 40 cal per 100 grammi;No,sono calorie negative come l''acqua;Ne hanno oltre 500 per 100 grammi;Sì, ma solo se sono rosse.');
+    DomandeERisposte.Add('Si possono mangiare le cipolle durante la gravidanza?;Sì, salvo casi particolari da valutare con il medico.;No,è vietato in ogni trimestre.;Solo se cotte in microonde.;Sì, ma solo cipolle bianche biologiche.');
+    DomandeERisposte.Add('Da dove proviene la cipolla?;Probabilmente dall''Asia centrale.;E'' stata creata in laboratorio in Europa.;Nasce spontaneamente nei deserti del Nord America.;E'' originaria dell''India e del Sudafrica.');
+    DomandeERisposte.Add('Qual è la cipolla più dolce al mondo?;La cipolla di Tropea e la Vidalia (USA).;La cipolla verde acerba.;Solo la cipolla in scatola.;La cipolla caramellata fatta in casa.');
+    DomandeERisposte.Add('Cosa significa sognare una cipolla?;Simboleggia lacrime, verità nascoste, strati da scoprire.;Che riceverai tanti soldi.;Indica una dieta sbagliata.;Significa che ami cucinare.');
+    DomandeERisposte.Add('Le cipolle sono velenose per gli animali?;Sì, sono tossiche per cani e gatti.;No, fanno bene anche ai cuccioli.;Solo crude sono pericolose, cotte sono un toccasana.;Solo le cipolle rosse sono tossiche.');
+    DomandeERisposte.Add('Si può coltivare la cipolla in vaso?;Sì, in vaso profondo con terra drenata e sole.;No, serve una serra con irrigazione automatica.; Solo se coltivata in acqua come le alghe.; Sì, ma solo nei mesi estivi al chiuso.');
 end;
 
 procedure TtQuestions.tTempoDomandaTimer(Sender: TObject);

@@ -49,7 +49,8 @@ object tQuestions: TtQuestions
     Height = 205
     Align = alClient
     TabOrder = 1
-    ExplicitLeft = -1
+    ExplicitWidth = 624
+    ExplicitHeight = 204
     object lblQuestion: TLabel
       Left = 1
       Top = 1
@@ -64,6 +65,7 @@ object tQuestions: TtQuestions
       Font.Name = 'Segoe UI'
       Font.Style = [fsBold]
       ParentFont = False
+      Visible = False
       ExplicitWidth = 75
     end
     object btnRisposta1: TBitBtn
@@ -73,6 +75,7 @@ object tQuestions: TtQuestions
       Height = 25
       Caption = 'Risposta'
       TabOrder = 0
+      Visible = False
     end
     object btnRisposta2: TBitBtn
       Left = 8
@@ -81,6 +84,7 @@ object tQuestions: TtQuestions
       Height = 25
       Caption = 'Risposta'
       TabOrder = 1
+      Visible = False
     end
     object btnRisposta3: TBitBtn
       Left = 8
@@ -89,6 +93,7 @@ object tQuestions: TtQuestions
       Height = 25
       Caption = 'Risposta'
       TabOrder = 2
+      Visible = False
     end
     object btnRisposta4: TBitBtn
       Left = 8
@@ -97,9 +102,11 @@ object tQuestions: TtQuestions
       Height = 25
       Caption = 'Risposta'
       TabOrder = 3
+      Visible = False
     end
   end
   object tTempoDomanda: TTimer
+    Interval = 500
     OnTimer = tTempoDomandaTimer
     Left = 608
   end
