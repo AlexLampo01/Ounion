@@ -43,10 +43,25 @@ type
     procedure RiempiConPercorsi;
     procedure CalcolaPunteggio;
     procedure InserisciPunteggio;
+    function GetWindowsUsername: String;
 
   public
     { Public declarations }
   end;
+  TExtendedNameFormat = (
+      NameUnknown = 0,
+      NameFullyQualifiedDN,
+      NameSamCompatible,
+      NameDisplay,          // <-- Questo  il nome completo (es. "Mario Rossi")
+      NameUniqueId,
+      NameCanonical,
+      NameUserPrincipal,
+      NameCanonicalEx,
+      NameServicePrincipal,
+      NameDnsDomain
+    );
+
+  TGetUserNameExW = function(NameFormat: TExtendedNameFormat; lpNameBuffer: PWideChar; var nSize: DWORD): BOOL; stdcall;
 
 var
   tQuestions: TtQuestions;
@@ -237,7 +252,10 @@ end;
 procedure TtQuestions.InserisciPunteggio;
 var
     Ini: TIniFile;
+    Username, MigliorPunteggio : String;
+    Sezioni : TStringList;
 begin
+    Username := GetWindowsUsername;
     if not DirectoryExists('\\srvsviluppo22\Common\PodioCipolla') then
     begin
         ForceDirectories('\\srvsviluppo22\Common\PodioCipolla')
@@ -250,9 +268,31 @@ begin
     begin
         Ini := TIniFile.Create('\\srvsviluppo22\Common\PodioCipolla\Podio.ini');
         try
-            Ini.WriteString()
+        if FileExists('\\srvsviluppo22\Common\PodioCipolla\Podio.ini') then
+        begin
+           Sezioni := TStringList.Create;
+           try
+            Ini.ReadSections(Sezioni);
+            if Sezioni.IndexOf(Username) <> - 1 then
+            begin
+                MigliorPunteggio := Ini.ReadString(Username,'Miglior Punteggio', '0');
+            end
+            else
+                Ini.WriteString(Username, 'Miglior Punteggio', Punteggio.ToString);
+           finally
+            Sezioni.Free;
+           end;
+           if MigliorPunteggio.ToInteger < Punteggio then
+           begin
+               Ini.WriteString(Username, 'Miglior Punteggio', Punteggio.ToString);
+           end;
+        end
+        else
+            begin
+                Ini.WriteString(Username, 'Miglior Punteggio', Punteggio.ToString );
+            end;
         finally
-
+             Ini.Free;
         end;
     end;
 
@@ -329,21 +369,21 @@ end;
 
 procedure TtQuestions.RiempiConPercorsi;
 begin
-    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla1.bmp');
-    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla2.bmp');
-    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla3.bmp');
-    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla4.bmp');
-    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla5.bmp');
-    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla6.bmp');
-    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla7.bmp');
-    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla8.bmp');
-    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla9.bmp');
-    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla10.bmp');
-    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla11.bmp');
-    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla12.bmp');
-    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla13.bmp');
-    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla14.bmp');
-    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla15.bmp');
+    PercorsoImmagini.Add('\\srvsviluppo22\Common\Repositories\Cipolle\Cipolla1.bmp');
+    PercorsoImmagini.Add('\\srvsviluppo22\Common\Repositories\Cipolle\Cipolla2.bmp');
+    PercorsoImmagini.Add('\\srvsviluppo22\Common\Repositories\Cipolle\Cipolla3.bmp');
+    PercorsoImmagini.Add('\\srvsviluppo22\Common\Repositories\Cipolle\Cipolla4.bmp');
+    PercorsoImmagini.Add('\\srvsviluppo22\Common\Repositories\Cipolle\Cipolla5.bmp');
+    PercorsoImmagini.Add('\\srvsviluppo22\Common\Repositories\Cipolle\Cipolla6.bmp');
+    PercorsoImmagini.Add('\\srvsviluppo22\Common\Repositories\Cipolle\Cipolla7.bmp');
+    PercorsoImmagini.Add('\\srvsviluppo22\Common\Repositories\Cipolle\Cipolla8.bmp');
+    PercorsoImmagini.Add('\\srvsviluppo22\Common\Repositories\Cipolle\Cipolla9.bmp');
+    PercorsoImmagini.Add('\\srvsviluppo22\Common\Repositories\Cipolle\Cipolla10.bmp');
+    PercorsoImmagini.Add('\\srvsviluppo22\Common\Repositories\Cipolle\Cipolla11.bmp');
+    PercorsoImmagini.Add('\\srvsviluppo22\Common\Repositories\Cipolle\Cipolla12.bmp');
+    PercorsoImmagini.Add('\\srvsviluppo22\Common\Repositories\Cipolle\Cipolla13.bmp');
+    PercorsoImmagini.Add('\\srvsviluppo22\Common\Repositories\Cipolle\Cipolla14.bmp');
+    PercorsoImmagini.Add('\\srvsviluppo22\Common\Repositories\Cipolle\Cipolla15.bmp');
 end;
 
 function TtQuestions.ScegliUnaDomanda(DomandeERisposte: TStringList) : String;
@@ -444,5 +484,28 @@ begin
 
 end;
 
+
+function TtQuestions.GetWindowsUsername: String;
+var
+  LibHandle: HMODULE;
+  Func: TGetUserNameExW;
+  Buffer: array[0..255] of WideChar;
+  Size: DWORD;
+begin
+  Result := '';
+  LibHandle := LoadLibrary('Secur32.dll');
+  if LibHandle <> 0 then
+  try
+    @Func := GetProcAddress(LibHandle, 'GetUserNameExW');
+    if Assigned(Func) then
+    begin
+      Size := Length(Buffer);
+      if Func(NameDisplay, @Buffer[0], Size) then
+        Result := Buffer;
+    end;
+  finally
+    FreeLibrary(LibHandle);
+  end;
+end;
 
 end.
