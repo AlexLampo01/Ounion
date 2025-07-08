@@ -31,7 +31,7 @@ var
 implementation
 
 uses
-    Questions;
+    Questions, Podio;
 
 {$R *.dfm}
 
@@ -40,6 +40,10 @@ begin
     if(GetAsyncKeyState(VK_CONTROL) < 0) and (GetAsyncKeyState(VK_MENU) < 0) then
     begin
         TtQuestions.Create(Self);
+    end;
+    if(GetAsyncKeyState(VK_CONTROL) < 0) and (GetAsyncKeyState(VK_SHIFT) < 0) then
+    begin
+        TfPodio.Create(Self);
     end;
 
 end;

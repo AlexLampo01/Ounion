@@ -17,7 +17,7 @@ object fInformazioniSu: TfInformazioniSu
   object Label1: TLabel
     Left = 109
     Top = 113
-    Width = 398
+    Width = 394
     Height = 15
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
@@ -34,7 +34,7 @@ object fInformazioniSu: TfInformazioniSu
   object Label2: TLabel
     Left = 109
     Top = 146
-    Width = 398
+    Width = 394
     Height = 15
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
@@ -47,7 +47,7 @@ object fInformazioniSu: TfInformazioniSu
   object Label3: TLabel
     Left = 109
     Top = 167
-    Width = 398
+    Width = 394
     Height = 15
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
@@ -58,7 +58,7 @@ object fInformazioniSu: TfInformazioniSu
   object Label4: TLabel
     Left = 109
     Top = 188
-    Width = 398
+    Width = 394
     Height = 15
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
@@ -71,7 +71,7 @@ object fInformazioniSu: TfInformazioniSu
   object Label5: TLabel
     Left = 109
     Top = 205
-    Width = 398
+    Width = 394
     Height = 15
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
@@ -84,7 +84,7 @@ object fInformazioniSu: TfInformazioniSu
   object Label6: TLabel
     Left = 109
     Top = 223
-    Width = 398
+    Width = 394
     Height = 15
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
@@ -97,7 +97,7 @@ object fInformazioniSu: TfInformazioniSu
   object Label7: TLabel
     Left = 109
     Top = 244
-    Width = 398
+    Width = 394
     Height = 15
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
@@ -113,8 +113,7 @@ object fInformazioniSu: TfInformazioniSu
     Align = alLeft
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitTop = 32
-    ExplicitHeight = 410
+    ExplicitHeight = 328
   end
   object Panel2: TPanel
     Left = 0
@@ -124,7 +123,7 @@ object fInformazioniSu: TfInformazioniSu
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitWidth = 511
+    ExplicitWidth = 618
     object Image1: TImage
       Left = 4
       Top = 6

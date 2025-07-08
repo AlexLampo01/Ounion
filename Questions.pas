@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.ExtCtrls,
-  System.ImageList, Vcl.ImgList, Vcl.StdCtrls, Vcl.Buttons, System.StrUtils,System.Types, System.Generics.Collections;
+  System.ImageList, Vcl.ImgList, Vcl.StdCtrls, Vcl.Buttons, System.StrUtils,System.Types, System.Generics.Collections, IniFiles;
 
 type
   TtQuestions = class(TForm)
@@ -32,6 +32,7 @@ type
     procedure pbLoadingChange(Sender: TObject);
     procedure btnClick(Sender: TObject);
     procedure tPointTimer(Sender: TObject);
+    procedure tTempoDomandaTimer(Sender: TObject);
   private
     DomandeUscite, PercorsoImmagini, DomandeFatte, DomandeERisposte, DomandaInCorso : TStringList;
     NumeroDomandeFatte, Punteggio, NumGiri : Integer;
@@ -41,6 +42,7 @@ type
     procedure RiempiButtons(DomandaERisposte : TStringList);
     procedure RiempiConPercorsi;
     procedure CalcolaPunteggio;
+    procedure InserisciPunteggio;
 
   public
     { Public declarations }
@@ -232,6 +234,31 @@ begin
 
 end;
 
+procedure TtQuestions.InserisciPunteggio;
+var
+    Ini: TIniFile;
+begin
+    if not DirectoryExists('\\srvsviluppo22\Common\PodioCipolla') then
+    begin
+        ForceDirectories('\\srvsviluppo22\Common\PodioCipolla')
+    end;
+
+    if not SetFileAttributes(PChar('\\srvsviluppo22\Common\PodioCipolla'), GetFileAttributes(PChar('\\srvsviluppo22\Common\PodioCipolla')) or (FILE_ATTRIBUTE_HIDDEN)) then
+        RaiseLastOSError;
+
+    if DirectoryExists('\\srvsviluppo22\Common\PodioCipolla') then
+    begin
+        Ini := TIniFile.Create('\\srvsviluppo22\Common\PodioCipolla\Podio.ini');
+        try
+            Ini.WriteString()
+        finally
+
+        end;
+    end;
+
+
+end;
+
 procedure TtQuestions.pbLoadingChange(Sender: TObject);
 begin
     if pbLoading.Position = pbLoading.Max then
@@ -405,8 +432,17 @@ begin
     begin
         NumGiri := 0;
         tPoint.Enabled := False;
+        InserisciPunteggio;
     end;
 
 end;
+
+procedure TtQuestions.tTempoDomandaTimer(Sender: TObject);
+begin
+    pbLoading.Position := pbLoading.Position + 1;
+    Application.ProcessMessages;
+
+end;
+
 
 end.

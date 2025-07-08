@@ -6,7 +6,8 @@ uses
   InizializzaProgetto in 'InizializzaProgetto.pas' {fInizializzaProgetto},
   CopiaFileConsegna in 'CopiaFileConsegna.pas' {fCopiaFileConsegna},
   About in 'About.pas' {fInformazioniSu},
-  Questions in 'Questions.pas' {tQuestions};
+  Questions in 'Questions.pas' {tQuestions},
+  Podio in 'Podio.pas' {fPodio};
 
 {$R *.res}
 
