@@ -20,16 +20,17 @@ type
     btnRisposta3: TBitBtn;
     btnRisposta4: TBitBtn;
     lblQuestion: TLabel;
-    Label2: TLabel;
+    lblPoint: TLabel;
     tPoint: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure tTempoDomandaTimer(Sender: TObject);
     procedure pbLoadingChange(Sender: TObject);
     procedure btnClick(Sender: TObject);
+    procedure tPointTimer(Sender: TObject);
   private
     DomandeUscite, PercorsoImmagini, DomandeFatte, DomandeERisposte, DomandaInCorso : TStringList;
-    NumeroDomandeFatte, Punteggio : Integer;
+    NumeroDomandeFatte, Punteggio, NumGiri : Integer;
     DomandaConRispostaUscita : String;
     function RegolaBarra : Boolean;
     function ScegliUnaDomanda(DomandeERisposte : TStringList) : String;
@@ -37,6 +38,7 @@ type
     procedure RiempiButtons(DomandaERisposte : TStringList);
     procedure RegolaBottoni(var ListaBottoni: TObjectList<TBitBtn>; const Risposte: TStringList);
     procedure RiempiConPercorsi;
+    procedure CalcolaPunteggio;
 
   public
     { Public declarations }
@@ -74,23 +76,56 @@ begin
     else if DomandaInCorso[4] = RispostaScelta then
     begin
         Punteggio := Punteggio + 5;
-    end
-    else if RispostaScelta = '' then
-    begin
-        Punteggio := Punteggio + 0;
     end;
-    if NumeroDomandeFatte < 5 then
+    if NumeroDomandeFatte < 4 then
     begin
         pbLoading.Position := 0;
         NumeroDomandeFatte := NumeroDomandeFatte + 1;
         tTempoDomanda.Enabled := True;
         ScegliUnaDomanda(DomandeERisposte);
     end
-    else if NumeroDomandeFatte = 5 then
+    else if NumeroDomandeFatte = 4 then
     begin
         tTempoDomanda.Enabled := False;
+        CalcolaPunteggio;
     end;
 
+
+end;
+
+procedure TtQuestions.CalcolaPunteggio;
+var
+    NumeroCifre, i : Integer;
+begin
+    lblQuestion.Visible  := False;
+    btnRisposta1.Visible := False;
+    btnRisposta2.Visible := False;
+    btnRisposta3.Visible := False;
+    btnRisposta4.Visible := False;
+    lblPoint.Visible     := True;
+    lblMaxPoint.Visible  := True;
+    tPoint.Enabled       := True;
+    if tPoint.Enabled = False then
+    begin
+        NumeroCifre := 1;
+        for i := 1 to Length(lblPoint.Caption) do
+        begin
+            NumeroCifre := NumeroCifre + 1;
+        end;
+        if NumeroCifre = 3 then
+        begin
+            lblPoint.Left := 227;
+        end
+        else if NumeroCifre = 2 then
+        begin
+            lblPoint.Left := 251;
+        end
+        else if NumeroCifre = 1 then
+        begin
+            lblPoint.Left := 271;
+        end;
+
+    end;
 
 end;
 
@@ -118,6 +153,7 @@ begin
     DomandaInCorso  := TStringList.Create;
     NumeroDomandeFatte := 0;
     Punteggio := 0;
+    NumGiri := 0;
     try
         StrutturaDomande(DomandeERisposte);
         DomandaConRispostaUscita := ScegliUnaDomanda(DomandeERisposte);
@@ -131,15 +167,16 @@ procedure TtQuestions.pbLoadingChange(Sender: TObject);
 begin
     if pbLoading.Position = pbLoading.Max then
     begin
-        if NumeroDomandeFatte < 5 then
+        if NumeroDomandeFatte < 4 then
         begin
             pbLoading.Position := 0;
             NumeroDomandeFatte := NumeroDomandeFatte + 1;
             ScegliUnaDomanda(DomandeERisposte);
         end
-        else if NumeroDomandeFatte = 5 then
+        else if NumeroDomandeFatte = 4 then
         begin
             tTempoDomanda.Enabled := False;
+            CalcolaPunteggio;
         end;
     end;
 end;
@@ -330,6 +367,35 @@ begin
     DomandeERisposte.Add('Cosa significa sognare una cipolla?;Simboleggia lacrime, verità nascoste, strati da scoprire.;Che riceverai tanti soldi.;Indica una dieta sbagliata.;Significa che ami cucinare.');
     DomandeERisposte.Add('Le cipolle sono velenose per gli animali?;Sì, sono tossiche per cani e gatti.;No, fanno bene anche ai cuccioli.;Solo crude sono pericolose, cotte sono un toccasana.;Solo le cipolle rosse sono tossiche.');
     DomandeERisposte.Add('Si può coltivare la cipolla in vaso?;Sì, in vaso profondo con terra drenata e sole.;No, serve una serra con irrigazione automatica.; Solo se coltivata in acqua come le alghe.; Sì, ma solo nei mesi estivi al chiuso.');
+end;
+
+procedure TtQuestions.tPointTimer(Sender: TObject);
+var
+    LoadPoint, i, NumeroCifre: Integer;
+    PunteggioString : String;
+    Fine : Boolean;
+begin
+    PunteggioString := lblPoint.Caption;
+    LoadPoint := PunteggioString.ToInteger;
+    Fine := False;
+    LoadPoint := LoadPoint + 1;
+    if LoadPoint = 100 then
+    begin
+        NumGiri := NumGiri + 1;
+        LoadPoint := 0;
+    end;
+    if NumGiri = 3 then
+    begin
+        LoadPoint := Punteggio;
+        Fine := True;
+    end;
+    lblPoint.Caption := LoadPoint.ToString;
+    if Fine then
+    begin
+        NumGiri := 0;
+        tPoint.Enabled := False;
+    end;
+
 end;
 
 procedure TtQuestions.tTempoDomandaTimer(Sender: TObject);

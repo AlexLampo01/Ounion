@@ -50,18 +50,18 @@ object tQuestions: TtQuestions
     Height = 205
     Align = alClient
     TabOrder = 1
-    ExplicitWidth = 624
-    ExplicitHeight = 204
+    ExplicitLeft = -68
+    ExplicitTop = 209
     object lblMaxPoint: TLabel
-      Left = 584
-      Top = 178
-      Width = 34
-      Height = 21
+      Left = 295
+      Top = 64
+      Width = 87
+      Height = 54
       Alignment = taCenter
       Caption = '/100'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -16
+      Font.Height = -40
       Font.Name = 'Segoe UI'
       Font.Style = [fsBold]
       ParentFont = False
@@ -84,16 +84,16 @@ object tQuestions: TtQuestions
       Visible = False
       ExplicitWidth = 75
     end
-    object Label2: TLabel
-      Left = 568
-      Top = 178
-      Width = 9
-      Height = 21
+    object lblPoint: TLabel
+      Left = 251
+      Top = 64
+      Width = 23
+      Height = 54
       Alignment = taCenter
       Caption = '0'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -16
+      Font.Height = -40
       Font.Name = 'Segoe UI'
       Font.Style = [fsBold]
       ParentFont = False
@@ -147,6 +147,7 @@ object tQuestions: TtQuestions
   end
   object tPoint: TTimer
     Interval = 10
+    OnTimer = tPointTimer
     Left = 604
     Top = 96
   end
