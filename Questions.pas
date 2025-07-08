@@ -12,24 +12,31 @@ type
     pbLoading: TProgressBar;
     tTempoDomanda: TTimer;
     pUpper: TPanel;
-    Image1: TImage;
-    ILImmagini: TImageList;
+    imgDomanda: TImage;
     pnlRisposte: TPanel;
-    lblQuestion: TLabel;
+    lblMaxPoint: TLabel;
     btnRisposta1: TBitBtn;
     btnRisposta2: TBitBtn;
     btnRisposta3: TBitBtn;
     btnRisposta4: TBitBtn;
+    lblQuestion: TLabel;
+    Label2: TLabel;
+    tPoint: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure tTempoDomandaTimer(Sender: TObject);
+    procedure pbLoadingChange(Sender: TObject);
+    procedure btnClick(Sender: TObject);
   private
-    DomandeUscite, DomandaConRispostaUscita : TStringList;
+    DomandeUscite, PercorsoImmagini, DomandeFatte, DomandeERisposte, DomandaInCorso : TStringList;
+    NumeroDomandeFatte, Punteggio : Integer;
+    DomandaConRispostaUscita : String;
     function RegolaBarra : Boolean;
-    function ScegliUnaDomanda(DomandeERisposte : TStringList) : TStringList;
+    function ScegliUnaDomanda(DomandeERisposte : TStringList) : String;
     procedure StrutturaDomande(DomandeERisposte : TStringList);
     procedure RiempiButtons(DomandaERisposte : TStringList);
     procedure RegolaBottoni(var ListaBottoni: TObjectList<TBitBtn>; const Risposte: TStringList);
+    procedure RiempiConPercorsi;
 
   public
     { Public declarations }
@@ -43,14 +50,61 @@ implementation
 
 {$R *.dfm}
 
+procedure TtQuestions.btnClick(Sender: TObject);
+var
+    RispostaScelta : String;
+    Btn : TBitBtn;
+begin
+    Btn := TBitBtn(Sender);
+    RispostaScelta := Btn.Caption;
+    pbLoading.Position := 0;
+    tTempoDomanda.Enabled := False;
+    if DomandaInCorso[1] = RispostaScelta then
+    begin
+        Punteggio := Punteggio + 20;
+    end
+    else if DomandaInCorso[2] = RispostaScelta then
+    begin
+        Punteggio := Punteggio - 5;
+    end
+    else if DomandaInCorso[3] = RispostaScelta then
+    begin
+        Punteggio := Punteggio - 2;
+    end
+    else if DomandaInCorso[4] = RispostaScelta then
+    begin
+        Punteggio := Punteggio + 5;
+    end
+    else if RispostaScelta = '' then
+    begin
+        Punteggio := Punteggio + 0;
+    end;
+    if NumeroDomandeFatte < 5 then
+    begin
+        pbLoading.Position := 0;
+        NumeroDomandeFatte := NumeroDomandeFatte + 1;
+        tTempoDomanda.Enabled := True;
+        ScegliUnaDomanda(DomandeERisposte);
+    end
+    else if NumeroDomandeFatte = 5 then
+    begin
+        tTempoDomanda.Enabled := False;
+    end;
+
+
+end;
+
 procedure TtQuestions.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+    DomandeUscite.Free;
+    PercorsoImmagini.Free;
+    DomandeFatte.Free;
+    DomandeERisposte.Free;
+    DomandaInCorso.Free;
     Free;
 end;
 
 procedure TtQuestions.FormCreate(Sender: TObject);
-var
-    DomandeERisposte : TStringList;
 begin
     Show;
     Sleep(1000);
@@ -58,14 +112,36 @@ begin
     tTempoDomanda.Enabled := True;
     DomandeERisposte := TStringList.Create;
     DomandeUscite := TStringList.Create;
-    DomandaConRispostaUscita := TStringList.Create;
+    DomandeFatte := TStringList.Create;
+    DomandaConRispostaUscita := '';
+    PercorsoImmagini := TStringList.Create;
+    DomandaInCorso  := TStringList.Create;
+    NumeroDomandeFatte := 0;
+    Punteggio := 0;
     try
         StrutturaDomande(DomandeERisposte);
         DomandaConRispostaUscita := ScegliUnaDomanda(DomandeERisposte);
+        DomandeFatte.Add(DomandaConRispostaUscita);
     finally
-        DomandeERisposte.Free;
     end;
 
+end;
+
+procedure TtQuestions.pbLoadingChange(Sender: TObject);
+begin
+    if pbLoading.Position = pbLoading.Max then
+    begin
+        if NumeroDomandeFatte < 5 then
+        begin
+            pbLoading.Position := 0;
+            NumeroDomandeFatte := NumeroDomandeFatte + 1;
+            ScegliUnaDomanda(DomandeERisposte);
+        end
+        else if NumeroDomandeFatte = 5 then
+        begin
+            tTempoDomanda.Enabled := False;
+        end;
+    end;
 end;
 
 function TtQuestions.RegolaBarra : Boolean;
@@ -128,7 +204,7 @@ end;
 
 procedure TtQuestions.RiempiButtons(DomandaERisposte: TStringList);
 var
-  i, BottoneCasuale: Integer;
+  i, BottoneCasuale, ImmagineCasuale: Integer;
   ListaBottoni: TObjectList<TBitBtn>;
   Ctrl: TControl;
   RisposteUsate: TList<Integer>;
@@ -136,7 +212,7 @@ begin
   Randomize;
 
   lblQuestion.Caption := DomandaERisposte[0];
-
+  ImmagineCasuale   := Random(3);
   ListaBottoni := TObjectList<TBitBtn>.Create(False);
   RisposteUsate := TList<Integer>.Create;
   try
@@ -148,6 +224,8 @@ begin
         ListaBottoni.Add(TBitBtn(Ctrl));
     end;
 
+    for i := 0 to ListaBottoni.Count - 1 do
+        ListaBottoni[i].Caption := 'Risposta';
     // Associa risposte in modo casuale
     for i := 1 to 4 do
     begin
@@ -164,6 +242,7 @@ begin
     lblQuestion.Visible := True;
     btnRisposta1.Visible := True;
     btnRisposta2.Visible := True;
+    imgDomanda.Picture.LoadFromFile(PercorsoImmagini[ImmagineCasuale]);
     btnRisposta3.Visible := True;
     btnRisposta4.Visible := True;
 
@@ -173,7 +252,26 @@ begin
   end;
 end;
 
-function TtQuestions.ScegliUnaDomanda(DomandeERisposte: TStringList) : TStringList;
+procedure TtQuestions.RiempiConPercorsi;
+begin
+    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla1.bmp');
+    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla2.bmp');
+    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla3.bmp');
+    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla4.bmp');
+    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla5.bmp');
+    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla6.bmp');
+    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla7.bmp');
+    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla8.bmp');
+    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla9.bmp');
+    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla10.bmp');
+    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla11.bmp');
+    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla12.bmp');
+    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla13.bmp');
+    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla14.bmp');
+    PercorsoImmagini.Add('C:\MecTools Functions\MecTools - Unione Progetti\Repositories\Cipolle\Cipolla15.bmp');
+end;
+
+function TtQuestions.ScegliUnaDomanda(DomandeERisposte: TStringList) : String;
 var
     RandomQuestion : Integer;
     DomandaInserita : Boolean;
@@ -184,6 +282,8 @@ var
 begin
     Randomize;
     DomandaInserita := False;
+    RiempiConPercorsi;
+    DomandaInCorso.Clear;
     DomandeConRisposteSeparate := TStringList.Create;
     try
         repeat
@@ -200,6 +300,8 @@ begin
         begin
             DomandeConRisposteSeparate.Add(DomandaSeparata[i]);
         end;
+        Result := DomandeConRisposteSeparate[0];
+        DomandaInCorso.Assign(DomandeConRisposteSeparate);
         RiempiButtons(DomandeConRisposteSeparate);
     finally
         DomandeConRisposteSeparate.Free;

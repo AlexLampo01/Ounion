@@ -1,6 +1,7 @@
 object tQuestions: TtQuestions
   Left = 0
   Top = 0
+  BorderStyle = bsDialog
   Caption = 'Domande sulle cipolle'
   ClientHeight = 442
   ClientWidth = 628
@@ -10,6 +11,7 @@ object tQuestions: TtQuestions
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
+  Position = poScreenCenter
   OnClose = FormClose
   OnCreate = FormCreate
   TextHeight = 15
@@ -21,16 +23,14 @@ object tQuestions: TtQuestions
     Align = alTop
     TabOrder = 0
     ExplicitWidth = 624
-    object Image1: TImage
+    object imgDomanda: TImage
       Left = 1
       Top = 1
       Width = 626
       Height = 215
       Align = alClient
-      ExplicitLeft = 240
-      ExplicitTop = 128
-      ExplicitWidth = 105
-      ExplicitHeight = 105
+      ExplicitLeft = 0
+      ExplicitTop = 0
     end
     object pbLoading: TProgressBar
       Left = 1
@@ -39,6 +39,7 @@ object tQuestions: TtQuestions
       Height = 20
       Align = alBottom
       TabOrder = 0
+      OnChange = pbLoadingChange
       ExplicitWidth = 622
     end
   end
@@ -51,6 +52,21 @@ object tQuestions: TtQuestions
     TabOrder = 1
     ExplicitWidth = 624
     ExplicitHeight = 204
+    object lblMaxPoint: TLabel
+      Left = 584
+      Top = 178
+      Width = 34
+      Height = 21
+      Alignment = taCenter
+      Caption = '/100'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+      Visible = False
+    end
     object lblQuestion: TLabel
       Left = 1
       Top = 1
@@ -68,6 +84,21 @@ object tQuestions: TtQuestions
       Visible = False
       ExplicitWidth = 75
     end
+    object Label2: TLabel
+      Left = 568
+      Top = 178
+      Width = 9
+      Height = 21
+      Alignment = taCenter
+      Caption = '0'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+      Visible = False
+    end
     object btnRisposta1: TBitBtn
       Left = 8
       Top = 26
@@ -76,6 +107,7 @@ object tQuestions: TtQuestions
       Caption = 'Risposta'
       TabOrder = 0
       Visible = False
+      OnClick = btnClick
     end
     object btnRisposta2: TBitBtn
       Left = 8
@@ -85,6 +117,7 @@ object tQuestions: TtQuestions
       Caption = 'Risposta'
       TabOrder = 1
       Visible = False
+      OnClick = btnClick
     end
     object btnRisposta3: TBitBtn
       Left = 8
@@ -94,6 +127,7 @@ object tQuestions: TtQuestions
       Caption = 'Risposta'
       TabOrder = 2
       Visible = False
+      OnClick = btnClick
     end
     object btnRisposta4: TBitBtn
       Left = 8
@@ -103,6 +137,7 @@ object tQuestions: TtQuestions
       Caption = 'Risposta'
       TabOrder = 3
       Visible = False
+      OnClick = btnClick
     end
   end
   object tTempoDomanda: TTimer
@@ -110,8 +145,9 @@ object tQuestions: TtQuestions
     OnTimer = tTempoDomandaTimer
     Left = 608
   end
-  object ILImmagini: TImageList
+  object tPoint: TTimer
+    Interval = 10
     Left = 604
-    Top = 48
+    Top = 96
   end
 end
