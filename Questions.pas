@@ -22,9 +22,13 @@ type
     lblQuestion: TLabel;
     lblPoint: TLabel;
     tPoint: TTimer;
+    pnl1: TPanel;
+    pnl2: TPanel;
+    pnl3: TPanel;
+    pnl4: TPanel;
+    pnl5: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure tTempoDomandaTimer(Sender: TObject);
     procedure pbLoadingChange(Sender: TObject);
     procedure btnClick(Sender: TObject);
     procedure tPointTimer(Sender: TObject);
@@ -32,11 +36,9 @@ type
     DomandeUscite, PercorsoImmagini, DomandeFatte, DomandeERisposte, DomandaInCorso : TStringList;
     NumeroDomandeFatte, Punteggio, NumGiri : Integer;
     DomandaConRispostaUscita : String;
-    function RegolaBarra : Boolean;
     function ScegliUnaDomanda(DomandeERisposte : TStringList) : String;
     procedure StrutturaDomande(DomandeERisposte : TStringList);
     procedure RiempiButtons(DomandaERisposte : TStringList);
-    procedure RegolaBottoni(var ListaBottoni: TObjectList<TBitBtn>; const Risposte: TStringList);
     procedure RiempiConPercorsi;
     procedure CalcolaPunteggio;
 
@@ -54,43 +56,110 @@ implementation
 
 procedure TtQuestions.btnClick(Sender: TObject);
 var
-    RispostaScelta : String;
+    RispostaScelta, PunteggioAssegnato : String;
     Btn : TBitBtn;
 begin
     Btn := TBitBtn(Sender);
     RispostaScelta := Btn.Caption;
     pbLoading.Position := 0;
+    NumeroDomandeFatte := NumeroDomandeFatte + 1;
     tTempoDomanda.Enabled := False;
     if DomandaInCorso[1] = RispostaScelta then
     begin
         Punteggio := Punteggio + 20;
+        PunteggioAssegnato := '20';
     end
     else if DomandaInCorso[2] = RispostaScelta then
     begin
         Punteggio := Punteggio - 5;
+        PunteggioAssegnato := '- 5';
     end
     else if DomandaInCorso[3] = RispostaScelta then
     begin
         Punteggio := Punteggio - 2;
+        PunteggioAssegnato := '- 2';
     end
     else if DomandaInCorso[4] = RispostaScelta then
     begin
         Punteggio := Punteggio + 5;
+        PunteggioAssegnato := '5';
     end;
-    if NumeroDomandeFatte < 4 then
+    if NumeroDomandeFatte = 1 then
+    begin
+        if PunteggioAssegnato = '20' then
+            pnl1.Color := clGreen
+        else if PunteggioAssegnato = '- 5' then
+            pnl1.Color := clRed
+        else if PunteggioAssegnato = '- 2' then
+            pnl1.Color := clYellow
+        else if PunteggioAssegnato = '5' then
+            pnl1.Color := RGB(255, 165, 0);
+        pnl1.StyleElements := pnl1.StyleElements - [seClient];
+        pnl1.Repaint;
+    end
+    else if NumeroDomandeFatte = 2 then
+    begin
+        if PunteggioAssegnato = '20' then
+            pnl2.Color := clGreen
+        else if PunteggioAssegnato = '- 5' then
+            pnl2.Color := clRed
+        else if PunteggioAssegnato = '- 2' then
+            pnl2.Color := clYellow
+        else if PunteggioAssegnato = '5' then
+            pnl2.Color := RGB(255, 165, 0);
+        pnl2.StyleElements := pnl2.StyleElements - [seClient];
+        pnl2.Repaint;
+    end
+    else if NumeroDomandeFatte = 3 then
+    begin
+        if PunteggioAssegnato = '20' then
+            pnl3.Color := clGreen
+        else if PunteggioAssegnato = '- 5' then
+            pnl3.Color := clRed
+        else if PunteggioAssegnato = '- 2' then
+            pnl3.Color := clYellow
+        else if PunteggioAssegnato = '5' then
+            pnl3.Color := RGB(255, 165, 0);
+        pnl3.StyleElements := pnl3.StyleElements - [seClient];
+        pnl3.Repaint;
+    end
+    else if NumeroDomandeFatte = 4 then
+    begin
+        if PunteggioAssegnato = '20' then
+            pnl4.Color := clGreen
+        else if PunteggioAssegnato = '- 5' then
+            pnl4.Color := clRed
+        else if PunteggioAssegnato = '- 2' then
+            pnl4.Color := clYellow
+        else if PunteggioAssegnato = '5' then
+            pnl4.Color := RGB(255, 165, 0);
+        pnl4.StyleElements := pnl4.StyleElements - [seClient];
+        pnl4.Repaint;
+    end
+    else if NumeroDomandeFatte = 5 then
+    begin
+        if PunteggioAssegnato = '20' then
+            pnl5.Color := clGreen
+        else if PunteggioAssegnato = '- 5' then
+            pnl5.Color := clRed
+        else if PunteggioAssegnato = '- 2' then
+            pnl5.Color := clYellow
+        else if PunteggioAssegnato = '5' then
+            pnl5.Color := RGB(255, 165, 0);
+        pnl5.StyleElements := pnl5.StyleElements - [seClient];
+        pnl5.Repaint;
+    end;
+    if NumeroDomandeFatte < 5 then
     begin
         pbLoading.Position := 0;
-        NumeroDomandeFatte := NumeroDomandeFatte + 1;
         tTempoDomanda.Enabled := True;
         ScegliUnaDomanda(DomandeERisposte);
     end
-    else if NumeroDomandeFatte = 4 then
+    else if NumeroDomandeFatte = 5 then
     begin
         tTempoDomanda.Enabled := False;
         CalcolaPunteggio;
     end;
-
-
 end;
 
 procedure TtQuestions.CalcolaPunteggio;
@@ -181,64 +250,6 @@ begin
     end;
 end;
 
-function TtQuestions.RegolaBarra : Boolean;
-begin
-    Result := False;
-    pbLoading.Position := pbLoading.Position + 1;
-    Application.ProcessMessages;
-    if pbLoading.Position = pbLoading.Max then
-        Result := True;
-end;
-
-procedure TtQuestions.RegolaBottoni(var ListaBottoni: TObjectList<TBitBtn>;
-  const Risposte: TStringList);
-var
-  i: Integer;
-  MaxWidth, TextWidth: Integer;
-  Button: TBitBtn;
-  OldWidth: Integer;
-  Canvas: TControlCanvas;
-begin
-  if (ListaBottoni.Count = 0) or (Risposte.Count < 4) then
-    Exit;
-
-  Canvas := TControlCanvas.Create;
-  try
-    Canvas.Control := ListaBottoni[0]; // Associa al primo bottone per accedere al font
-    Canvas.Font := ListaBottoni[0].Font;
-
-    MaxWidth := 0;
-
-    for i := 1 to 4 do // Risposte dalla posizione 1 a 4 (0 è la domanda)
-    begin
-      TextWidth := Canvas.TextWidth(Risposte[i]);
-      if TextWidth > MaxWidth then
-        MaxWidth := TextWidth;
-    end;
-
-    MaxWidth := MaxWidth + 20; // margine interno
-
-    for i := 0 to ListaBottoni.Count - 1 do
-    begin
-      Button := ListaBottoni[i];
-      OldWidth := Button.Width;
-
-      // Assegna la risposta
-      Button.Caption := Risposte[i + 1]; // +1 perché [0] è la domanda
-
-      // Imposta nuova larghezza
-      Button.Width := MaxWidth;
-
-      // Se è sulla destra, spostalo a sinistra della differenza
-      if Button.Left > (Button.Parent.Width div 2) then
-        Button.Left := Button.Left - (MaxWidth - OldWidth);
-    end;
-
-  finally
-    Canvas.Free;
-  end;
-end;
-
 procedure TtQuestions.RiempiButtons(DomandaERisposte: TStringList);
 var
   i, BottoneCasuale, ImmagineCasuale: Integer;
@@ -324,7 +335,7 @@ begin
     DomandeConRisposteSeparate := TStringList.Create;
     try
         repeat
-            RandomQuestion := Random(21);
+            RandomQuestion := Random(20);
             if DomandeUscite.IndexOf(RandomQuestion.ToString) = - 1 then
             begin
                 DomandeUscite.Add(RandomQuestion.ToString);
@@ -371,7 +382,7 @@ end;
 
 procedure TtQuestions.tPointTimer(Sender: TObject);
 var
-    LoadPoint, i, NumeroCifre: Integer;
+    LoadPoint: Integer;
     PunteggioString : String;
     Fine : Boolean;
 begin
@@ -396,14 +407,6 @@ begin
         tPoint.Enabled := False;
     end;
 
-end;
-
-procedure TtQuestions.tTempoDomandaTimer(Sender: TObject);
-begin
-    if RegolaBarra() then
-    begin
-
-    end;
 end;
 
 end.

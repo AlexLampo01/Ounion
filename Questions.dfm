@@ -50,8 +50,8 @@ object tQuestions: TtQuestions
     Height = 205
     Align = alClient
     TabOrder = 1
-    ExplicitLeft = -68
-    ExplicitTop = 209
+    ExplicitWidth = 624
+    ExplicitHeight = 204
     object lblMaxPoint: TLabel
       Left = 295
       Top = 64
@@ -139,10 +139,80 @@ object tQuestions: TtQuestions
       Visible = False
       OnClick = btnClick
     end
+    object pnl1: TPanel
+      Left = 506
+      Top = 180
+      Width = 21
+      Height = 21
+      Caption = '1'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentBackground = False
+      ParentFont = False
+      TabOrder = 4
+    end
+    object pnl2: TPanel
+      Left = 530
+      Top = 180
+      Width = 21
+      Height = 21
+      Caption = '2'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 5
+    end
+    object pnl3: TPanel
+      Left = 554
+      Top = 180
+      Width = 21
+      Height = 21
+      Caption = '3'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 6
+    end
+    object pnl4: TPanel
+      Left = 578
+      Top = 180
+      Width = 21
+      Height = 21
+      Caption = '4'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 7
+    end
+    object pnl5: TPanel
+      Left = 602
+      Top = 180
+      Width = 21
+      Height = 21
+      Caption = '5'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 8
+    end
   end
   object tTempoDomanda: TTimer
     Interval = 500
-    OnTimer = tTempoDomandaTimer
     Left = 608
   end
   object tPoint: TTimer

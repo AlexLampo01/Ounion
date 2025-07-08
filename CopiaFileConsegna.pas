@@ -97,7 +97,7 @@ end;
 
 procedure TfCopiaFileConsegna.btnConfermaClick(Sender: TObject);
 var
-    CartellaSalvataggio, PercorsoRicerca, Risultato, FileDaCercareTemp, FileDaCercare  : String;
+    CartellaSalvataggio, PercorsoRicerca, Risultato, FileDaCercare  : String;
 
     TStringPercorsoCompleto : TStringList;
     i, j, PosNomeFile, NumBackSlash: Integer;
@@ -127,7 +127,6 @@ begin
                     if TFile.Exists(PercorsoSorgente) then
                     begin
                         var NomeFile := ExtractFileName(PercorsoSorgente);
-                        PosNomeFile := 0;
                         CartelleDaAggiungere := '';
                         InizioCartelle := False;
                         NumBackSlash := 0;
@@ -184,7 +183,6 @@ var
 begin
     FileConEliminazione := TStringList.Create;
     try
-        UltimaRiga := 0;
         UltimaRiga := sgFile.RowCount;
         for i := 0 to sgFileConfermati.RowCount - 1 do
         begin
@@ -296,7 +294,6 @@ begin
     FileConEliminazione := TStringList.Create;
     FileDaNonSpostare := TStringList.Create;
     try
-        UltimaRiga := 0;
         UltimaRiga := sgFileConfermati.RowCount - 1;
         for i := 0 to sgFile.RowCount - 1 do
         begin
@@ -359,7 +356,6 @@ end;
 procedure TfCopiaFileConsegna.cbBranchEnter(Sender: TObject);
 var
     TStringRemote, TStringBranch, TStringDef : TStringList;
-    i : Integer;
 begin
     //cbBranch.Items := RecuperaBranch(CartellaScelta);
     TStringRemote := TStringList.Create;

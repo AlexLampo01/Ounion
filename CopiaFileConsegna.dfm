@@ -2,8 +2,8 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
   Left = 0
   Top = 0
   Caption = 'Copia File Consegna'
-  ClientHeight = 442
-  ClientWidth = 626
+  ClientHeight = 441
+  ClientWidth = 622
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,11 +15,10 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 626
+    Width = 622
     Height = 85
     Align = alTop
     TabOrder = 0
-    ExplicitWidth = 622
     object pbLoading: TProgressBar
       Left = 1
       Top = 67
@@ -287,14 +286,12 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
   end
   object pnlConferma: TPanel
     Left = 0
-    Top = 408
-    Width = 626
+    Top = 407
+    Width = 622
     Height = 34
     Align = alBottom
     TabOrder = 1
     Visible = False
-    ExplicitTop = 407
-    ExplicitWidth = 622
     object btnConferma: TBitBtn
       Left = 569
       Top = 5
@@ -445,12 +442,10 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
   object Panel3: TPanel
     Left = 0
     Top = 85
-    Width = 626
-    Height = 323
+    Width = 622
+    Height = 322
     Align = alClient
     TabOrder = 2
-    ExplicitWidth = 622
-    ExplicitHeight = 322
     object pnlButtons: TPanel
       Left = 1
       Top = 1
