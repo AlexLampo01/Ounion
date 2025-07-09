@@ -3,8 +3,8 @@ object fPodio: TfPodio
   Top = 0
   BorderStyle = bsDialog
   Caption = 'Classifica'
-  ClientHeight = 442
-  ClientWidth = 628
+  ClientHeight = 441
+  ClientWidth = 624
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,8 +18,8 @@ object fPodio: TfPodio
   object Image1: TImage
     Left = 0
     Top = 0
-    Width = 628
-    Height = 442
+    Width = 624
+    Height = 441
     Align = alClient
     Picture.Data = {
       07544269746D61700EB50C00424D0EB50C000000000036000000280000007402
@@ -26055,7 +26055,7 @@ object fPodio: TfPodio
   object lblPrimo: TLabel
     Left = 244
     Top = 348
-    Width = 137
+    Width = 7
     Height = 15
     Alignment = taCenter
     Caption = '0'
@@ -26097,7 +26097,7 @@ object fPodio: TfPodio
   object lblNome: TLabel
     Left = 244
     Top = 326
-    Width = 137
+    Width = 7
     Height = 15
     Alignment = taCenter
     Caption = '0'

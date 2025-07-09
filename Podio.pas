@@ -17,8 +17,6 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     Procedure ControllaPunteggi;
-    function ConfrontaGiocatori(List: TStringList; Index1,
-      Index2: Integer): Integer;
   public
     { Public declarations }
   end;
@@ -98,18 +96,6 @@ begin
       Ini.Free;
     end;
   end;
-end;
-
-function TfPodio.ConfrontaGiocatori(List: TStringList; Index1, Index2: Integer): Integer;
-var
-  P1, P2: Integer;
-  S1, S2: string;
-begin
-  S1 := List[Index1];
-  S2 := List[Index2];
-  P1 := StrToIntDef(Copy(S1, Pos(',', S1) + 1, MaxInt), 0);
-  P2 := StrToIntDef(Copy(S2, Pos(',', S2) + 1, MaxInt), 0);
-  Result := P2 - P1; // Ordinamento decrescente
 end;
 
 procedure TfPodio.FormClose(Sender: TObject; var Action: TCloseAction);

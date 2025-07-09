@@ -40,8 +40,7 @@ object tQuestions: TtQuestions
       Align = alBottom
       TabOrder = 0
       OnChange = pbLoadingChange
-      ExplicitLeft = 0
-      ExplicitTop = 212
+      ExplicitWidth = 622
     end
   end
   object pnlRisposte: TPanel

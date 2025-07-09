@@ -180,8 +180,6 @@ begin
 end;
 
 procedure TtQuestions.CalcolaPunteggio;
-var
-    NumeroCifre, i : Integer;
 begin
     lblQuestion.Visible  := False;
     btnRisposta1.Visible := False;
@@ -191,28 +189,6 @@ begin
     lblPoint.Visible     := True;
     lblMaxPoint.Visible  := True;
     tPoint.Enabled       := True;
-    if tPoint.Enabled = False then
-    begin
-        NumeroCifre := 1;
-        for i := 1 to Length(lblPoint.Caption) do
-        begin
-            NumeroCifre := NumeroCifre + 1;
-        end;
-        if NumeroCifre = 3 then
-        begin
-            lblPoint.Left := 227;
-        end
-        else if NumeroCifre = 2 then
-        begin
-            lblPoint.Left := 251;
-        end
-        else if NumeroCifre = 1 then
-        begin
-            lblPoint.Left := 271;
-        end;
-
-    end;
-
 end;
 
 procedure TtQuestions.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -449,7 +425,7 @@ end;
 
 procedure TtQuestions.tPointTimer(Sender: TObject);
 var
-    LoadPoint: Integer;
+    LoadPoint, NumeroCifre, i: Integer;
     PunteggioString : String;
     Fine : Boolean;
 begin
@@ -473,6 +449,26 @@ begin
         NumGiri := 0;
         tPoint.Enabled := False;
         InserisciPunteggio;
+        if tPoint.Enabled = False then
+        begin
+            NumeroCifre := 1;
+            for i := 1 to Length(lblPoint.Caption) do
+            begin
+                NumeroCifre := NumeroCifre + 1;
+            end;
+            if NumeroCifre = 3 then
+            begin
+                lblPoint.Left := 227;
+            end
+            else if NumeroCifre = 2 then
+            begin
+                lblPoint.Left := 251;
+            end
+            else if NumeroCifre = 1 then
+            begin
+                lblPoint.Left := 271;
+            end;
+        end;
     end;
 
 end;
