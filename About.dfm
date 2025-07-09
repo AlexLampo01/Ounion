@@ -17,7 +17,7 @@ object fInformazioniSu: TfInformazioniSu
   object Label1: TLabel
     Left = 109
     Top = 113
-    Width = 394
+    Width = 493
     Height = 15
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
@@ -29,12 +29,11 @@ object fInformazioniSu: TfInformazioniSu
     Font.Name = 'Segoe UI'
     Font.Style = [fsBold]
     ParentFont = False
-    ExplicitWidth = 406
   end
   object Label2: TLabel
     Left = 109
     Top = 146
-    Width = 394
+    Width = 493
     Height = 15
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
@@ -42,23 +41,21 @@ object fInformazioniSu: TfInformazioniSu
     Caption = 
       'Questo Software/Menu '#232' protetto da Copyright e propriet'#224' esclusi' +
       'va '
-    ExplicitWidth = 406
   end
   object Label3: TLabel
     Left = 109
     Top = 167
-    Width = 394
+    Width = 493
     Height = 15
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
     AutoSize = False
     Caption = 'della MEC GROUP.'
-    ExplicitWidth = 406
   end
   object Label4: TLabel
     Left = 109
     Top = 188
-    Width = 394
+    Width = 493
     Height = 15
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
@@ -66,12 +63,11 @@ object fInformazioniSu: TfInformazioniSu
     Caption = 
       'Tutti i diritti sono riservati. L'#39'utilizzo del contenuto del men' +
       #249' '#232' consentito'
-    ExplicitWidth = 406
   end
   object Label5: TLabel
     Left = 109
     Top = 205
-    Width = 394
+    Width = 493
     Height = 15
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
@@ -79,12 +75,11 @@ object fInformazioniSu: TfInformazioniSu
     Caption = 
       'solo secondo i termini e le condizioni stabiliti dalla MEC GROUP' +
       '.'
-    ExplicitWidth = 406
   end
   object Label6: TLabel
     Left = 109
     Top = 223
-    Width = 394
+    Width = 493
     Height = 15
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
@@ -92,18 +87,16 @@ object fInformazioniSu: TfInformazioniSu
     Caption = 
       'La riproduzione, la distribuzione, la modifica o l'#39'utilizzo non ' +
       'autorizzato'
-    ExplicitWidth = 406
   end
   object Label7: TLabel
     Left = 109
     Top = 244
-    Width = 394
+    Width = 493
     Height = 15
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
     AutoSize = False
     Caption = 'del materiale contenuto nel Software '#232' vietato'
-    ExplicitWidth = 406
   end
   object Panel1: TPanel
     Left = 0
@@ -124,6 +117,9 @@ object fInformazioniSu: TfInformazioniSu
     BevelOuter = bvNone
     TabOrder = 1
     ExplicitWidth = 618
+    DesignSize = (
+      622
+      113)
     object Image1: TImage
       Left = 4
       Top = 6
@@ -6017,6 +6013,7 @@ object fInformazioniSu: TfInformazioniSu
       Top = 8
       Width = 98
       Height = 101
+      Anchors = [akTop, akRight]
       Picture.Data = {
         07544269746D617036000400424D360004000000000036000000280000000001
         0000000100000100200000000000000004000000000000000000000000000000

@@ -109,7 +109,7 @@ var
 implementation
 
 uses
-    System.IOUtils, IniFiles, System.Win.Registry, ShellApi;
+    System.IOUtils, IniFiles, System.Win.Registry, ShellApi, Clipbrd;
 
 {$R *.dfm}
 
@@ -591,6 +591,8 @@ begin
                 begin
                     SistemaRegSetUp;
                     ShowMessage('Ricorda di mettere la password nel RegSetUp!');
+                    Clipboard.AsText := Password;
+
                 end;
                 if cbInizializzaGit.Checked then
                 begin

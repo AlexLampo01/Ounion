@@ -192,6 +192,9 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Height = 129
       TabOrder = 0
       Visible = False
+      DesignSize = (
+        400
+        129)
       object lblUsername: TLabel
         Left = 14
         Top = 35
@@ -207,10 +210,13 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Caption = 'Password: '
       end
       object Label3: TLabel
-        Left = 129
-        Top = 3
-        Width = 143
+        Left = 14
+        Top = 5
+        Width = 324
         Height = 21
+        Alignment = taCenter
+        Anchors = [akLeft, akTop, akRight]
+        AutoSize = False
         Caption = 'Credenziali Server '
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -224,6 +230,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Top = 64
         Width = 307
         Height = 23
+        Anchors = [akLeft, akTop, akRight]
         TabOrder = 0
       end
       object edUsername: TEdit
@@ -231,6 +238,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Top = 32
         Width = 307
         Height = 23
+        Anchors = [akLeft, akTop, akRight]
         TabOrder = 1
       end
       object cbRicordami: TCheckBox
@@ -248,6 +256,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Top = 97
         Width = 77
         Height = 27
+        Anchors = [akTop, akRight]
         Caption = 'Conferma'
         Glyph.Data = {
           36030000424D3603000000000000360000002800000010000000100000000100
@@ -284,6 +293,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Top = 4
         Width = 45
         Height = 25
+        Anchors = [akTop, akRight]
         Glyph.Data = {
           F6000000424DF600000000000000760000002800000010000000100000000100
           0400000000008000000000000000000000001000000010000000000000000000
@@ -305,6 +315,9 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Height = 129
       TabOrder = 1
       Visible = False
+      DesignSize = (
+        400
+        129)
       object Label1: TLabel
         Left = 13
         Top = 40
@@ -313,10 +326,13 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Caption = 'Nome Progetto: '
       end
       object Label5: TLabel
-        Left = 147
-        Top = 7
-        Width = 122
+        Left = 13
+        Top = 10
+        Width = 324
         Height = 21
+        Alignment = taCenter
+        Anchors = [akLeft, akTop, akRight]
+        AutoSize = False
         Caption = 'Nome Progetto '
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -330,6 +346,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Top = 37
         Width = 282
         Height = 23
+        Anchors = [akLeft, akTop, akRight]
         TabOrder = 0
       end
       object btnConfermaNome: TBitBtn
@@ -337,6 +354,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Top = 96
         Width = 77
         Height = 27
+        Anchors = [akTop, akRight]
         Caption = 'Conferma'
         Glyph.Data = {
           36030000424D3603000000000000360000002800000010000000100000000100
@@ -503,6 +521,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Top = 8
         Width = 45
         Height = 25
+        Anchors = [akTop, akRight]
         Glyph.Data = {
           F6000000424DF600000000000000760000002800000010000000100000000100
           0400000000008000000000000000000000001000000010000000000000000000
@@ -526,11 +545,13 @@ object fInizializzaProgetto: TfInizializzaProgetto
       TabOrder = 2
       ExplicitWidth = 395
       object Label2: TLabel
-        Left = 91
-        Top = 9
-        Width = 234
-        Height = 28
+        Left = 1
+        Top = 1
+        Width = 397
+        Height = 54
+        Align = alClient
         Alignment = taCenter
+        AutoSize = False
         Caption = 'Inizializzazione Progetto'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -538,6 +559,11 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Font.Name = 'Segoe UI'
         Font.Style = [fsBold]
         ParentFont = False
+        Layout = tlCenter
+        ExplicitLeft = 91
+        ExplicitTop = 9
+        ExplicitWidth = 234
+        ExplicitHeight = 28
       end
     end
     object pnlModificaDitta: TPanel
@@ -547,6 +573,9 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Height = 129
       TabOrder = 3
       Visible = False
+      DesignSize = (
+        400
+        129)
       object lblDitta: TLabel
         Left = 73
         Top = 66
@@ -562,10 +591,13 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Caption = 'Utente (Numero): '
       end
       object Label4: TLabel
-        Left = 143
-        Top = 7
-        Width = 114
+        Left = 8
+        Top = 11
+        Width = 330
         Height = 21
+        Alignment = taCenter
+        Anchors = [akLeft, akTop, akRight]
+        AutoSize = False
         Caption = 'Modifica Ditta '
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -579,6 +611,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Top = 95
         Width = 77
         Height = 27
+        Anchors = [akTop, akRight]
         Caption = 'Conferma'
         Glyph.Data = {
           36030000424D3603000000000000360000002800000010000000100000000100
@@ -615,6 +648,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Top = 66
         Width = 279
         Height = 23
+        Anchors = [akLeft, akTop, akRight]
         TabOrder = 1
       end
       object edUtente: TEdit
@@ -622,6 +656,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Top = 38
         Width = 279
         Height = 23
+        Anchors = [akLeft, akTop, akRight]
         TabOrder = 2
         OnExit = edUtenteExit
       end
@@ -630,6 +665,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Top = 8
         Width = 45
         Height = 25
+        Anchors = [akTop, akRight]
         Glyph.Data = {
           F6000000424DF600000000000000760000002800000010000000100000000100
           0400000000008000000000000000000000001000000010000000000000000000

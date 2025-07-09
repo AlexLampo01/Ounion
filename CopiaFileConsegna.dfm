@@ -3,7 +3,7 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
   Top = 0
   Caption = 'Copia File Consegna'
   ClientHeight = 441
-  ClientWidth = 622
+  ClientWidth = 968
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,26 +15,32 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 622
+    Width = 968
     Height = 85
     Align = alTop
     TabOrder = 0
+    ExplicitWidth = 618
+    DesignSize = (
+      968
+      85)
     object pbLoading: TProgressBar
       Left = 1
       Top = 67
-      Width = 624
+      Width = 966
       Height = 17
       Align = alBottom
       TabOrder = 0
       Visible = False
-      ExplicitWidth = 620
+      ExplicitWidth = 616
     end
     object pPercorso: TPanel
       Left = 2
       Top = 8
-      Width = 561
+      Width = 907
       Height = 17
+      Anchors = [akLeft, akTop, akRight]
       TabOrder = 1
+      ExplicitWidth = 561
       object lblPercorso: TLabel
         Left = 1
         Top = 1
@@ -44,11 +50,12 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
       end
     end
     object btnEsploraRisorse: TBitBtn
-      Left = 569
+      Left = 915
       Top = 5
       Width = 36
       Height = 25
       Hint = 'Scegli La Cartella Del Progetto'
+      Anchors = [akTop, akRight]
       Cancel = True
       DisabledImageIndex = 3
       ImageIndex = 3
@@ -158,22 +165,26 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
       TabOrder = 2
       OnClick = btnEsploraRisorseClick
       OnEnter = btnEsploraRisorseEnter
+      ExplicitLeft = 569
     end
     object cbBranch: TComboBox
       Left = 1
       Top = 31
-      Width = 562
+      Width = 908
       Height = 23
+      Anchors = [akLeft, akTop, akRight]
       TabOrder = 3
       Visible = False
       OnEnter = cbBranchEnter
+      ExplicitWidth = 562
     end
     object btnAnalizzatore: TBitBtn
-      Left = 569
+      Left = 915
       Top = 31
       Width = 36
       Height = 23
       Hint = 'Seleziona Branch'
+      Anchors = [akTop, akRight]
       DisabledImageIndex = 2
       ImageIndex = 2
       Glyph.Data = {
@@ -282,22 +293,29 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
       Visible = False
       OnClick = btnAnalizzatoreClick
       OnEnter = btnAnalizzatoreEnter
+      ExplicitLeft = 569
     end
   end
   object pnlConferma: TPanel
     Left = 0
     Top = 407
-    Width = 622
+    Width = 968
     Height = 34
     Align = alBottom
     TabOrder = 1
     Visible = False
+    ExplicitTop = 406
+    ExplicitWidth = 618
+    DesignSize = (
+      968
+      34)
     object btnConferma: TBitBtn
-      Left = 569
+      Left = 915
       Top = 5
       Width = 36
       Height = 25
       Hint = 'Copia'
+      Anchors = [akTop, akRight]
       DisabledImageIndex = 4
       ImageIndex = 4
       Glyph.Data = {
@@ -407,11 +425,12 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
       OnEnter = btnConfermaEnter
     end
     object btnRestart: TBitBtn
-      Left = 516
+      Left = 871
       Top = 5
       Width = 36
       Height = 25
       Hint = 'Restart'
+      Anchors = [akTop, akRight]
       DisabledImageIndex = 5
       ImageIndex = 5
       Glyph.Data = {
@@ -442,96 +461,34 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
   object Panel3: TPanel
     Left = 0
     Top = 85
-    Width = 622
+    Width = 968
     Height = 322
     Align = alClient
     TabOrder = 2
-    object pnlButtons: TPanel
-      Left = 1
+    ExplicitWidth = 618
+    ExplicitHeight = 321
+    object Splitter1: TSplitter
+      Left = 313
       Top = 1
-      Width = 624
-      Height = 32
-      Align = alTop
-      TabOrder = 0
-      Visible = False
-      ExplicitWidth = 620
-      object btnSelezionaTutto: TBitBtn
-        Left = 313
-        Top = 4
-        Width = 41
-        Height = 25
-        Hint = 'Seleziona Tutto'
-        DisabledImageIndex = 1
-        ImageIndex = 1
-        Glyph.Data = {
-          06020000424D0602000000000000760000002800000028000000140000000100
-          0400000000009001000000000000000000001000000000000000000000000000
-          BF0000BF000000BFBF00BF000000BF00BF00BFBF0000C0C0C000808080000000
-          FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00777777777777
-          7777777777777777777777777777777777777777777777777777777777777777
-          777777777777777777777777777777777777777777777777777777A777777777
-          777777777787777777777777777777AA77777777777777777788777777777777
-          777777AAA7777777777777777788877777777777777777AAAA77777777777777
-          778888777777777AAAAAAAAAAAA7777777788888888888877777777AAAAAAAAA
-          AAAA777777788888888888887777777AAAAAAAAAAAAAA7777778888888888888
-          8777777AAAAAAAAAAAAA277777788888888888888777777AAAAAAAAAAAA27777
-          777888888888888877777772222222AAAA277777777888888888888777777777
-          777777AAA2777777777777777788887777777777777777AA2777777777777777
-          7788877777777777777777A27777777777777777778877777777777777777727
-          7777777777777777778777777777777777777777777777777777777777777777
-          7777777777777777777777777777777777777777777777777777777777777777
-          77777777777777777777}
-        NumGlyphs = 2
-        TabOrder = 0
-        OnClick = btnSelezionaTuttoClick
-        OnEnter = btnSelezionaTuttoEnter
-      end
-      object btnDeselezionaTutto: TBitBtn
-        Left = 266
-        Top = 4
-        Width = 41
-        Height = 25
-        Hint = 'Deseleziona Tutto'
-        DisabledImageIndex = 0
-        ImageIndex = 0
-        Glyph.Data = {
-          06020000424D0602000000000000760000002800000028000000140000000100
-          0400000000009001000000000000000000001000000000000000000000000000
-          BF0000BF000000BFBF00BF000000BF00BF00BFBF0000C0C0C000808080000000
-          FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00DDDDDDDDDDDD
-          DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-          DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD9DDDDDDDDDD
-          DDDDDDDDD8DDDDDDDDDDDDDDDDDD99DDDDDDDDDDDDDDDDDD88DDDDDDDDDDDDDD
-          DDD999DDDDDDDDDDDDDDDDD888DDDDDDDDDDDDDDDD9999DDDDDDDDDDDDDDDD88
-          88DDDDDDDDDDDDDDD999999999999DDDDDDDD888888888888DDDDDDD99999999
-          99999DDDDDDD8888888888888DDDDDD99999999999999DDDDDD8888888888888
-          8DDDDDD19999999999999DDDDDD88888888888888DDDDDDD1999999999999DDD
-          DDDD8888888888888DDDDDDDD199991111111DDDDDDDD888888888888DDDDDDD
-          DD1999DDDDDDDDDDDDDDDD8888DDDDDDDDDDDDDDDDD199DDDDDDDDDDDDDDDDD8
-          88DDDDDDDDDDDDDDDDDD19DDDDDDDDDDDDDDDDDD88DDDDDDDDDDDDDDDDDDD1DD
-          DDDDDDDDDDDDDDDDD8DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-          DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-          DDDDDDDDDDDDDDDDDDDD}
-        NumGlyphs = 2
-        TabOrder = 1
-        OnClick = btnDeselezionaTuttoClick
-        OnEnter = btnDeselezionaTuttoEnter
-      end
+      Height = 320
+      ExplicitLeft = 465
+      ExplicitTop = -4
     end
     object pnlSelezionaTutto: TPanel
       Left = 1
-      Top = 33
+      Top = 1
       Width = 312
-      Height = 289
+      Height = 320
       Align = alLeft
-      TabOrder = 1
+      TabOrder = 0
       Visible = False
-      ExplicitHeight = 288
+      ExplicitTop = 33
+      ExplicitHeight = 287
       object sgFile: TStringGrid
         Left = 1
-        Top = 1
+        Top = 33
         Width = 310
-        Height = 287
+        Height = 286
         Align = alClient
         ColCount = 1
         FixedCols = 0
@@ -541,24 +498,73 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
         TabOrder = 0
         Visible = False
         OnDblClick = sgFileDblClick
-        ExplicitHeight = 286
+        ExplicitTop = 1
+        ExplicitHeight = 285
       end
-    end
-    object pnlDeselezionaTutto: TPanel
-      Left = 313
-      Top = 33
-      Width = 312
-      Height = 289
-      Align = alRight
-      TabOrder = 2
-      Visible = False
-      ExplicitLeft = 309
-      ExplicitHeight = 288
-      object sgFileConfermati: TStringGrid
+      object Panel2: TPanel
         Left = 1
         Top = 1
         Width = 310
-        Height = 287
+        Height = 32
+        Align = alTop
+        TabOrder = 1
+        ExplicitLeft = 2
+        ExplicitTop = 5
+        object btnDeselezionaTutto: TBitBtn
+          AlignWithMargins = True
+          Left = 260
+          Top = 4
+          Width = 41
+          Height = 24
+          Hint = 'Deseleziona Tutto'
+          Margins.Right = 8
+          Align = alRight
+          DisabledImageIndex = 0
+          ImageIndex = 0
+          Glyph.Data = {
+            06020000424D0602000000000000760000002800000028000000140000000100
+            0400000000009001000000000000000000001000000000000000000000000000
+            BF0000BF000000BFBF00BF000000BF00BF00BFBF0000C0C0C000808080000000
+            FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00DDDDDDDDDDDD
+            DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+            DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD9DDDDDDDDDD
+            DDDDDDDDD8DDDDDDDDDDDDDDDDDD99DDDDDDDDDDDDDDDDDD88DDDDDDDDDDDDDD
+            DDD999DDDDDDDDDDDDDDDDD888DDDDDDDDDDDDDDDD9999DDDDDDDDDDDDDDDD88
+            88DDDDDDDDDDDDDDD999999999999DDDDDDDD888888888888DDDDDDD99999999
+            99999DDDDDDD8888888888888DDDDDD99999999999999DDDDDD8888888888888
+            8DDDDDD19999999999999DDDDDD88888888888888DDDDDDD1999999999999DDD
+            DDDD8888888888888DDDDDDDD199991111111DDDDDDDD888888888888DDDDDDD
+            DD1999DDDDDDDDDDDDDDDD8888DDDDDDDDDDDDDDDDD199DDDDDDDDDDDDDDDDD8
+            88DDDDDDDDDDDDDDDDDD19DDDDDDDDDDDDDDDDDD88DDDDDDDDDDDDDDDDDDD1DD
+            DDDDDDDDDDDDDDDDD8DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+            DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+            DDDDDDDDDDDDDDDDDDDD}
+          NumGlyphs = 2
+          TabOrder = 0
+          OnClick = btnDeselezionaTuttoClick
+          OnEnter = btnDeselezionaTuttoEnter
+          ExplicitLeft = 266
+          ExplicitHeight = 25
+        end
+      end
+    end
+    object pnlDeselezionaTutto: TPanel
+      Left = 316
+      Top = 1
+      Width = 651
+      Height = 320
+      Align = alClient
+      TabOrder = 1
+      Visible = False
+      ExplicitLeft = 305
+      ExplicitTop = 33
+      ExplicitWidth = 312
+      ExplicitHeight = 287
+      object sgFileConfermati: TStringGrid
+        Left = 1
+        Top = 33
+        Width = 649
+        Height = 286
         Align = alClient
         ColCount = 1
         FixedCols = 0
@@ -567,7 +573,57 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAlwaysShowEditor, goFixedRowDefAlign]
         TabOrder = 0
         OnDblClick = sgFileConfermatiDblClick
-        ExplicitHeight = 286
+        ExplicitTop = 1
+        ExplicitWidth = 310
+        ExplicitHeight = 285
+      end
+      object pnlButtons: TPanel
+        Left = 1
+        Top = 1
+        Width = 649
+        Height = 32
+        Align = alTop
+        TabOrder = 1
+        Visible = False
+        ExplicitLeft = -91
+        ExplicitTop = -5
+        ExplicitWidth = 310
+        object btnSelezionaTutto: TBitBtn
+          AlignWithMargins = True
+          Left = 6
+          Top = 4
+          Width = 41
+          Height = 24
+          Hint = 'Seleziona Tutto'
+          Margins.Left = 5
+          Align = alLeft
+          DisabledImageIndex = 1
+          ImageIndex = 1
+          Glyph.Data = {
+            06020000424D0602000000000000760000002800000028000000140000000100
+            0400000000009001000000000000000000001000000000000000000000000000
+            BF0000BF000000BFBF00BF000000BF00BF00BFBF0000C0C0C000808080000000
+            FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00777777777777
+            7777777777777777777777777777777777777777777777777777777777777777
+            777777777777777777777777777777777777777777777777777777A777777777
+            777777777787777777777777777777AA77777777777777777788777777777777
+            777777AAA7777777777777777788877777777777777777AAAA77777777777777
+            778888777777777AAAAAAAAAAAA7777777788888888888877777777AAAAAAAAA
+            AAAA777777788888888888887777777AAAAAAAAAAAAAA7777778888888888888
+            8777777AAAAAAAAAAAAA277777788888888888888777777AAAAAAAAAAAA27777
+            777888888888888877777772222222AAAA277777777888888888888777777777
+            777777AAA2777777777777777788887777777777777777AA2777777777777777
+            7788877777777777777777A27777777777777777778877777777777777777727
+            7777777777777777778777777777777777777777777777777777777777777777
+            7777777777777777777777777777777777777777777777777777777777777777
+            77777777777777777777}
+          NumGlyphs = 2
+          TabOrder = 0
+          OnClick = btnSelezionaTuttoClick
+          OnEnter = btnSelezionaTuttoEnter
+          ExplicitLeft = 83
+          ExplicitHeight = 25
+        end
       end
     end
   end
@@ -576,7 +632,7 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
     FavoriteLinks = <>
     FileTypes = <>
     Options = [fdoPickFolders]
-    Left = 566
-    Top = 248
+    Left = 954
+    Top = 412
   end
 end

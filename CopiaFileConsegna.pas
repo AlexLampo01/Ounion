@@ -13,13 +13,10 @@ type
     pbLoading: TProgressBar;
     pnlConferma: TPanel;
     Panel3: TPanel;
-    pnlButtons: TPanel;
     pnlSelezionaTutto: TPanel;
     pnlDeselezionaTutto: TPanel;
     sgFile: TStringGrid;
     sgFileConfermati: TStringGrid;
-    btnSelezionaTutto: TBitBtn;
-    btnDeselezionaTutto: TBitBtn;
     btnConferma: TBitBtn;
     pPercorso: TPanel;
     lblPercorso: TLabel;
@@ -28,6 +25,11 @@ type
     cbBranch: TComboBox;
     btnAnalizzatore: TBitBtn;
     btnRestart: TBitBtn;
+    Panel2: TPanel;
+    btnDeselezionaTutto: TBitBtn;
+    pnlButtons: TPanel;
+    btnSelezionaTutto: TBitBtn;
+    Splitter1: TSplitter;
     procedure btnEsploraRisorseClick(Sender: TObject);
     procedure cbBranchEnter(Sender: TObject);
     procedure btnAnalizzatoreClick(Sender: TObject);
@@ -262,6 +264,9 @@ var
     i: integer;
 begin
     cbBranch.Visible := False;
+    cbBranch.Enabled := True;
+    cbbranch.Text := '';
+    btnAnalizzatore.Enabled := True;
     btnAnalizzatore.Visible := False;
     btnEsploraRisorse.Visible := True;
     for i := 0 to sgFile.RowCount - 1 do
@@ -271,8 +276,6 @@ begin
     sgFile.RowCount := 0;
     sgFileConfermati.RowCount := 0;
     pnlButtons.Visible := False;
-    pnlSelezionaTutto.Visible := False;
-    pnlDeselezionaTutto.Visible := False;
     pnlConferma.Visible := False;
     btnEsploraRisorse.Enabled := True;
     lblPercorso.Caption := '';
@@ -334,7 +337,7 @@ begin
                 else
                 begin
                     UltimaRiga := UltimaRiga + 1;
-                    sgFileConfermati.RowCount := FileConEliminazione.Count + UltimaRiga;
+                    sgFileConfermati.RowCount := UltimaRiga + 1;
                     sgFileConfermati.Cells[0, UltimaRiga] := FileConEliminazione[i];
                 end;
             end;
@@ -612,7 +615,7 @@ begin
     for I := 0 to CommitList.Count - 1 do
     begin
       Sleep(250);
-      Command := Format('diff-tree --no-commit-id --name-status -r %s', [CommitList[I]]);
+      Command := Format('diff-tree --no-commit-id --name-status --diff-filter=AM -r %s', [CommitList[I]]);
       FileList.Text := FileList.Text + RunGitCommand(Command);
       Application.ProcessMessages;
       pbLoading.Position := pbLoading.Position + i;

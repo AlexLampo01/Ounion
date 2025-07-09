@@ -1,7 +1,6 @@
 object fScegliCosaFare: TfScegliCosaFare
   Left = 0
   Top = 0
-  BorderStyle = bsDialog
   Caption = 'Scegli Cosa Fare'
   ClientHeight = 589
   ClientWidth = 618
@@ -21,6 +20,10 @@ object fScegliCosaFare: TfScegliCosaFare
     Height = 53
     Align = alTop
     TabOrder = 0
+    ExplicitWidth = 614
+    DesignSize = (
+      618
+      53)
     object btnInizializzaProgetto: TBitBtn
       Left = 16
       Top = 3
@@ -1068,6 +1071,7 @@ object fScegliCosaFare: TfScegliCosaFare
       Top = 3
       Width = 45
       Height = 45
+      Anchors = [akTop, akRight]
       Glyph.Data = {
         E61F0000424DE61F000000000000360000002800000034000000340000000100
         180000000000B01F0000C40E0000C40E000000000000000000009E05FF9E05FF
@@ -1336,5 +1340,7 @@ object fScegliCosaFare: TfScegliCosaFare
     Height = 536
     Align = alClient
     TabOrder = 1
+    ExplicitWidth = 614
+    ExplicitHeight = 535
   end
 end
