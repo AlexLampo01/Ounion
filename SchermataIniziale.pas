@@ -89,6 +89,7 @@ begin
             Visible := False;
         end;
     end;
+    if Assigned(About.fInformazioniSu) then
     with About.fInformazioniSu do
     begin
         Parent := pnlCentrale;
@@ -124,6 +125,7 @@ begin
             Visible := False;
         end;
     end;
+    if Assigned(About.fInformazioniSu) then
     with About.fInformazioniSu do
     begin
         Parent := pnlCentrale;

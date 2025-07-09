@@ -3,8 +3,8 @@ object fScegliCosaFare: TfScegliCosaFare
   Top = 0
   BorderStyle = bsDialog
   Caption = 'Scegli Cosa Fare'
-  ClientHeight = 590
-  ClientWidth = 622
+  ClientHeight = 589
+  ClientWidth = 618
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,11 +17,10 @@ object fScegliCosaFare: TfScegliCosaFare
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 622
+    Width = 618
     Height = 53
     Align = alTop
     TabOrder = 0
-    ExplicitWidth = 618
     object btnInizializzaProgetto: TBitBtn
       Left = 16
       Top = 3
@@ -1333,11 +1332,9 @@ object fScegliCosaFare: TfScegliCosaFare
   object pnlCentrale: TPanel
     Left = 0
     Top = 53
-    Width = 622
-    Height = 537
+    Width = 618
+    Height = 536
     Align = alClient
     TabOrder = 1
-    ExplicitWidth = 618
-    ExplicitHeight = 536
   end
 end
