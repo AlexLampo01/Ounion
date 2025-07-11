@@ -8,6 +8,13 @@ uses
   Vcl.Buttons, Vcl.Grids, System.ImageList, Vcl.ImgList, System.IOUtils;
 
 type
+  PListBoxItemData = ^TListBoxItemData;
+  TListBoxItemData = record
+    LeftIconIndex: Integer;
+    RightIconIndex: Integer;
+  end;
+
+type
   TfCopiaFileConsegna = class(TForm)
     Panel1: TPanel;
     pbLoading: TProgressBar;
@@ -30,8 +37,9 @@ type
     Splitter1: TSplitter;
     lbFile: TListBox;
     lbFileConfermati: TListBox;
-    ImageList1: TImageList;
+    imgListStatoFile: TImageList;
     pbFile: TProgressBar;
+    imgListSpostabileAuto: TImageList;
     procedure btnEsploraRisorseClick(Sender: TObject);
     procedure cbBranchEnter(Sender: TObject);
     procedure btnAnalizzatoreClick(Sender: TObject);
@@ -662,17 +670,44 @@ end;
 procedure TfCopiaFileConsegna.RiempiDatiInsgFile(FileDaSpostare: TStringList);
 var
     i: Integer;
+    Immagini: PListBoxItemData;
 begin
     pbFile.Position := 0;
     pbFile.Max := FileDaSpostare.Count;
+
     for i := 0 to FileDaSpostare.Count - 1 do
     begin
-        if (ExtractFileExt(FileDaSpostare[i]) = '.pas') or (ExtractFileExt(FileDaSpostare[i]) = '.dfm')  then
+        {if (ExtractFileExt(FileDaSpostare[i]) = '.pas') or (ExtractFileExt(FileDaSpostare[i]) = '.dfm')  then
         begin
             lbFile.Items.AddObject(FileDaSpostare[i], TObject(0));
             pbFile.Position := pbFile.Position + 1;
             Application.ProcessMessages;
+        end; }
+        New(Immagini);
+        if Trim(LowerCase(FileDaSpostare[i])).StartsWith('m') then
+        begin
+            Immagini^.LeftIconIndex := 0;
+        end
+        else if Trim(LowerCase(FileDaSpostare[i])).StartsWith('a') then
+        begin
+            Immagini^.LeftIconIndex := 1;
+
         end;
+        if (ExtractFileExt(FileDaSpostare[i]) = '.pas') or (ExtractFileExt(FileDaSpostare[i]) = '.dfm')  then
+        begin
+           Immagini^.RightIconIndex := 0;
+        end
+        else
+        begin
+           Immagini^.RightIconIndex := 1;
+        end;
+
+        lbFile.Items.AddObject(Copy(FileDaSpostare[i], 2, Length(FileDaSpostare[i])), TObject(Immagini));
+        pbFile.Position := pbFile.Position + 1;
+        Application.ProcessMessages;
+        Sleep(250);
+        if pbFile.Position = pbFile.Max then
+            pbFile.Position := 0;
     end;
     //RiadattaLarghezzaRighe(sgFile);
 
@@ -802,28 +837,35 @@ end;
 procedure TfCopiaFileConsegna.lbFileDrawItem(Control: TWinControl;
   Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var
-  ImgIndex: Integer;
-  TextLeft: Integer;
+  ImgIndex, IconTopLeft, IconTopRight: Integer;
+  TextLeft, TextRight: Integer;
+  Immagini : PListBoxItemData;
   S: string;
 begin
-  with lbFile.Canvas do
+  with lbFile do
   begin
-    FillRect(Rect);
+    Canvas.FillRect(Rect);
+    Immagini := PListBoxItemData(lbFile.Items.Objects[Index]);
 
-    ImgIndex := Integer(lbFile.Items.Objects[Index]);
-
-    // Se l'immagine è valida, disegna l'icona
-    if (ImgIndex >= 0) and (ImgIndex < ImageList1.Count) then
+    IconTopLeft := Rect.Top + (Rect.Height - ImgListStatoFile.Height) div 2;
+    IconTopRight := Rect.Top + (Rect.Height - imgListSpostabileAuto.Height) div 2;
+    if Assigned(Immagini) and (Immagini^.LeftIconIndex >= 0) then
     begin
-      ImageList1.Draw(Canvas, Rect.Left + 2, Rect.Top + 2, ImgIndex);
-      TextLeft := Rect.Left + ImageList1.Width + 6;
+        ImgListStatoFile.Draw(Canvas, Rect.Left + 4, IconTopLeft, Immagini^.LeftIconIndex);
+        TextLeft := Rect.Left + ImgListStatoFile.Width + 8;
     end
     else
-      TextLeft := Rect.Left + 2;
-
+        TextLeft := Rect.Left + 4;
     // Scrive il testo accanto all'icona
     S := lbFile.Items[Index];
-    TextOut(TextLeft, Rect.Top + 2, S);
+    Canvas.TextOut(TextLeft, Rect.Top, S);
+
+    TextRight := TextLeft + Canvas.TextWidth(S) + 4;
+
+    if Assigned(Immagini) and (Immagini^.RightIconIndex >= 0) then
+    begin
+        imgListSpostabileAuto.Draw(Canvas, Rect.Right - imgListSpostabileAuto.Width, IconTopRight, Immagini^.RightIconIndex);
+    end;
   end;
 end;
 
