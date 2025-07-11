@@ -15,8 +15,6 @@ type
     Panel3: TPanel;
     pnlSelezionaTutto: TPanel;
     pnlDeselezionaTutto: TPanel;
-    sgFile: TStringGrid;
-    sgFileConfermati: TStringGrid;
     btnConferma: TBitBtn;
     pPercorso: TPanel;
     lblPercorso: TLabel;
@@ -30,13 +28,17 @@ type
     pnlButtons: TPanel;
     btnSelezionaTutto: TBitBtn;
     Splitter1: TSplitter;
+    lbFile: TListBox;
+    lbFileConfermati: TListBox;
+    ImageList1: TImageList;
+    pbFile: TProgressBar;
     procedure btnEsploraRisorseClick(Sender: TObject);
     procedure cbBranchEnter(Sender: TObject);
     procedure btnAnalizzatoreClick(Sender: TObject);
     procedure btnSelezionaTuttoClick(Sender: TObject);
     procedure btnDeselezionaTuttoClick(Sender: TObject);
-    procedure sgFileDblClick(Sender: TObject);
-    procedure sgFileConfermatiDblClick(Sender: TObject);
+    //procedure sgFileDblClick(Sender: TObject);
+    //procedure sgFileConfermatiDblClick(Sender: TObject);
     procedure btnConfermaClick(Sender: TObject);
     procedure btnRestartClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -46,6 +48,10 @@ type
     procedure btnDeselezionaTuttoEnter(Sender: TObject);
     procedure btnRestartEnter(Sender: TObject);
     procedure btnConfermaEnter(Sender: TObject);
+    procedure lbFileDrawItem(Control: TWinControl; Index: Integer; Rect: TRect;
+      State: TOwnerDrawState);
+    //procedure lbFileDblClick(Sender: TObject);
+    //procedure lbFileConfermatiDblClick(Sender: TObject);
   private
     function RecuperaRemote(Percorso: String): TStringList;
     function RecuperaBranch(Percorso: String): TStringList;
@@ -107,7 +113,7 @@ var
     CartelleDaAggiungere, CartelleDefinitive : String;
     InizioCartelle : Boolean;
 begin
-    if sgFileConfermati.Cells[0,0] <> '' then
+   { if sgFileConfermati.Cells[0,0] <> '' then
     begin
         if fodEsploraRisorse.Execute then
           CartellaSalvataggio := fodEsploraRisorse.FileName;
@@ -170,7 +176,7 @@ begin
         end
         else
             ShowMessage('Seleziona una cartella!');
-    end;
+    end; }
 end;
 
 procedure TfCopiaFileConsegna.btnConfermaEnter(Sender: TObject);
@@ -184,7 +190,7 @@ var
     i, j, UltimaRiga: Integer;
     FileConEliminazione: TStringList;
 begin
-    FileConEliminazione := TStringList.Create;
+    {FileConEliminazione := TStringList.Create;
     try
         UltimaRiga := sgFile.RowCount;
         for i := 0 to sgFileConfermati.RowCount - 1 do
@@ -211,7 +217,7 @@ begin
         btnDeselezionaTutto.Enabled := False;
     finally
      FileConEliminazione.Free;
-    end;
+    end;}
 end;
 
 procedure TfCopiaFileConsegna.btnDeselezionaTuttoEnter(Sender: TObject);
@@ -272,12 +278,12 @@ begin
     btnAnalizzatore.Enabled := True;
     btnAnalizzatore.Visible := False;
     btnEsploraRisorse.Visible := True;
-    for i := 0 to sgFile.RowCount - 1 do
+    {for i := 0 to sgFile.RowCount - 1 do
         sgFile.Cells[0, i] := '';
     for i := 0 to sgFileConfermati.RowCount - 1 do
-        sgFileConfermati.Cells[0,i] := '';
-    sgFile.RowCount := 0;
-    sgFileConfermati.RowCount := 0;
+        sgFileConfermati.Cells[0,i] := ''; }
+    {sgFile.RowCount := 0;
+    sgFileConfermati.RowCount := 0; }
     pnlButtons.Visible := False;
     pnlConferma.Visible := False;
     btnEsploraRisorse.Enabled := True;
@@ -297,7 +303,7 @@ var
     FileConEliminazione, FileDaNonSpostare: TStringList;
     Estensione : String;
 begin
-    FileConEliminazione := TStringList.Create;
+    {FileConEliminazione := TStringList.Create;
     FileDaNonSpostare := TStringList.Create;
     try
         UltimaRiga := sgFileConfermati.RowCount - 1;
@@ -350,13 +356,13 @@ begin
         btnDeselezionaTutto.Enabled := True;
     finally
      FileConEliminazione.Free;
-    end;
+    end;}
 end;
 
 procedure TfCopiaFileConsegna.btnSelezionaTuttoEnter(Sender: TObject);
 begin
     //btnSelezionaTutto.Hint := 'Seleziona Tutto';
-    btnSelezionaTutto.ShowHint := True;
+    //btnSelezionaTutto.ShowHint := True;
 end;
 
 procedure TfCopiaFileConsegna.cbBranchEnter(Sender: TObject);
@@ -631,12 +637,12 @@ begin
       else
         FileList[I] := Trim(FileList[I]);
     pbLoading.Visible := False;
-    sgFile.Visible := True;
+    //sgFile.Visible := True;
     pnlButtons.Visible := True;
     pnlConferma.Visible := True;
     pnlSelezionaTutto.Visible := True;
     pnlDeselezionaTutto.Visible := True;
-    sgFileConfermati.RowCount := 0;
+    //sgFileConfermati.RowCount := 0;
     btnSelezionatutto.Visible := True;
     btnConferma.Visible := True;
     btnAnalizzatore.Enabled := False;
@@ -657,20 +663,171 @@ procedure TfCopiaFileConsegna.RiempiDatiInsgFile(FileDaSpostare: TStringList);
 var
     i: Integer;
 begin
-    sgFile.RowCount := FileDaSpostare.Count;
-
+    pbFile.Position := 0;
+    pbFile.Max := FileDaSpostare.Count;
     for i := 0 to FileDaSpostare.Count - 1 do
     begin
-        sgFile.Cells[0, i] := Copy(FileDaSpostare[i], 2, Length(FileDaSpostare[i]));
+        if (ExtractFileExt(FileDaSpostare[i]) = '.pas') or (ExtractFileExt(FileDaSpostare[i]) = '.dfm')  then
+        begin
+            lbFile.Items.AddObject(FileDaSpostare[i], TObject(0));
+            pbFile.Position := pbFile.Position + 1;
+            Application.ProcessMessages;
+        end;
     end;
-
-    RiadattaLarghezzaRighe(sgFile);
+    //RiadattaLarghezzaRighe(sgFile);
 
 //////////////////////////Seconda Griglia///////////////////////////////////////
-   RiadattaLarghezzaRighe(sgFileConfermati);
+   //RiadattaLarghezzaRighe(sgFileConfermati);
 end;
 
-procedure TfCopiaFileConsegna.sgFileConfermatiDblClick(Sender: TObject);
+{procedure TfCopiaFileConsegna.sgFileConfermatiDblClick(Sender: TObject);
+var
+    i, j, RigaDaEliminare, NuovaRiga : Integer;
+    FileConEliminazione : TStringList;
+    RigaDaSpostare : String;
+begin
+    RigaDaSpostare := sgFileConfermati.Cells[0, sgFileConfermati.Row];
+    RigaDaEliminare := sgFileConfermati.Row;
+    FileConEliminazione := TStringList.Create;
+    try
+        for i := 0 to sgFileConfermati.RowCount - 1 do
+            if i <> RigaDaEliminare then
+            begin
+              FileConEliminazione.Add( sgFileConfermati.Cells[0, i]);
+            end
+            else
+                Continue;
+        for i := 0 to sgFileConfermati.RowCount - 1 do
+            for j := 0 to sgFileConfermati.ColCount - 1 do
+                sgFileConfermati.Cells[j, i] := '';
+        sgFileConfermati.RowCount := 0;
+         for i := 0 to FileConEliminazione.Count - 1 do
+         begin
+            sgFileConfermati.Cells[0, i] := Copy(FileConEliminazione[i], 1, Length(FileConEliminazione[i]));
+         end;
+        sgFileConfermati.RowCount := FileConEliminazione.Count;
+    finally
+     FileConEliminazione.Free;
+    //Inserisce l'elemento nella seconda TStringGrid
+     NuovaRiga := sgFile.RowCount;
+
+     if (NuovaRiga = 1) and (sgFile.Cells[0, 0] = '') then
+        sgFile.Cells[0, 0] := RigaDaSpostare
+     else
+     begin
+         sgFile.RowCount := NuovaRiga + 1;
+         sgFile.Cells[0, NuovaRiga] := RigaDaSpostare;
+     end;
+     RiadattaLarghezzaRighe(sgFile);
+    end;
+end;}
+
+{procedure TfCopiaFileConsegna.sgFileDblClick(Sender: TObject);
+var
+    i, j, RigaDaEliminare, NuovaRiga : Integer;
+    FileConEliminazione : TStringList;
+    RigaDaSpostare : String;
+begin
+    RigaDaSpostare := sgFile.Cells[0, sgFile.Row];
+    RigaDaEliminare := sgFile.Row;
+    FileConEliminazione := TStringList.Create;
+    try
+        for i := 0 to sgFile.RowCount - 1 do
+            if i <> RigaDaEliminare then
+            begin
+              FileConEliminazione.Add( sgFile.Cells[0, i]);
+            end
+            else
+                Continue;
+        for i := 0 to sgFile.RowCount - 1 do
+            for j := 0 to sgFile.ColCount - 1 do
+                sgFile.Cells[j, i] := '';
+        sgFile.RowCount := 0;
+         for i := 0 to FileConEliminazione.Count - 1 do
+         begin
+            sgFile.Cells[0, i] := Copy(FileConEliminazione[i], 1, Length(FileConEliminazione[i]));
+         end;
+        sgFile.RowCount := FileConEliminazione.Count;
+    finally
+     FileConEliminazione.Free;
+    //Inserisce l'elemento nella seconda TStringGrid
+     NuovaRiga := sgFileConfermati.RowCount;
+
+     if (NuovaRiga = 1) and (sgFileConfermati.Cells[0, 0] = '') then
+        sgFileConfermati.Cells[0, 0] := RigaDaSpostare
+     else
+     begin
+         sgFileConfermati.RowCount := NuovaRiga + 1;
+         sgFileConfermati.Cells[0, NuovaRiga] := RigaDaSpostare;
+     end;
+     RiadattaLarghezzaRighe(sgFileConfermati);
+    end;
+end; }
+
+procedure TfCopiaFileConsegna.RiadattaLarghezzaRighe(
+  TStringGridUsata: TStringGrid);
+var
+    ColIndex, RowIndex, MaxWidth, RowWidth : Integer;
+    S : String;
+begin
+    MaxWidth := 0;
+    ColIndex := 0;
+    TStringGridUsata.Canvas.Font := TStringGridUsata.Font;
+
+    for RowIndex := 0 to TStringGridUsata.RowCount - 1 do
+    begin
+        S := TStringGridUsata.Cells[ColIndex, RowIndex];
+        RowWidth := TStringGridUsata.Canvas.TextWidth(S);
+        if RowWidth > MaxWidth then
+          MaxWidth := RowWidth;
+    end;
+
+  // Aggiungi un po' di margine per padding
+  TStringGridUsata.ColWidths[ColIndex] := MaxWidth + 12;
+end;
+procedure TfCopiaFileConsegna.CercaFileRicorsivo(const Percorso, FileDaCercare : String; var Trovato: String);
+var
+    CostruzionePercorso: String;
+begin
+    CostruzionePercorso := IncludeTrailingPathDelimiter(Trim(Percorso)) + Trim(FileDaCercare);
+    CostruzionePercorso := StringReplace(CostruzionePercorso, '/', '\', [rfReplaceAll]);
+    Trovato := CostruzionePercorso;
+end;
+
+procedure TfCopiaFileConsegna.FormCreate(Sender: TObject);
+begin
+    Self.ShowHint := True;
+end;
+
+procedure TfCopiaFileConsegna.lbFileDrawItem(Control: TWinControl;
+  Index: Integer; Rect: TRect; State: TOwnerDrawState);
+var
+  ImgIndex: Integer;
+  TextLeft: Integer;
+  S: string;
+begin
+  with lbFile.Canvas do
+  begin
+    FillRect(Rect);
+
+    ImgIndex := Integer(lbFile.Items.Objects[Index]);
+
+    // Se l'immagine è valida, disegna l'icona
+    if (ImgIndex >= 0) and (ImgIndex < ImageList1.Count) then
+    begin
+      ImageList1.Draw(Canvas, Rect.Left + 2, Rect.Top + 2, ImgIndex);
+      TextLeft := Rect.Left + ImageList1.Width + 6;
+    end
+    else
+      TextLeft := Rect.Left + 2;
+
+    // Scrive il testo accanto all'icona
+    S := lbFile.Items[Index];
+    TextOut(TextLeft, Rect.Top + 2, S);
+  end;
+end;
+
+{procedure TfCopiaFileConsegna.lbFileConfermatiDblClick(Sender: TObject);
 var
     i, j, RigaDaEliminare, NuovaRiga : Integer;
     FileConEliminazione : TStringList;
@@ -712,7 +869,7 @@ begin
     end;
 end;
 
-procedure TfCopiaFileConsegna.sgFileDblClick(Sender: TObject);
+procedure TfCopiaFileConsegna.lbFileDblClick(Sender: TObject);
 var
     i, j, RigaDaEliminare, NuovaRiga : Integer;
     FileConEliminazione : TStringList;
@@ -752,41 +909,6 @@ begin
      end;
      RiadattaLarghezzaRighe(sgFileConfermati);
     end;
-end;
-
-procedure TfCopiaFileConsegna.RiadattaLarghezzaRighe(
-  TStringGridUsata: TStringGrid);
-var
-    ColIndex, RowIndex, MaxWidth, RowWidth : Integer;
-    S : String;
-begin
-    MaxWidth := 0;
-    ColIndex := 0;
-    TStringGridUsata.Canvas.Font := TStringGridUsata.Font;
-
-    for RowIndex := 0 to TStringGridUsata.RowCount - 1 do
-    begin
-        S := TStringGridUsata.Cells[ColIndex, RowIndex];
-        RowWidth := TStringGridUsata.Canvas.TextWidth(S);
-        if RowWidth > MaxWidth then
-          MaxWidth := RowWidth;
-    end;
-
-  // Aggiungi un po' di margine per padding
-  TStringGridUsata.ColWidths[ColIndex] := MaxWidth + 12;
-end;
-procedure TfCopiaFileConsegna.CercaFileRicorsivo(const Percorso, FileDaCercare : String; var Trovato: String);
-var
-    CostruzionePercorso: String;
-begin
-    CostruzionePercorso := IncludeTrailingPathDelimiter(Trim(Percorso)) + Trim(FileDaCercare);
-    CostruzionePercorso := StringReplace(CostruzionePercorso, '/', '\', [rfReplaceAll]);
-    Trovato := CostruzionePercorso;
-end;
-
-procedure TfCopiaFileConsegna.FormCreate(Sender: TObject);
-begin
-    Self.ShowHint := True;
-end;
+end;}
 
 end.
