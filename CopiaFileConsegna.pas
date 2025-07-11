@@ -75,6 +75,7 @@ var
 begin
    pbLoading.Visible := True;
    pbLoading.Position := 0;
+   btnSelezionaTutto.Enabled := True;
    FileListTemp := TStringList.Create;
    FileList := TStringList.Create;
    try
@@ -265,6 +266,8 @@ var
 begin
     cbBranch.Visible := False;
     cbBranch.Enabled := True;
+    pnlDeselezionaTutto.Visible := False;
+    pnlSelezionaTutto.Visible := False;
     cbbranch.Text := '';
     btnAnalizzatore.Enabled := True;
     btnAnalizzatore.Visible := False;
