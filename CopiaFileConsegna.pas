@@ -58,6 +58,11 @@ type
     procedure btnConfermaEnter(Sender: TObject);
     procedure lbFileDrawItem(Control: TWinControl; Index: Integer; Rect: TRect;
       State: TOwnerDrawState);
+    procedure pnlSelezionaTuttoResize(Sender: TObject);
+    procedure pnlSelezionaTuttoCanResize(Sender: TObject; var NewWidth,
+      NewHeight: Integer; var Resize: Boolean);
+    procedure lbFileConfermatiDrawItem(Control: TWinControl; Index: Integer;
+      Rect: TRect; State: TOwnerDrawState);
     //procedure lbFileDblClick(Sender: TObject);
     //procedure lbFileConfermatiDblClick(Sender: TObject);
   private
@@ -68,6 +73,8 @@ type
     procedure RiadattaLarghezzaRighe(TStringGridUsata: TStringGrid);
     procedure CercaFileRicorsivo(const Percorso, FileDaCercare: String;
       var Trovato: String);
+    procedure SpostaElementiListBox(ListBoxOrigine, ListBoxDestinazione : TListBox; FileDaSpostare, FileDaNonSpostare : TStringList);
+    function MaxValuePixel(AListBox : TListBox) : Integer;
 
   public
     Completato : Boolean;
@@ -311,13 +318,13 @@ var
     FileConEliminazione, FileDaNonSpostare: TStringList;
     Estensione : String;
 begin
-    {FileConEliminazione := TStringList.Create;
+    FileConEliminazione := TStringList.Create;
     FileDaNonSpostare := TStringList.Create;
     try
-        UltimaRiga := sgFileConfermati.RowCount - 1;
-        for i := 0 to sgFile.RowCount - 1 do
+        UltimaRiga := lbFileConfermati.Count;
+        for i := 0 to lbFile.Count - 1 do
         begin
-            Estensione := sgFile.Cells[0,i];
+            Estensione := lbFile.Items[i];
             if not SameText(ExtractFileExt(Trim(Estensione)), '.pas')
             and not SameText(ExtractFileExt(Trim(Estensione)), '.dfm')
             and not SameText(ExtractFileExt(Trim(Estensione)), '.dpr')
@@ -328,43 +335,37 @@ begin
             and not Trim(LowerCase(Estensione)).StartsWith('os1test')
             and not SameText(Estensione, '')
             then
-                FileConEliminazione.Add( sgFile.Cells[0, i])
+                FileConEliminazione.Add( lbFile.Items[i])
             else
-                FileDaNonSpostare.Add( sgFile.Cells[0, i])
+                FileDaNonSpostare.Add( lbFile.Items[i])
         end;
-        for i := 0 to sgFile.RowCount - 1 do
-            for j := 0 to sgFile.ColCount - 1 do
-            begin
-                sgFile.Cells[j, i] := '';
-            end;
-        sgFile.RowCount := 0;
-
-        sgFile.RowCount := FileDaNonSpostare.Count;
-        for i := 0 to FileDaNonSpostare.Count - 1 do
+        SpostaElementiListBox(lbFile,lbFileConfermati, FileConEliminazione, FileDaNonSpostare);
+        //lbFile.Count := FileDaNonSpostare.Count;
+        {for i := 0 to FileDaNonSpostare.Count - 1 do
         begin
-            sgFile.Cells[0,i] := FileDaNonSpostare[i];
+            lbFile.Items[i] := FileDaNonSpostare[i];
         end;
-        RiadattaLarghezzaRighe(sgFile);
+        //RiadattaLarghezzaRighe(lbFile);
         for i := 0 to FileConEliminazione.Count - 1  do
         begin
             if Trim(FileConEliminazione[i]) <> '' then
             begin
-                if (sgFileConfermati.RowCount = 1) and (sgFileConfermati.Cells[0, 0] = '') then
-                    sgFileConfermati.Cells[0, 0] := FileConEliminazione[i]
+                if (lbFileConfermati.Count = 1) and (lbFileConfermati.Items[0] = '') then
+                    lbFileConfermati.Items[0] := FileConEliminazione[i]
                 else
                 begin
                     UltimaRiga := UltimaRiga + 1;
-                    sgFileConfermati.RowCount := UltimaRiga + 1;
-                    sgFileConfermati.Cells[0, UltimaRiga] := FileConEliminazione[i];
+                    lbFileConfermati.Count := UltimaRiga + 1;
+                    lbFileConfermati.Items[UltimaRiga] := FileConEliminazione[i];
                 end;
             end;
         end;
-        RiadattaLarghezzaRighe(sgFileConfermati);
+        //RiadattaLarghezzaRighe(lbFileConfermati);
         btnSelezionaTutto.Enabled := False;
-        btnDeselezionaTutto.Enabled := True;
+        btnDeselezionaTutto.Enabled := True;}
     finally
      FileConEliminazione.Free;
-    end;}
+    end;
 end;
 
 procedure TfCopiaFileConsegna.btnSelezionaTuttoEnter(Sender: TObject);
@@ -693,7 +694,14 @@ begin
             Immagini^.LeftIconIndex := 1;
 
         end;
-        if (ExtractFileExt(FileDaSpostare[i]) = '.pas') or (ExtractFileExt(FileDaSpostare[i]) = '.dfm')  then
+        if (ExtractFileExt(FileDaSpostare[i]) = '.pas')
+        or (ExtractFileExt(FileDaSpostare[i]) = '.dfm')
+        or (ExtractFileExt(FileDaSpostare[i]) = '.dpr')
+        or (ExtractFileExt(FileDaSpostare[i]) = '.dpk')
+        or (ExtractFileExt(FileDaSpostare[i]) = '.gitignore')
+        or (ExtractFileExt(FileDaSpostare[i]) = '.dproj')
+        or (ExtractFileExt(FileDaSpostare[i]) = '.stat')
+        or (Trim(LowerCase(FileDaSpostare[i]))).StartsWith('os1test') then
         begin
            Immagini^.RightIconIndex := 0;
         end
@@ -705,7 +713,7 @@ begin
         lbFile.Items.AddObject(Copy(FileDaSpostare[i], 2, Length(FileDaSpostare[i])), TObject(Immagini));
         pbFile.Position := pbFile.Position + 1;
         Application.ProcessMessages;
-        Sleep(250);
+        Sleep(300);
         if pbFile.Position = pbFile.Max then
             pbFile.Position := 0;
     end;
@@ -713,6 +721,39 @@ begin
 
 //////////////////////////Seconda Griglia///////////////////////////////////////
    //RiadattaLarghezzaRighe(sgFileConfermati);
+end;
+
+procedure TfCopiaFileConsegna.SpostaElementiListBox(ListBoxOrigine,
+  ListBoxDestinazione: TListBox ; FileDaSpostare, FileDaNonSpostare : TStringList);
+var
+    TStringFileNonDaSpostare : TStringList;
+    Immagini: PListBoxItemData;
+    i,j,k : Integer;
+begin
+    TStringFileNonDaSpostare := TStringList.Create;
+    try
+        for i := 0 to ListBoxOrigine.Items.Count - 1 do
+        begin
+            Immagini := PListBoxItemData(lbFile.Items.Objects[i]);
+            if Assigned(Immagini) then
+            begin
+                for j := 0 to FileDaSpostare.Count - 1 do
+                begin
+                if FileDaNonSpostare.IndexOf(FileDaSpostare[j]) = - 1 then
+                begin
+                    for k := 0 to ListBoxDestinazione.Count - 1 do
+                        if not (ListBoxDestinazione.Items[k] = FileDaSpostare[j]) then
+                            ListBoxDestinazione.Items.AddObject(Copy(FileDaSpostare[j], 2, Length(FileDaSpostare[j])), TObject(Immagini));
+                end;
+
+
+                //TStringFileNonDaSpostare.Add(Immagini^.LeftIconIndex.ToString + ',' + lbFile.Items[i] + ',' + Immagini^.RightIconIndex.ToString);
+                end;
+            end;
+        end;
+    finally
+        TStringFileNonDaSpostare.Free;
+    end;
 end;
 
 {procedure TfCopiaFileConsegna.sgFileConfermatiDblClick(Sender: TObject);
@@ -834,6 +875,41 @@ begin
     Self.ShowHint := True;
 end;
 
+procedure TfCopiaFileConsegna.lbFileConfermatiDrawItem(Control: TWinControl;
+  Index: Integer; Rect: TRect; State: TOwnerDrawState);
+var
+  ImgIndex, IconTopLeft, IconTopRight: Integer;
+  TextLeft, TextRight: Integer;
+  Immagini : PListBoxItemData;
+  S: string;
+begin
+  with lbFileConfermati do
+  begin
+    Canvas.FillRect(Rect);
+    Immagini := PListBoxItemData(lbFileConfermati.Items.Objects[Index]);
+
+    IconTopLeft := Rect.Top + (Rect.Height - ImgListStatoFile.Height) div 2;
+    IconTopRight := Rect.Top + (Rect.Height - imgListSpostabileAuto.Height) div 2;
+    if Assigned(Immagini) and (Immagini^.LeftIconIndex >= 0) then
+    begin
+        ImgListStatoFile.Draw(Canvas, Rect.Left + 4, IconTopLeft, Immagini^.LeftIconIndex);
+        TextLeft := Rect.Left + ImgListStatoFile.Width + 8;
+    end
+    else
+        TextLeft := Rect.Left + 4;
+    // Scrive il testo accanto all'icona
+    S := lbFileConfermati.Items[Index];
+    Canvas.TextOut(TextLeft, Rect.Top, S);
+
+    TextRight := TextLeft + Canvas.TextWidth(S) + 4;
+
+    if Assigned(Immagini) and (Immagini^.RightIconIndex >= 0) then
+    begin
+        imgListSpostabileAuto.Draw(Canvas, Rect.Right - imgListSpostabileAuto.Width, IconTopRight, Immagini^.RightIconIndex);
+    end;
+  end;
+end;
+
 procedure TfCopiaFileConsegna.lbFileDrawItem(Control: TWinControl;
   Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var
@@ -867,6 +943,38 @@ begin
         imgListSpostabileAuto.Draw(Canvas, Rect.Right - imgListSpostabileAuto.Width, IconTopRight, Immagini^.RightIconIndex);
     end;
   end;
+end;
+
+function TfCopiaFileConsegna.MaxValuePixel(AListBox: TListBox): Integer;
+var
+    i, ItemWidth: Integer;
+begin
+    Result := 0;
+    for i := 0 to AListBox.Items.Count - 1 do
+    begin
+        ItemWidth := AListBox.Canvas.TextWidth(AListBox.Items[i]);
+        if ItemWidth > Result then
+            Result := ItemWidth;
+    end;
+end;
+
+procedure TfCopiaFileConsegna.pnlSelezionaTuttoCanResize(Sender: TObject;
+  var NewWidth, NewHeight: Integer; var Resize: Boolean);
+var
+    MinWidth: Integer;
+begin
+    MinWidth := MaxValuePixel(lbFile) + 40;
+
+    if NewWidth < MinWidth then
+    begin
+        NewWidth := MinWidth;
+        Resize := False;
+    end;
+end;
+
+procedure TfCopiaFileConsegna.pnlSelezionaTuttoResize(Sender: TObject);
+begin
+    lbFile.Invalidate;
 end;
 
 {procedure TfCopiaFileConsegna.lbFileConfermatiDblClick(Sender: TObject);

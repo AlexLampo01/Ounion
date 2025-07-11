@@ -485,6 +485,8 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
       Align = alLeft
       TabOrder = 0
       Visible = False
+      OnCanResize = pnlSelezionaTuttoCanResize
+      OnResize = pnlSelezionaTuttoResize
       ExplicitHeight = 319
       object Panel2: TPanel
         Left = 1
@@ -607,11 +609,10 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
         Top = 33
         Width = 649
         Height = 286
+        Style = lbOwnerDrawFixed
         Align = alClient
-        ItemHeight = 15
         TabOrder = 1
-        ExplicitLeft = 2
-        ExplicitTop = 34
+        OnDrawItem = lbFileConfermatiDrawItem
       end
     end
   end
