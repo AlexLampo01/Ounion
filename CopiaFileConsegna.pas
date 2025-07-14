@@ -63,6 +63,7 @@ type
       NewHeight: Integer; var Resize: Boolean);
     procedure lbFileConfermatiDrawItem(Control: TWinControl; Index: Integer;
       Rect: TRect; State: TOwnerDrawState);
+    procedure pbFileChange(Sender: TObject);
     //procedure lbFileDblClick(Sender: TObject);
     //procedure lbFileConfermatiDblClick(Sender: TObject);
   private
@@ -729,6 +730,7 @@ var
     TStringFileNonDaSpostare : TStringList;
     Immagini: PListBoxItemData;
     i,j,k : Integer;
+    NomeFile : String;
 begin
     TStringFileNonDaSpostare := TStringList.Create;
     try
@@ -739,12 +741,20 @@ begin
             begin
                 for j := 0 to FileDaSpostare.Count - 1 do
                 begin
-                if FileDaNonSpostare.IndexOf(FileDaSpostare[j]) = - 1 then
-                begin
-                    for k := 0 to ListBoxDestinazione.Count - 1 do
-                        if not (ListBoxDestinazione.Items[k] = FileDaSpostare[j]) then
-                            ListBoxDestinazione.Items.AddObject(Copy(FileDaSpostare[j], 2, Length(FileDaSpostare[j])), TObject(Immagini));
-                end;
+                    NomeFile := Copy(FileDaSpostare[j], 2, Length(FileDaSpostare[j]));
+                    if FileDaNonSpostare.IndexOf(FileDaSpostare[j]) = - 1 then
+                    begin
+                        if ListBoxDestinazione.Count = 0 then
+                        begin
+                            ListBoxDestinazione.Items.AddObject(NomeFile, TObject(Immagini));
+                        end
+                        else
+                        begin
+                            for k := 0 to ListBoxDestinazione.Count - 1 do
+                                if not (ListBoxDestinazione.Items[k] = NomeFile) then
+                                    ListBoxDestinazione.Items.AddObject(NomeFile, TObject(Immagini));
+                        end;
+                    end;
 
 
                 //TStringFileNonDaSpostare.Add(Immagini^.LeftIconIndex.ToString + ',' + lbFile.Items[i] + ',' + Immagini^.RightIconIndex.ToString);
@@ -955,6 +965,14 @@ begin
         ItemWidth := AListBox.Canvas.TextWidth(AListBox.Items[i]);
         if ItemWidth > Result then
             Result := ItemWidth;
+    end;
+end;
+
+procedure TfCopiaFileConsegna.pbFileChange(Sender: TObject);
+begin
+    if pbFile.Position = pbFile.Max then
+    begin
+        btnSelezionaTutto.Enabled := True;
     end;
 end;
 
