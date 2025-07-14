@@ -97,7 +97,7 @@ var
 begin
    pbLoading.Visible := True;
    pbLoading.Position := 0;
-   btnSelezionaTutto.Enabled := True;
+   //btnSelezionaTutto.Enabled := True;
    FileListTemp := TStringList.Create;
    FileList := TStringList.Create;
    try
@@ -653,7 +653,7 @@ begin
     pnlSelezionaTutto.Visible := True;
     pnlDeselezionaTutto.Visible := True;
     //sgFileConfermati.RowCount := 0;
-    btnSelezionatutto.Visible := True;
+    //btnSelezionatutto.Visible := True;
     btnConferma.Visible := True;
     btnAnalizzatore.Enabled := False;
     cbBranch.Enabled := False;
@@ -702,7 +702,7 @@ begin
         or (ExtractFileExt(FileDaSpostare[i]) = '.gitignore')
         or (ExtractFileExt(FileDaSpostare[i]) = '.dproj')
         or (ExtractFileExt(FileDaSpostare[i]) = '.stat')
-        or (Trim(LowerCase(FileDaSpostare[i]))).StartsWith('os1test') then
+        or (Copy(Trim(LowerCase(FileDaSpostare[i])), 3, Length(Trim(LowerCase(FileDaSpostare[i]))))).StartsWith('os1test') then
         begin
            Immagini^.RightIconIndex := 0;
         end
