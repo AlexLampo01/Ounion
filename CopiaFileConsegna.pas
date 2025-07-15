@@ -64,6 +64,7 @@ type
     procedure lbFileConfermatiDrawItem(Control: TWinControl; Index: Integer;
       Rect: TRect; State: TOwnerDrawState);
     procedure pbFileChange(Sender: TObject);
+    procedure lbFileDblClick(Sender: TObject);
     //procedure lbFileDblClick(Sender: TObject);
     //procedure lbFileConfermatiDblClick(Sender: TObject);
   private
@@ -640,6 +641,7 @@ var
     i: Integer;
     Immagini: PListBoxItemData;
 begin
+    pbFile.Visible := True;
     pbFile.Position := 0;
     pbFile.Max := FileDaSpostare.Count;
 
@@ -682,7 +684,10 @@ begin
         Application.ProcessMessages;
         Sleep(300);
         if pbFile.Position = pbFile.Max then
+        begin
             pbFile.Position := 0;
+            pbFile.Visible := False;
+        end;
     end;
     //RiadattaLarghezzaRighe(sgFile);
 
@@ -892,6 +897,38 @@ begin
         imgListSpostabileAuto.Draw(Canvas, Rect.Right - imgListSpostabileAuto.Width, IconTopRight, Immagini^.RightIconIndex);
     end;
   end;
+end;
+
+procedure TfCopiaFileConsegna.lbFileDblClick(Sender: TObject);
+var
+    Indice, i : Integer;
+    FileDaSpostare, FileDaNonSpostare : TStringList;
+begin
+    FileDaSpostare := TStringList.Create;
+    FileDaNonSpostare := TStringList.Create;
+    try
+        Indice := lbFile.ItemIndex;
+        if Indice >= 0 then
+        begin
+            for i := 0 to lbFile.Count - 1 do
+            begin
+                if i = Indice then
+                begin
+                    FileDaSpostare.Add(lbFile.Items[Indice]);
+                end
+                else if i <> Indice then
+                begin
+                    FileDaNonSpostare.Add(lbFile.Items[i]);
+                end;
+            end;
+            ShowMessage(FileDaSpostare.Text);
+            ShowMessage(FileDaNonSpostare.Text);
+        end;
+        //SpostaElementiListBox(  );
+    finally
+        FileDaNonSpostare.Free;
+        FileDaSpostare.Free;
+    end;
 end;
 
 procedure TfCopiaFileConsegna.lbFileDrawItem(Control: TWinControl;
