@@ -203,37 +203,24 @@ end;
 
 procedure TfCopiaFileConsegna.btnDeselezionaTuttoClick(Sender: TObject);
 var
-    i, j, UltimaRiga: Integer;
-    FileConEliminazione: TStringList;
+    i, j: Integer;
+    FileConEliminazione, FileDaNonSpostare: TStringList;
+    Estensione : String;
 begin
-    {FileConEliminazione := TStringList.Create;
+    FileConEliminazione := TStringList.Create;
+    FileDaNonSpostare := TStringList.Create;
     try
-        UltimaRiga := sgFile.RowCount;
-        for i := 0 to sgFileConfermati.RowCount - 1 do
+        for i := 0 to lbFileConfermati.Count - 1 do
         begin
-            FileConEliminazione.Add(sgFileConfermati.Cells[0, i]);
+            FileConEliminazione.Add(lbFileConfermati.Items[i])
         end;
-        for i := 0 to sgFileConfermati.RowCount - 1 do
-            for j := 0 to sgFileConfermati.ColCount - 1 do
-                sgFileConfermati.Cells[j, i] := '';
-        sgFileConfermati.RowCount := 0;
-
-
-        for i := 0 to FileConEliminazione.Count - 1  do
-        begin
-            if FileConEliminazione[i] <> '' then
-            begin
-                sgFile.RowCount := UltimaRiga + 1;
-                sgFile.Cells[0, UltimaRiga] := FileConEliminazione[i];
-                UltimaRiga := UltimaRiga + 1;
-            end;
-        end;
-        RiadattaLarghezzaRighe(sgFile);
-        btnSelezionaTutto.Enabled := True;
+        SpostaElementiListBox(lbFileConfermati ,lbFile, FileConEliminazione, FileDaNonSpostare);
         btnDeselezionaTutto.Enabled := False;
+        btnSelezionaTutto.Enabled   := True;
     finally
      FileConEliminazione.Free;
-    end;}
+     FileDaNonSpostare.Free;
+    end;
 end;
 
 procedure TfCopiaFileConsegna.btnDeselezionaTuttoEnter(Sender: TObject);
@@ -341,29 +328,8 @@ begin
                 FileDaNonSpostare.Add( lbFile.Items[i])
         end;
         SpostaElementiListBox(lbFile,lbFileConfermati, FileConEliminazione, FileDaNonSpostare);
-        //lbFile.Count := FileDaNonSpostare.Count;
-        {for i := 0 to FileDaNonSpostare.Count - 1 do
-        begin
-            lbFile.Items[i] := FileDaNonSpostare[i];
-        end;
-        //RiadattaLarghezzaRighe(lbFile);
-        for i := 0 to FileConEliminazione.Count - 1  do
-        begin
-            if Trim(FileConEliminazione[i]) <> '' then
-            begin
-                if (lbFileConfermati.Count = 1) and (lbFileConfermati.Items[0] = '') then
-                    lbFileConfermati.Items[0] := FileConEliminazione[i]
-                else
-                begin
-                    UltimaRiga := UltimaRiga + 1;
-                    lbFileConfermati.Count := UltimaRiga + 1;
-                    lbFileConfermati.Items[UltimaRiga] := FileConEliminazione[i];
-                end;
-            end;
-        end;
-        //RiadattaLarghezzaRighe(lbFileConfermati);
-        btnSelezionaTutto.Enabled := False;
-        btnDeselezionaTutto.Enabled := True;}
+        btnDeselezionaTutto.Enabled := True;
+        btnSelezionaTutto.Enabled   := False;
     finally
      FileConEliminazione.Free;
     end;
@@ -727,42 +693,50 @@ end;
 procedure TfCopiaFileConsegna.SpostaElementiListBox(ListBoxOrigine,
   ListBoxDestinazione: TListBox ; FileDaSpostare, FileDaNonSpostare : TStringList);
 var
-    TStringFileNonDaSpostare : TStringList;
-    Immagini: PListBoxItemData;
-    i,j,k : Integer;
+    ImmaginiSrc, ImmaginiDst: PListBoxItemData;
+    i,j,k, Indice : Integer;
     NomeFile : String;
+    Vuoto : Boolean;
 begin
-    TStringFileNonDaSpostare := TStringList.Create;
-    try
-        for i := 0 to ListBoxOrigine.Items.Count - 1 do
+    Vuoto := True;
+    for i := 0 to ListBoxOrigine.Items.Count - 1 do
+    begin
+        for j := 0 to FileDaNonSpostare.Count - 1 do
         begin
-            Immagini := PListBoxItemData(lbFile.Items.Objects[i]);
-            if Assigned(Immagini) then
+            if Trim(FileDaNonSpostare[j]) <> '' then
+                Vuoto := False;
+        end;
+        for j := 0 to FileDaSpostare.Count - 1 do
+        begin
+            if Vuoto or (Not FileDaSpostare[j].StartsWith('#')) then
+                NomeFile := FileDaSpostare[j]
+            else
+                NomeFile := Copy(FileDaSpostare[j], 2, Length(FileDaSpostare[j]));
+            Indice := ListBoxOrigine.Items.IndexOf(FileDaSpostare[j]);
+            if Indice <> - 1 then
             begin
-                for j := 0 to FileDaSpostare.Count - 1 do
+                if FileDaNonSpostare.IndexOf(FileDaSpostare[j]) = - 1 then
                 begin
-                    NomeFile := Copy(FileDaSpostare[j], 2, Length(FileDaSpostare[j]));
-                    if FileDaNonSpostare.IndexOf(FileDaSpostare[j]) = - 1 then
+                    ImmaginiSrc := PListBoxItemData(ListBoxOrigine.Items.Objects[Indice]);
+
+                    New(ImmaginiDst);
+                    ImmaginiDst^.LeftIconIndex := ImmaginiSrc^.LeftIconIndex;
+                    ImmaginiDst^.RightIconIndex := ImmaginiSrc^.RightIconIndex;
+                    if ListBoxDestinazione.Count = 0 then
                     begin
-                        if ListBoxDestinazione.Count = 0 then
-                        begin
-                            ListBoxDestinazione.Items.AddObject(NomeFile, TObject(Immagini));
-                        end
-                        else
-                        begin
-                            for k := 0 to ListBoxDestinazione.Count - 1 do
-                                if not (ListBoxDestinazione.Items[k] = NomeFile) then
-                                    ListBoxDestinazione.Items.AddObject(NomeFile, TObject(Immagini));
-                        end;
+                        ListBoxDestinazione.Items.InsertObject(0, NomeFile, TObject(ImmaginiDst));
+                    end
+                    else
+                    begin
+                        if not (ListBoxDestinazione.Items[0] = NomeFile) then
+                                ListBoxDestinazione.Items.InsertObject(0, NomeFile, TObject(ImmaginiDst))
                     end;
 
-
-                //TStringFileNonDaSpostare.Add(Immagini^.LeftIconIndex.ToString + ',' + lbFile.Items[i] + ',' + Immagini^.RightIconIndex.ToString);
+                    ListBoxOrigine.Items.Objects[Indice] := nil;
+                    ListBoxOrigine.Items.Delete(Indice);
                 end;
             end;
         end;
-    finally
-        TStringFileNonDaSpostare.Free;
     end;
 end;
 
