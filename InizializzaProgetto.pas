@@ -58,6 +58,7 @@ type
     Label7: TLabel;
     Label8: TLabel;
     pbLoading: TProgressBar;
+    Splitter1: TSplitter;
     procedure cbVersioneEnter(Sender: TObject);
     procedure cbServerEnter(Sender: TObject);
     procedure cbDatabaseEnter(Sender: TObject);

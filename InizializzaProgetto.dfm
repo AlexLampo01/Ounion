@@ -12,6 +12,14 @@ object fInizializzaProgetto: TfInizializzaProgetto
   Font.Style = []
   OnCreate = FormCreate
   TextHeight = 15
+  object Splitter1: TSplitter
+    Left = 225
+    Top = 0
+    Height = 504
+    ExplicitLeft = 0
+    ExplicitTop = 68
+    ExplicitHeight = 100
+  end
   object pnlCheckbox: TPanel
     Left = 0
     Top = 0
@@ -20,6 +28,9 @@ object fInizializzaProgetto: TfInizializzaProgetto
     Align = alLeft
     TabOrder = 0
     ExplicitHeight = 503
+    DesignSize = (
+      225
+      504)
     object lblVersioneOS1: TLabel
       Left = 40
       Top = 165
@@ -70,6 +81,8 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Top = 103
       Width = 225
       Height = 15
+      Alignment = taCenter
+      Anchors = [akLeft, akTop, akRight]
       Caption = '---------------------------------------------'
     end
     object Label8: TLabel
@@ -90,6 +103,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Top = 186
       Width = 145
       Height = 23
+      Anchors = [akLeft, akTop, akRight]
       TabOrder = 0
       Text = 'Versione OS1'
       OnChange = cbVersioneChange
@@ -100,6 +114,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Top = 264
       Width = 145
       Height = 23
+      Anchors = [akLeft, akTop, akRight]
       TabOrder = 1
       Text = 'Server'
       OnChange = cbServerChange
@@ -110,6 +125,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Top = 350
       Width = 145
       Height = 23
+      Anchors = [akLeft, akTop, akRight]
       TabOrder = 2
       Text = 'Database'
       OnChange = cbDatabaseChange
@@ -120,6 +136,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Top = 432
       Width = 145
       Height = 23
+      Anchors = [akLeft, akTop, akRight]
       TabOrder = 3
       Text = 'Database Ditta'
       OnChange = cbDatabaseDittaChange
@@ -177,12 +194,13 @@ object fInizializzaProgetto: TfInizializzaProgetto
     end
   end
   object Panel3: TPanel
-    Left = 225
+    Left = 228
     Top = 0
-    Width = 401
+    Width = 398
     Height = 504
     Align = alClient
     TabOrder = 1
+    ExplicitLeft = 225
     ExplicitWidth = 397
     ExplicitHeight = 503
     object pnlUsernamePassword: TPanel
@@ -252,9 +270,9 @@ object fInizializzaProgetto: TfInizializzaProgetto
         TabOrder = 2
       end
       object btnConfermaUsername: TBitBtn
-        Left = 312
+        Left = 293
         Top = 97
-        Width = 77
+        Width = 96
         Height = 27
         Anchors = [akTop, akRight]
         Caption = 'Conferma'
@@ -350,9 +368,9 @@ object fInizializzaProgetto: TfInizializzaProgetto
         TabOrder = 0
       end
       object btnConfermaNome: TBitBtn
-        Left = 311
+        Left = 292
         Top = 96
-        Width = 77
+        Width = 96
         Height = 27
         Anchors = [akTop, akRight]
         Caption = 'Conferma'
@@ -389,7 +407,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       object btnProgettoGiaEsistente: TBitBtn
         Left = 13
         Top = 96
-        Width = 160
+        Width = 175
         Height = 27
         Caption = 'Progetto Gi'#224' Esistente'
         Glyph.Data = {
@@ -539,7 +557,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
     object Panel1: TPanel
       Left = 1
       Top = 1
-      Width = 399
+      Width = 396
       Height = 56
       Align = alTop
       TabOrder = 2
@@ -547,7 +565,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       object Label2: TLabel
         Left = 1
         Top = 1
-        Width = 397
+        Width = 394
         Height = 54
         Align = alClient
         Alignment = taCenter
@@ -607,9 +625,9 @@ object fInizializzaProgetto: TfInizializzaProgetto
         ParentFont = False
       end
       object btnModificaDitta: TBitBtn
-        Left = 311
+        Left = 292
         Top = 95
-        Width = 77
+        Width = 96
         Height = 27
         Anchors = [akTop, akRight]
         Caption = 'Conferma'
@@ -682,7 +700,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
     object pbLoading: TProgressBar
       Left = 1
       Top = 486
-      Width = 399
+      Width = 396
       Height = 17
       Align = alBottom
       TabOrder = 4

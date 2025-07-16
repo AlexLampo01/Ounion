@@ -1,4 +1,4 @@
-program MECToolsUnioneProgetti;
+program Ounion;
 
 uses
   Vcl.Forms,
