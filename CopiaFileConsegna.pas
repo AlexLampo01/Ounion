@@ -65,6 +65,7 @@ type
       Rect: TRect; State: TOwnerDrawState);
     procedure pbFileChange(Sender: TObject);
     procedure lbFileDblClick(Sender: TObject);
+    procedure lbFileConfermatiDblClick(Sender: TObject);
     //procedure lbFileDblClick(Sender: TObject);
     //procedure lbFileConfermatiDblClick(Sender: TObject);
   private
@@ -130,8 +131,8 @@ var
     CartelleDaAggiungere, CartelleDefinitive : String;
     InizioCartelle : Boolean;
 begin
-   { if sgFileConfermati.Cells[0,0] <> '' then
-    begin
+   {if sgFileConfermati.Cells[0,0] <> '' then
+    begin}
         if fodEsploraRisorse.Execute then
           CartellaSalvataggio := fodEsploraRisorse.FileName;
         if CartellaSalvataggio <> '' then
@@ -193,7 +194,7 @@ begin
         end
         else
             ShowMessage('Seleziona una cartella!');
-    end; }
+    //end;
 end;
 
 procedure TfCopiaFileConsegna.btnConfermaEnter(Sender: TObject);
@@ -236,6 +237,7 @@ var
     PresenteGit : Boolean;
 begin
     Completato := False;
+    CartellaScelta := '';
     if fodEsploraRisorse.Execute then
       CartellaScelta := fodEsploraRisorse.FileName;
     if CartellaScelta <> '' then
@@ -266,7 +268,6 @@ end;
 
 procedure TfCopiaFileConsegna.btnEsploraRisorseEnter(Sender: TObject);
 begin
-    //btnEsploraRisorse.Hint := 'Scegli La Cartella Del Progetto';
     btnEsploraRisorse.ShowHint := True;
 end;
 
@@ -278,16 +279,13 @@ begin
     cbBranch.Enabled := True;
     pnlDeselezionaTutto.Visible := False;
     pnlSelezionaTutto.Visible := False;
+    btnSelezionaTutto.Enabled := False;
     cbbranch.Text := '';
     btnAnalizzatore.Enabled := True;
     btnAnalizzatore.Visible := False;
     btnEsploraRisorse.Visible := True;
-    {for i := 0 to sgFile.RowCount - 1 do
-        sgFile.Cells[0, i] := '';
-    for i := 0 to sgFileConfermati.RowCount - 1 do
-        sgFileConfermati.Cells[0,i] := ''; }
-    {sgFile.RowCount := 0;
-    sgFileConfermati.RowCount := 0; }
+    lbFile.Clear;
+    lbFileConfermati.Clear;
     pnlButtons.Visible := False;
     pnlConferma.Visible := False;
     btnEsploraRisorse.Enabled := True;
@@ -346,7 +344,6 @@ procedure TfCopiaFileConsegna.cbBranchEnter(Sender: TObject);
 var
     TStringRemote, TStringBranch, TStringDef : TStringList;
 begin
-    //cbBranch.Items := RecuperaBranch(CartellaScelta);
     TStringRemote := TStringList.Create;
     TStringBranch := TStringList.Create;
     TStringDef    := TStringList.Create;
@@ -745,90 +742,6 @@ begin
     end;
 end;
 
-{procedure TfCopiaFileConsegna.sgFileConfermatiDblClick(Sender: TObject);
-var
-    i, j, RigaDaEliminare, NuovaRiga : Integer;
-    FileConEliminazione : TStringList;
-    RigaDaSpostare : String;
-begin
-    RigaDaSpostare := sgFileConfermati.Cells[0, sgFileConfermati.Row];
-    RigaDaEliminare := sgFileConfermati.Row;
-    FileConEliminazione := TStringList.Create;
-    try
-        for i := 0 to sgFileConfermati.RowCount - 1 do
-            if i <> RigaDaEliminare then
-            begin
-              FileConEliminazione.Add( sgFileConfermati.Cells[0, i]);
-            end
-            else
-                Continue;
-        for i := 0 to sgFileConfermati.RowCount - 1 do
-            for j := 0 to sgFileConfermati.ColCount - 1 do
-                sgFileConfermati.Cells[j, i] := '';
-        sgFileConfermati.RowCount := 0;
-         for i := 0 to FileConEliminazione.Count - 1 do
-         begin
-            sgFileConfermati.Cells[0, i] := Copy(FileConEliminazione[i], 1, Length(FileConEliminazione[i]));
-         end;
-        sgFileConfermati.RowCount := FileConEliminazione.Count;
-    finally
-     FileConEliminazione.Free;
-    //Inserisce l'elemento nella seconda TStringGrid
-     NuovaRiga := sgFile.RowCount;
-
-     if (NuovaRiga = 1) and (sgFile.Cells[0, 0] = '') then
-        sgFile.Cells[0, 0] := RigaDaSpostare
-     else
-     begin
-         sgFile.RowCount := NuovaRiga + 1;
-         sgFile.Cells[0, NuovaRiga] := RigaDaSpostare;
-     end;
-     RiadattaLarghezzaRighe(sgFile);
-    end;
-end;}
-
-{procedure TfCopiaFileConsegna.sgFileDblClick(Sender: TObject);
-var
-    i, j, RigaDaEliminare, NuovaRiga : Integer;
-    FileConEliminazione : TStringList;
-    RigaDaSpostare : String;
-begin
-    RigaDaSpostare := sgFile.Cells[0, sgFile.Row];
-    RigaDaEliminare := sgFile.Row;
-    FileConEliminazione := TStringList.Create;
-    try
-        for i := 0 to sgFile.RowCount - 1 do
-            if i <> RigaDaEliminare then
-            begin
-              FileConEliminazione.Add( sgFile.Cells[0, i]);
-            end
-            else
-                Continue;
-        for i := 0 to sgFile.RowCount - 1 do
-            for j := 0 to sgFile.ColCount - 1 do
-                sgFile.Cells[j, i] := '';
-        sgFile.RowCount := 0;
-         for i := 0 to FileConEliminazione.Count - 1 do
-         begin
-            sgFile.Cells[0, i] := Copy(FileConEliminazione[i], 1, Length(FileConEliminazione[i]));
-         end;
-        sgFile.RowCount := FileConEliminazione.Count;
-    finally
-     FileConEliminazione.Free;
-    //Inserisce l'elemento nella seconda TStringGrid
-     NuovaRiga := sgFileConfermati.RowCount;
-
-     if (NuovaRiga = 1) and (sgFileConfermati.Cells[0, 0] = '') then
-        sgFileConfermati.Cells[0, 0] := RigaDaSpostare
-     else
-     begin
-         sgFileConfermati.RowCount := NuovaRiga + 1;
-         sgFileConfermati.Cells[0, NuovaRiga] := RigaDaSpostare;
-     end;
-     RiadattaLarghezzaRighe(sgFileConfermati);
-    end;
-end; }
-
 procedure TfCopiaFileConsegna.RiadattaLarghezzaRighe(
   TStringGridUsata: TStringGrid);
 var
@@ -862,6 +775,36 @@ end;
 procedure TfCopiaFileConsegna.FormCreate(Sender: TObject);
 begin
     Self.ShowHint := True;
+end;
+
+procedure TfCopiaFileConsegna.lbFileConfermatiDblClick(Sender: TObject);
+var
+    Indice, i : Integer;
+    FileDaSpostare, FileDaNonSpostare : TStringList;
+begin
+    FileDaSpostare := TStringList.Create;
+    FileDaNonSpostare := TStringList.Create;
+    try
+        Indice := lbFileConfermati.ItemIndex;
+        if Indice >= 0 then
+        begin
+            for i := 0 to lbFileConfermati.Count - 1 do
+            begin
+                if i = Indice then
+                begin
+                    FileDaSpostare.Add(lbFileConfermati.Items[Indice]);
+                end
+                else if i <> Indice then
+                begin
+                    FileDaNonSpostare.Add(lbFileConfermati.Items[i]);
+                end;
+            end;
+        end;
+        SpostaElementiListBox(lbFileConfermati, lbFile, FileDaSpostare, FileDaNonSpostare );
+    finally
+        FileDaNonSpostare.Free;
+        FileDaSpostare.Free;
+    end;
 end;
 
 procedure TfCopiaFileConsegna.lbFileConfermatiDrawItem(Control: TWinControl;
@@ -921,10 +864,8 @@ begin
                     FileDaNonSpostare.Add(lbFile.Items[i]);
                 end;
             end;
-            ShowMessage(FileDaSpostare.Text);
-            ShowMessage(FileDaNonSpostare.Text);
         end;
-        //SpostaElementiListBox(  );
+        SpostaElementiListBox(lbFile, lbFileConfermati, FileDaSpostare, FileDaNonSpostare );
     finally
         FileDaNonSpostare.Free;
         FileDaSpostare.Free;
@@ -1005,89 +946,5 @@ procedure TfCopiaFileConsegna.pnlSelezionaTuttoResize(Sender: TObject);
 begin
     lbFile.Invalidate;
 end;
-
-{procedure TfCopiaFileConsegna.lbFileConfermatiDblClick(Sender: TObject);
-var
-    i, j, RigaDaEliminare, NuovaRiga : Integer;
-    FileConEliminazione : TStringList;
-    RigaDaSpostare : String;
-begin
-    RigaDaSpostare := sgFileConfermati.Cells[0, sgFileConfermati.Row];
-    RigaDaEliminare := sgFileConfermati.Row;
-    FileConEliminazione := TStringList.Create;
-    try
-        for i := 0 to sgFileConfermati.RowCount - 1 do
-            if i <> RigaDaEliminare then
-            begin
-              FileConEliminazione.Add( sgFileConfermati.Cells[0, i]);
-            end
-            else
-                Continue;
-        for i := 0 to sgFileConfermati.RowCount - 1 do
-            for j := 0 to sgFileConfermati.ColCount - 1 do
-                sgFileConfermati.Cells[j, i] := '';
-        sgFileConfermati.RowCount := 0;
-         for i := 0 to FileConEliminazione.Count - 1 do
-         begin
-            sgFileConfermati.Cells[0, i] := Copy(FileConEliminazione[i], 1, Length(FileConEliminazione[i]));
-         end;
-        sgFileConfermati.RowCount := FileConEliminazione.Count;
-    finally
-     FileConEliminazione.Free;
-    //Inserisce l'elemento nella seconda TStringGrid
-     NuovaRiga := sgFile.RowCount;
-
-     if (NuovaRiga = 1) and (sgFile.Cells[0, 0] = '') then
-        sgFile.Cells[0, 0] := RigaDaSpostare
-     else
-     begin
-         sgFile.RowCount := NuovaRiga + 1;
-         sgFile.Cells[0, NuovaRiga] := RigaDaSpostare;
-     end;
-     RiadattaLarghezzaRighe(sgFile);
-    end;
-end;
-
-procedure TfCopiaFileConsegna.lbFileDblClick(Sender: TObject);
-var
-    i, j, RigaDaEliminare, NuovaRiga : Integer;
-    FileConEliminazione : TStringList;
-    RigaDaSpostare : String;
-begin
-    RigaDaSpostare := sgFile.Cells[0, sgFile.Row];
-    RigaDaEliminare := sgFile.Row;
-    FileConEliminazione := TStringList.Create;
-    try
-        for i := 0 to sgFile.RowCount - 1 do
-            if i <> RigaDaEliminare then
-            begin
-              FileConEliminazione.Add( sgFile.Cells[0, i]);
-            end
-            else
-                Continue;
-        for i := 0 to sgFile.RowCount - 1 do
-            for j := 0 to sgFile.ColCount - 1 do
-                sgFile.Cells[j, i] := '';
-        sgFile.RowCount := 0;
-         for i := 0 to FileConEliminazione.Count - 1 do
-         begin
-            sgFile.Cells[0, i] := Copy(FileConEliminazione[i], 1, Length(FileConEliminazione[i]));
-         end;
-        sgFile.RowCount := FileConEliminazione.Count;
-    finally
-     FileConEliminazione.Free;
-    //Inserisce l'elemento nella seconda TStringGrid
-     NuovaRiga := sgFileConfermati.RowCount;
-
-     if (NuovaRiga = 1) and (sgFileConfermati.Cells[0, 0] = '') then
-        sgFileConfermati.Cells[0, 0] := RigaDaSpostare
-     else
-     begin
-         sgFileConfermati.RowCount := NuovaRiga + 1;
-         sgFileConfermati.Cells[0, NuovaRiga] := RigaDaSpostare;
-     end;
-     RiadattaLarghezzaRighe(sgFileConfermati);
-    end;
-end;}
 
 end.
