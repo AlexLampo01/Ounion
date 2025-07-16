@@ -45,14 +45,11 @@ type
     procedure btnAnalizzatoreClick(Sender: TObject);
     procedure btnSelezionaTuttoClick(Sender: TObject);
     procedure btnDeselezionaTuttoClick(Sender: TObject);
-    //procedure sgFileDblClick(Sender: TObject);
-    //procedure sgFileConfermatiDblClick(Sender: TObject);
     procedure btnConfermaClick(Sender: TObject);
     procedure btnRestartClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnEsploraRisorseEnter(Sender: TObject);
     procedure btnAnalizzatoreEnter(Sender: TObject);
-    procedure btnSelezionaTuttoEnter(Sender: TObject);
     procedure btnDeselezionaTuttoEnter(Sender: TObject);
     procedure btnRestartEnter(Sender: TObject);
     procedure btnConfermaEnter(Sender: TObject);
@@ -66,14 +63,11 @@ type
     procedure pbFileChange(Sender: TObject);
     procedure lbFileDblClick(Sender: TObject);
     procedure lbFileConfermatiDblClick(Sender: TObject);
-    //procedure lbFileDblClick(Sender: TObject);
-    //procedure lbFileConfermatiDblClick(Sender: TObject);
   private
     function RecuperaRemote(Percorso: String): TStringList;
     function RecuperaBranch(Percorso: String): TStringList;
     function AnalizzaBranch: TStringList;
     procedure RiempiDatiInsgFile(FileDaSpostare: TStringList);
-    procedure RiadattaLarghezzaRighe(TStringGridUsata: TStringGrid);
     procedure CercaFileRicorsivo(const Percorso, FileDaCercare: String;
       var Trovato: String);
     procedure SpostaElementiListBox(ListBoxOrigine, ListBoxDestinazione : TListBox; FileDaSpostare, FileDaNonSpostare : TStringList);
@@ -131,83 +125,78 @@ var
     CartelleDaAggiungere, CartelleDefinitive : String;
     InizioCartelle : Boolean;
 begin
-   {if sgFileConfermati.Cells[0,0] <> '' then
-    begin}
-        if fodEsploraRisorse.Execute then
-          CartellaSalvataggio := fodEsploraRisorse.FileName;
-        if CartellaSalvataggio <> '' then
-        begin
-            TStringPercorsoCompleto := TStringList.Create;
-            try
-                PercorsoRicerca := IncludeTrailingPathDelimiter(lblPercorso.Caption);
-                for i := 0 to sgFileConfermati.RowCount do
-                begin
-                    FileDaCercare:= sgFileConfermati.Cells[0,i];
-                    CercaFileRicorsivo(PercorsoRicerca, FileDaCercare, Risultato);
-                    if Risultato <> '' then
-                        TStringPercorsoCompleto.Add(Risultato);
-                end;
-
-                for i := 0 to TStringPercorsoCompleto.Count - 1 do
-                begin
-                    var PercorsoSorgente := TStringPercorsoCompleto[i];
-                    if TFile.Exists(PercorsoSorgente) then
-                    begin
-                        var NomeFile := ExtractFileName(PercorsoSorgente);
-                        CartelleDaAggiungere := '';
-                        InizioCartelle := False;
-                        NumBackSlash := 0;
-                        CartelleDefinitive := '';
-                        PosNomeFile := Pos(NomeFile, PercorsoSorgente);
-                        if PosNomeFile > 0 then
-                        begin
-                            CartelleDaAggiungere := Copy(PercorsoSorgente, 1, PosNomeFile - 1);
-                        end;
-                        if CartelleDaAggiungere <> '' then
-                        begin
-                            for j := 1 to Length(CartelleDaAggiungere) do
-                            begin
-                                if (CartelleDaAggiungere[j] = '\') and not InizioCartelle then
-                                begin
-                                    NumBackSlash := NumBackSlash + 1;
-                                end;
-                                if NumBackSlash = 5 then
-                                begin
-                                    CartelleDefinitive := CartelleDefinitive + CartelleDaAggiungere[j];
-                                    InizioCartelle := True;
-                                end;
-                            end;
-                            if not DirectoryExists(CartellaSalvataggio + CartelleDefinitive) then
-                                ForceDirectories(CartellaSalvataggio + CartelleDefinitive);
-                        end;
-
-                        var PercorsoDestinazione := CartellaSalvataggio + CartelleDefinitive + NomeFile;
-
-                        TFile.Copy(PercorsoSorgente, PercorsoDestinazione, True);
-                    end
-                end;
-                ShowMessage('Copia del file completata con successo!');
-                //imgRestart.OnClick(imgRestart);
-            finally
-                TStringPercorsoCompleto.Free;
+    if fodEsploraRisorse.Execute then
+      CartellaSalvataggio := fodEsploraRisorse.FileName;
+    if CartellaSalvataggio <> '' then
+    begin
+        TStringPercorsoCompleto := TStringList.Create;
+        try
+            PercorsoRicerca := IncludeTrailingPathDelimiter(lblPercorso.Caption);
+            for i := 0 to lbFileConfermati.Count - 1 do
+            begin
+                FileDaCercare:= lbFileConfermati.Items[i];
+                CercaFileRicorsivo(PercorsoRicerca, FileDaCercare, Risultato);
+                if Risultato <> '' then
+                    TStringPercorsoCompleto.Add(Risultato);
             end;
-        end
-        else
-            ShowMessage('Seleziona una cartella!');
-    //end;
+
+            for i := 0 to TStringPercorsoCompleto.Count - 1 do
+            begin
+                var PercorsoSorgente := TStringPercorsoCompleto[i];
+                if TFile.Exists(PercorsoSorgente) then
+                begin
+                    var NomeFile := ExtractFileName(PercorsoSorgente);
+                    CartelleDaAggiungere := '';
+                    InizioCartelle := False;
+                    NumBackSlash := 0;
+                    CartelleDefinitive := '';
+                    PosNomeFile := Pos(NomeFile, PercorsoSorgente);
+                    if PosNomeFile > 0 then
+                    begin
+                        CartelleDaAggiungere := Copy(PercorsoSorgente, 1, PosNomeFile - 1);
+                    end;
+                    if CartelleDaAggiungere <> '' then
+                    begin
+                        for j := 1 to Length(CartelleDaAggiungere) do
+                        begin
+                            if (CartelleDaAggiungere[j] = '\') and not InizioCartelle then
+                            begin
+                                NumBackSlash := NumBackSlash + 1;
+                            end;
+                            if NumBackSlash = 5 then
+                            begin
+                                CartelleDefinitive := CartelleDefinitive + CartelleDaAggiungere[j];
+                                InizioCartelle := True;
+                            end;
+                        end;
+                        if not DirectoryExists(CartellaSalvataggio + CartelleDefinitive) then
+                            ForceDirectories(CartellaSalvataggio + CartelleDefinitive);
+                    end;
+
+                    var PercorsoDestinazione := CartellaSalvataggio + CartelleDefinitive + NomeFile;
+
+                    TFile.Copy(PercorsoSorgente, PercorsoDestinazione, True);
+                end
+            end;
+            ShowMessage('Copia del file completata con successo!');
+            //imgRestart.OnClick(imgRestart);
+        finally
+            TStringPercorsoCompleto.Free;
+        end;
+    end
+    else
+        ShowMessage('Seleziona una cartella!');
 end;
 
 procedure TfCopiaFileConsegna.btnConfermaEnter(Sender: TObject);
 begin
-    //btnConferma.Hint := 'Copia';
     btnConferma.ShowHint := True;
 end;
 
 procedure TfCopiaFileConsegna.btnDeselezionaTuttoClick(Sender: TObject);
 var
-    i, j: Integer;
+    i: Integer;
     FileConEliminazione, FileDaNonSpostare: TStringList;
-    Estensione : String;
 begin
     FileConEliminazione := TStringList.Create;
     FileDaNonSpostare := TStringList.Create;
@@ -227,7 +216,6 @@ end;
 
 procedure TfCopiaFileConsegna.btnDeselezionaTuttoEnter(Sender: TObject);
 begin
-    //btnDeselezionaTutto.Hint := 'Deseleziona Tutto';
     btnDeselezionaTutto.ShowHint := True;
 end;
 
@@ -272,8 +260,6 @@ begin
 end;
 
 procedure TfCopiaFileConsegna.btnRestartClick(Sender: TObject);
-var
-    i: integer;
 begin
     cbBranch.Visible := False;
     cbBranch.Enabled := True;
@@ -301,14 +287,13 @@ end;
 
 procedure TfCopiaFileConsegna.btnSelezionaTuttoClick(Sender: TObject);
 var
-    i, j, UltimaRiga: Integer;
+    i : Integer;
     FileConEliminazione, FileDaNonSpostare: TStringList;
     Estensione : String;
 begin
     FileConEliminazione := TStringList.Create;
     FileDaNonSpostare := TStringList.Create;
     try
-        UltimaRiga := lbFileConfermati.Count;
         for i := 0 to lbFile.Count - 1 do
         begin
             Estensione := lbFile.Items[i];
@@ -332,12 +317,6 @@ begin
     finally
      FileConEliminazione.Free;
     end;
-end;
-
-procedure TfCopiaFileConsegna.btnSelezionaTuttoEnter(Sender: TObject);
-begin
-    //btnSelezionaTutto.Hint := 'Seleziona Tutto';
-    //btnSelezionaTutto.ShowHint := True;
 end;
 
 procedure TfCopiaFileConsegna.cbBranchEnter(Sender: TObject);
@@ -582,8 +561,6 @@ var
 begin
   CommitList := TStringList.Create;
   FileList := TStringList.Create;
-  //FileList.Sorted := True;
-  //FileList.Duplicates := dupIgnore;
   Stream := TStringStream.Create('');
   try
     // Setup sicurezza pipe
@@ -611,20 +588,16 @@ begin
       else
         FileList[I] := Trim(FileList[I]);
     pbLoading.Visible := False;
-    //sgFile.Visible := True;
     pnlButtons.Visible := True;
     pnlConferma.Visible := True;
     pnlSelezionaTutto.Visible := True;
     pnlDeselezionaTutto.Visible := True;
-    //sgFileConfermati.RowCount := 0;
-    //btnSelezionatutto.Visible := True;
     btnConferma.Visible := True;
     btnAnalizzatore.Enabled := False;
     cbBranch.Enabled := False;
     btnEsploraRisorse.Enabled := False;
     btnDeselezionaTutto.Enabled := False;
     btnRestart.Visible := True;
-    //btnDeselezionaTutto.Dis
     Result := FileList;
   finally
     Stream.Free;
@@ -644,12 +617,6 @@ begin
 
     for i := 0 to FileDaSpostare.Count - 1 do
     begin
-        {if (ExtractFileExt(FileDaSpostare[i]) = '.pas') or (ExtractFileExt(FileDaSpostare[i]) = '.dfm')  then
-        begin
-            lbFile.Items.AddObject(FileDaSpostare[i], TObject(0));
-            pbFile.Position := pbFile.Position + 1;
-            Application.ProcessMessages;
-        end; }
         New(Immagini);
         if Trim(LowerCase(FileDaSpostare[i])).StartsWith('m') then
         begin
@@ -686,17 +653,13 @@ begin
             pbFile.Visible := False;
         end;
     end;
-    //RiadattaLarghezzaRighe(sgFile);
-
-//////////////////////////Seconda Griglia///////////////////////////////////////
-   //RiadattaLarghezzaRighe(sgFileConfermati);
 end;
 
 procedure TfCopiaFileConsegna.SpostaElementiListBox(ListBoxOrigine,
   ListBoxDestinazione: TListBox ; FileDaSpostare, FileDaNonSpostare : TStringList);
 var
     ImmaginiSrc, ImmaginiDst: PListBoxItemData;
-    i,j,k, Indice : Integer;
+    i,j, Indice : Integer;
     NomeFile : String;
     Vuoto : Boolean;
 begin
@@ -742,27 +705,6 @@ begin
     end;
 end;
 
-procedure TfCopiaFileConsegna.RiadattaLarghezzaRighe(
-  TStringGridUsata: TStringGrid);
-var
-    ColIndex, RowIndex, MaxWidth, RowWidth : Integer;
-    S : String;
-begin
-    MaxWidth := 0;
-    ColIndex := 0;
-    TStringGridUsata.Canvas.Font := TStringGridUsata.Font;
-
-    for RowIndex := 0 to TStringGridUsata.RowCount - 1 do
-    begin
-        S := TStringGridUsata.Cells[ColIndex, RowIndex];
-        RowWidth := TStringGridUsata.Canvas.TextWidth(S);
-        if RowWidth > MaxWidth then
-          MaxWidth := RowWidth;
-    end;
-
-  // Aggiungi un po' di margine per padding
-  TStringGridUsata.ColWidths[ColIndex] := MaxWidth + 12;
-end;
 procedure TfCopiaFileConsegna.CercaFileRicorsivo(const Percorso, FileDaCercare : String; var Trovato: String);
 var
     CostruzionePercorso: String;
@@ -810,8 +752,8 @@ end;
 procedure TfCopiaFileConsegna.lbFileConfermatiDrawItem(Control: TWinControl;
   Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var
-  ImgIndex, IconTopLeft, IconTopRight: Integer;
-  TextLeft, TextRight: Integer;
+  IconTopLeft, IconTopRight: Integer;
+  TextLeft: Integer;
   Immagini : PListBoxItemData;
   S: string;
 begin
@@ -833,7 +775,6 @@ begin
     S := lbFileConfermati.Items[Index];
     Canvas.TextOut(TextLeft, Rect.Top, S);
 
-    TextRight := TextLeft + Canvas.TextWidth(S) + 4;
 
     if Assigned(Immagini) and (Immagini^.RightIconIndex >= 0) then
     begin
@@ -875,8 +816,8 @@ end;
 procedure TfCopiaFileConsegna.lbFileDrawItem(Control: TWinControl;
   Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var
-  ImgIndex, IconTopLeft, IconTopRight: Integer;
-  TextLeft, TextRight: Integer;
+  IconTopLeft, IconTopRight: Integer;
+  TextLeft: Integer;
   Immagini : PListBoxItemData;
   S: string;
 begin
@@ -898,7 +839,6 @@ begin
     S := lbFile.Items[Index];
     Canvas.TextOut(TextLeft, Rect.Top, S);
 
-    TextRight := TextLeft + Canvas.TextWidth(S) + 4;
 
     if Assigned(Immagini) and (Immagini^.RightIconIndex >= 0) then
     begin
