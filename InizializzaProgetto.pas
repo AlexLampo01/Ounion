@@ -251,7 +251,6 @@ var
 begin
     DocumentPath := TPath.GetHomePath;
     VersioneScelta := '';
-    //DocumentPath := DocumentPath + '\Microsoft\SQL Server Management Studio\18.0\UserSettings.xml';
     DocumentPath := DocumentPath + '\Microsoft\SQL Server Management Studio';
     VersioniMicrosoftSql := TDirectory.GetDirectories(DocumentPath);
     Reg := TRegEx.Create('^\d{2}\.\d$');
@@ -328,7 +327,6 @@ begin
       end;
       if Base <> '' then
       begin
-          //TODO: Sistemare tutta la questione del file
           if NomeScelto <> '' then
           begin
               if ConfermataForm then
@@ -525,7 +523,6 @@ begin
     edNomeProgetto.Enabled      := True;
     ProgettoEsistente           := False;
     edNomeProgetto.Text         := '';
-    //SettaCheckBox;
 end;
 
 procedure TfInizializzaProgetto.btnCloseNomeProgettoEnter(Sender: TObject);
@@ -772,11 +769,9 @@ begin
             if PrendoNome and (i = Length(CartellaSelezionata)) then
             begin
                 NomeScelto := RicostruzioneNome;
-                //StatoInizializzaGit := True;
                 break;
             end;
         end;
-        //InizializzaDMI(CartellaSelezionata);
         edNomeProgetto.Enabled := False;
         edNomeProgetto.Text := NomeScelto;
    end;
@@ -1205,7 +1200,6 @@ begin
     ChiudiModificaDitta          := False;
     cbInizializzaGit.Enabled     := True;
     cbVersioneAuto.Enabled       := True;
-    //SettaCheckBox;
     Close;
 end;
 

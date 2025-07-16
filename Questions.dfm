@@ -217,6 +217,7 @@ object tQuestions: TtQuestions
     Left = 608
   end
   object tPoint: TTimer
+    Enabled = False
     Interval = 10
     OnTimer = tPointTimer
     Left = 604

@@ -26052,12 +26052,13 @@ object fPodio: TfPodio
     ExplicitWidth = 105
     ExplicitHeight = 105
   end
-  object lblPrimo: TLabel
+  object lblNome: TLabel
     Left = 244
-    Top = 348
-    Width = 7
+    Top = 24
+    Width = 137
     Height = 15
     Alignment = taCenter
+    AutoSize = False
     Caption = '0'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -26066,38 +26067,25 @@ object fPodio: TfPodio
     Font.Style = [fsBold]
     ParentFont = False
   end
-  object lblSecondo: TLabel
+  object lblName2: TLabel
     Left = 124
-    Top = 348
-    Width = 9
-    Height = 21
+    Top = 235
+    Width = 117
+    Height = 15
     Alignment = taCenter
+    AutoSize = False
     Caption = '0'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -16
+    Font.Height = -12
     Font.Name = 'Segoe UI'
     Font.Style = [fsBold]
     ParentFont = False
   end
-  object lblTerzo: TLabel
+  object lblName3: TLabel
     Left = 387
-    Top = 348
-    Width = 9
-    Height = 21
-    Alignment = taCenter
-    Caption = '0'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -16
-    Font.Name = 'Segoe UI'
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
-  object lblNome: TLabel
-    Left = 244
-    Top = 326
-    Width = 7
+    Top = 249
+    Width = 114
     Height = 15
     Alignment = taCenter
     Caption = '0'

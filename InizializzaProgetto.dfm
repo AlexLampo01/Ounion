@@ -104,7 +104,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Width = 145
       Height = 23
       Anchors = [akLeft, akTop, akRight]
-      TabOrder = 0
+      TabOrder = 5
       Text = 'Versione OS1'
       OnChange = cbVersioneChange
       OnEnter = cbVersioneEnter
@@ -115,7 +115,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Width = 145
       Height = 23
       Anchors = [akLeft, akTop, akRight]
-      TabOrder = 1
+      TabOrder = 6
       Text = 'Server'
       OnChange = cbServerChange
       OnEnter = cbServerEnter
@@ -126,7 +126,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Width = 145
       Height = 23
       Anchors = [akLeft, akTop, akRight]
-      TabOrder = 2
+      TabOrder = 7
       Text = 'Database'
       OnChange = cbDatabaseChange
       OnEnter = cbDatabaseEnter
@@ -137,7 +137,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Width = 145
       Height = 23
       Anchors = [akLeft, akTop, akRight]
-      TabOrder = 3
+      TabOrder = 8
       Text = 'Database Ditta'
       OnChange = cbDatabaseDittaChange
       OnEnter = cbDatabaseDittaEnter
@@ -150,7 +150,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Caption = 'RegSetUp'
       Checked = True
       State = cbChecked
-      TabOrder = 4
+      TabOrder = 0
     end
     object cbLauncher: TCheckBox
       Left = 116
@@ -160,7 +160,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Caption = 'Launcher'
       Checked = True
       State = cbChecked
-      TabOrder = 5
+      TabOrder = 1
     end
     object cbInizializzaGit: TCheckBox
       Left = 9
@@ -170,7 +170,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Caption = 'Inizializza Git'
       Checked = True
       State = cbChecked
-      TabOrder = 6
+      TabOrder = 2
     end
     object cbVersioneAuto: TCheckBox
       Left = 115
@@ -180,7 +180,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Caption = 'Versione Auto.'
       Checked = True
       State = cbChecked
-      TabOrder = 7
+      TabOrder = 3
     end
     object cbModificaDitta: TCheckBox
       Left = 9
@@ -190,7 +190,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Caption = 'Modifica Ditta'
       Checked = True
       State = cbChecked
-      TabOrder = 8
+      TabOrder = 4
     end
   end
   object Panel3: TPanel
@@ -207,7 +207,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Top = 68
       Width = 400
       Height = 129
-      TabOrder = 0
+      TabOrder = 1
       Visible = False
       DesignSize = (
         400
@@ -248,7 +248,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Width = 307
         Height = 23
         Anchors = [akLeft, akTop, akRight]
-        TabOrder = 0
+        TabOrder = 1
       end
       object edUsername: TEdit
         Left = 82
@@ -256,7 +256,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Width = 307
         Height = 23
         Anchors = [akLeft, akTop, akRight]
-        TabOrder = 1
+        TabOrder = 0
       end
       object cbRicordami: TCheckBox
         Left = 14
@@ -330,7 +330,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Top = 202
       Width = 400
       Height = 129
-      TabOrder = 1
+      TabOrder = 2
       Visible = False
       DesignSize = (
         400
@@ -559,7 +559,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Width = 396
       Height = 56
       Align = alTop
-      TabOrder = 2
+      TabOrder = 0
       ExplicitWidth = 392
       object Label2: TLabel
         Left = 1
@@ -657,7 +657,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
           C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C060DF
           6090B090C0C0C04040403F3F3F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F
           7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F202020}
-        TabOrder = 0
+        TabOrder = 2
         OnClick = btnModificaDittaClick
       end
       object edDitta: TEdit
@@ -674,7 +674,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Width = 279
         Height = 23
         Anchors = [akLeft, akTop, akRight]
-        TabOrder = 2
+        TabOrder = 0
         OnExit = edUtenteExit
       end
       object btnCloseModificaDitta: TBitBtn

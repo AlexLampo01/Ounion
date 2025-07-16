@@ -93,7 +93,6 @@ var
 begin
    pbLoading.Visible := True;
    pbLoading.Position := 0;
-   //btnSelezionaTutto.Enabled := True;
    FileListTemp := TStringList.Create;
    FileList := TStringList.Create;
    try
@@ -112,7 +111,6 @@ end;
 
 procedure TfCopiaFileConsegna.btnAnalizzatoreEnter(Sender: TObject);
 begin
-    //btnAnalizzatore.Hint := 'Seleziona Branch';
     btnAnalizzatore.ShowHint := True;
 end;
 
@@ -179,7 +177,6 @@ begin
                 end
             end;
             ShowMessage('Copia del file completata con successo!');
-            //imgRestart.OnClick(imgRestart);
         finally
             TStringPercorsoCompleto.Free;
         end;

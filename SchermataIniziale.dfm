@@ -2,8 +2,8 @@ object fScegliCosaFare: TfScegliCosaFare
   Left = 0
   Top = 0
   Caption = 'Scegli Cosa Fare'
-  ClientHeight = 589
-  ClientWidth = 618
+  ClientHeight = 588
+  ClientWidth = 614
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,13 +16,12 @@ object fScegliCosaFare: TfScegliCosaFare
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 618
+    Width = 614
     Height = 53
     Align = alTop
     TabOrder = 0
-    ExplicitWidth = 614
     DesignSize = (
-      618
+      614
       53)
     object btnInizializzaProgetto: TBitBtn
       Left = 16
@@ -1067,7 +1066,7 @@ object fScegliCosaFare: TfScegliCosaFare
       OnEnter = btnSpostaCartellaEnter
     end
     object btnInformazioniSu: TBitBtn
-      Left = 562
+      Left = 558
       Top = 3
       Width = 45
       Height = 45
@@ -1336,11 +1335,9 @@ object fScegliCosaFare: TfScegliCosaFare
   object pnlCentrale: TPanel
     Left = 0
     Top = 53
-    Width = 618
-    Height = 536
+    Width = 614
+    Height = 535
     Align = alClient
     TabOrder = 1
-    ExplicitWidth = 614
-    ExplicitHeight = 535
   end
 end

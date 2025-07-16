@@ -35,7 +35,7 @@ type
     procedure tTempoDomandaTimer(Sender: TObject);
   private
     DomandeUscite, PercorsoImmagini, DomandeFatte, DomandeERisposte, DomandaInCorso : TStringList;
-    NumeroDomandeFatte, Punteggio, NumGiri : Integer;
+    NumeroDomandeFatte, Punteggio, NumGiri, SecondiPassati : Integer;
     DomandaConRispostaUscita : String;
     function ScegliUnaDomanda(DomandeERisposte : TStringList) : String;
     procedure StrutturaDomande(DomandeERisposte : TStringList);
@@ -74,17 +74,39 @@ implementation
 procedure TtQuestions.btnClick(Sender: TObject);
 var
     RispostaScelta, PunteggioAssegnato : String;
+    PunteggioSecondi : Integer;
     Btn : TBitBtn;
 begin
     Btn := TBitBtn(Sender);
     RispostaScelta := Btn.Caption;
     pbLoading.Position := 0;
+    PunteggioSecondi := 0;
     NumeroDomandeFatte := NumeroDomandeFatte + 1;
     tTempoDomanda.Enabled := False;
+    if SecondiPassati <= 10 then
+    begin
+        PunteggioSecondi := 5;
+    end
+    else if (SecondiPassati > 10) and (SecondiPassati <= 20) then
+    begin
+        PunteggioSecondi := 2;
+    end
+    else if (SecondiPassati > 20) and (SecondiPassati <= 30) then
+    begin
+        PunteggioSecondi := 0;
+    end
+    else if (SecondiPassati > 30) and (SecondiPassati <= 100) then
+    begin
+        PunteggioSecondi := - 2;
+    end;
+
+
+
+
     if DomandaInCorso[1] = RispostaScelta then
     begin
-        Punteggio := Punteggio + 20;
-        PunteggioAssegnato := '20';
+        Punteggio := Punteggio + 15 + PunteggioSecondi;
+        PunteggioAssegnato := '15';
     end
     else if DomandaInCorso[2] = RispostaScelta then
     begin
@@ -98,12 +120,12 @@ begin
     end
     else if DomandaInCorso[4] = RispostaScelta then
     begin
-        Punteggio := Punteggio + 5;
+        Punteggio := Punteggio + 5 + PunteggioSecondi;
         PunteggioAssegnato := '5';
     end;
     if NumeroDomandeFatte = 1 then
     begin
-        if PunteggioAssegnato = '20' then
+        if PunteggioAssegnato = '15' then
             pnl1.Color := clGreen
         else if PunteggioAssegnato = '- 5' then
             pnl1.Color := clRed
@@ -116,7 +138,7 @@ begin
     end
     else if NumeroDomandeFatte = 2 then
     begin
-        if PunteggioAssegnato = '20' then
+        if PunteggioAssegnato = '15' then
             pnl2.Color := clGreen
         else if PunteggioAssegnato = '- 5' then
             pnl2.Color := clRed
@@ -129,7 +151,7 @@ begin
     end
     else if NumeroDomandeFatte = 3 then
     begin
-        if PunteggioAssegnato = '20' then
+        if PunteggioAssegnato = '15' then
             pnl3.Color := clGreen
         else if PunteggioAssegnato = '- 5' then
             pnl3.Color := clRed
@@ -142,7 +164,7 @@ begin
     end
     else if NumeroDomandeFatte = 4 then
     begin
-        if PunteggioAssegnato = '20' then
+        if PunteggioAssegnato = '15' then
             pnl4.Color := clGreen
         else if PunteggioAssegnato = '- 5' then
             pnl4.Color := clRed
@@ -155,7 +177,7 @@ begin
     end
     else if NumeroDomandeFatte = 5 then
     begin
-        if PunteggioAssegnato = '20' then
+        if PunteggioAssegnato = '15' then
             pnl5.Color := clGreen
         else if PunteggioAssegnato = '- 5' then
             pnl5.Color := clRed
@@ -170,11 +192,13 @@ begin
     begin
         pbLoading.Position := 0;
         tTempoDomanda.Enabled := True;
+        SecondiPassati := 0;
         ScegliUnaDomanda(DomandeERisposte);
     end
     else if NumeroDomandeFatte = 5 then
     begin
         tTempoDomanda.Enabled := False;
+        SecondiPassati := 0;
         CalcolaPunteggio;
     end;
 end;
@@ -204,7 +228,6 @@ end;
 procedure TtQuestions.FormCreate(Sender: TObject);
 begin
     Show;
-    Sleep(1000);
     pbLoading.Position := 0;
     tTempoDomanda.Enabled := True;
     DomandeERisposte := TStringList.Create;
@@ -277,17 +300,20 @@ end;
 
 procedure TtQuestions.pbLoadingChange(Sender: TObject);
 begin
+    SecondiPassati := SecondiPassati + 1;
     if pbLoading.Position = pbLoading.Max then
     begin
-        if NumeroDomandeFatte < 4 then
+        if NumeroDomandeFatte < 5 then
         begin
             pbLoading.Position := 0;
             NumeroDomandeFatte := NumeroDomandeFatte + 1;
+            SecondiPassati := 0;
             ScegliUnaDomanda(DomandeERisposte);
         end
-        else if NumeroDomandeFatte = 4 then
+        else if NumeroDomandeFatte = 5 then
         begin
             tTempoDomanda.Enabled := False;
+            SecondiPassati := 0;
             CalcolaPunteggio;
         end;
     end;
@@ -378,7 +404,7 @@ begin
     DomandeConRisposteSeparate := TStringList.Create;
     try
         repeat
-            RandomQuestion := Random(20);
+            RandomQuestion := Random(30);
             if DomandeUscite.IndexOf(RandomQuestion.ToString) = - 1 then
             begin
                 DomandeUscite.Add(RandomQuestion.ToString);
@@ -401,26 +427,37 @@ end;
 
 procedure TtQuestions.StrutturaDomande(DomandeERisposte : TStringList);
 begin
-    DomandeERisposte.Add('Che cos''è una cipolla?;E'' un ortaggio bulboso appartenente alla famiglia delle Amaryllidaceae.;E'' un frutto simile al mango.;E''''un''''erba aromatica che cresce in acqua.;E'''' un tubero della famiglia delle solanaceae.');
+    DomandeERisposte.Add('Che cos''è una cipolla?;E'' un ortaggio bulboso appartenente alla famiglia delle Amaryllidaceae.;E'' un frutto simile al mango.;E''un''erba aromatica che cresce in acqua.;E'' un tubero della famiglia delle solanaceae.');
     DomandeERisposte.Add('Quali sono le varietà più comuni di cipolla?;Bianca,Rossa,Dorata,Tropea,Giarratana.;Mela,Pera,Pesca,Albicocca.;Solo la cipolla rossa è commestibile;Solo la cipolla dorata è naturale, le altre sono OGM.');
     DomandeERisposte.Add('Come cresce la cipolla?;Sviluppa un bulbo sotterraneo e foglie fuori terra.;Galleggia sull''acqua come le ninfee.;Cresce completamente fuori dal terreno, come il mais.;Cresce su rami come un frutto.');
     DomandeERisposte.Add('Qual è la differenza tra cipolla e scalogno?;Lo scalogno è più piccolo e ha un sapore più delicato.;Lo scalogno è il seme della cipolla.;Sono identici ma hanno colore diverso.;Lo scalogno è una varità di cipolla rossa.');
+    DomandeERisposte.Add('Perchè le cipolle si conservano meglio in ambieti bui e asciutti?;Perchè evitano germogliazione e muffe;Perchè attivano la fotosintesi;Perchè restano umide più a lungo;Perchè al buoi aumentano gli zuccheri.');
     DomandeERisposte.Add('Le cipolle fioriscono?;Sì,producono un fiore sferico se non raccolte.;No,le cipolle sono piante artificiali.;Fioriscono solo se coltivate in serra.;Solo le cipolle bianche possono fiorire.');
     DomandeERisposte.Add('Come si può cucinare la cipolla?;Cruda,Fritta,Stufata,Caramellata,Grigliata.;Solo bollita in acqua dolce.;Solo fritta, altrimenti è tossica.;Solo cruda o stufata.');
     DomandeERisposte.Add('Qual è la cipolla migliore da mangiare cruda?;Quella rossa di Tropea, dolce e delicata.;Quella marcia o germogliata.;Quella bianca, purchè molto cotta.;Quella dorata, ma solo se sbucciata sott''acqua.');
     DomandeERisposte.Add('Perchè la cipolla fa piangere?;Rilascia un gas che diventa acido solforico negli occhi.;Perchè è emozionata.;Perchè contiene aceto concentrato.;Perchè emete vapore acido solo quando è vecchia.');
+    DomandeERisposte.Add('Quale minerale è particolarmente presente nelle cipolle?;Zolfo;Alluminio;Calcio in grandi quantità;Ferro come l''aglio.');
     DomandeERisposte.Add('Come si può ridurre il bruciore agli occhi tagliando le cipolle?;Raffreddandola prima, tagliandola sott''acqua o con coltello affilato.;Indossando guanti da forno.;Immergendola nel caffè.;Tagliandola solo al buio.');
-    DomandeERisposte.Add('Quanto tempo si può conservare una cipola tagliata?; 2-3 giorni in frigo in un contenitore ermatico.;Fino a 30 giorni fuori dal frigo.;Solo 6 ore, poi diventa velenosa.;Fino a una settimana anche se lasciata scoperta.');
+    DomandeERisposte.Add('Quanto tempo si può conservare una cipolla tagliata?; 2-3 giorni in frigo in un contenitore ermatico.;Fino a 30 giorni fuori dal frigo.;Solo 6 ore, poi diventa velenosa.;Fino a una settimana anche se lasciata scoperta.');
     DomandeERisposte.Add('La cipolla fa bene alla salute?;Sì, è ricca di antiossidanti e ha proprietà antinfiammatorie.;No, è tossica per l''uomo.;Fa solo ingrassare.;Sì, ma solo se mangiata fritta.');
+    DomandeERisposte.Add('Cosa indica il termine "Bulbo Tunicato" riferito alla cipolla?;Bulbo formato da strati concentrici sovrapposti;Bulbo con spine protettive;Bulbo coperto da peli sottili;Bulbo scavato internamente.');
     DomandeERisposte.Add('Le cipolle aiutano contro il raffreddore?;Possono aiutare grazie alla loro proprietà antimicrobiche.;Provocano raffreddore e febbre alta.;Solo se mangiate crude a digiuno per 7 giorni.;Funzionano come antibiotici naturali sempre.');
     DomandeERisposte.Add('Le cipolle fanno male a chi ha problemi gastrointestinali?;Possono causare gonfiore o fastidi a chi soffre di colon irritabile.;Sono l''alimento perfetto per lo stomaco.;Fanno male solo se crude.;Fanno sempre bene all''intestino in ogni caso.');
     DomandeERisposte.Add('Le cipolle hanno calorie?;Sì, circa 40 cal per 100 grammi;No,sono calorie negative come l''acqua;Ne hanno oltre 500 per 100 grammi;Sì, ma solo se sono rosse.');
+    DomandeERisposte.Add('In botanica, come si classificano le foglie della cipolla?;Foglie tubolari cave a sezione circolare;Foglie palmate larghe;Foglie aghiformi;Foglie laminate con nervatura centrale.');
     DomandeERisposte.Add('Si possono mangiare le cipolle durante la gravidanza?;Sì, salvo casi particolari da valutare con il medico.;No,è vietato in ogni trimestre.;Solo se cotte in microonde.;Sì, ma solo cipolle bianche biologiche.');
     DomandeERisposte.Add('Da dove proviene la cipolla?;Probabilmente dall''Asia centrale.;E'' stata creata in laboratorio in Europa.;Nasce spontaneamente nei deserti del Nord America.;E'' originaria dell''India e del Sudafrica.');
     DomandeERisposte.Add('Qual è la cipolla più dolce al mondo?;La cipolla di Tropea e la Vidalia (USA).;La cipolla verde acerba.;Solo la cipolla in scatola.;La cipolla caramellata fatta in casa.');
+    DomandeERisposte.Add('Qual è il principale zucchero presente nella cipolla?;Fruttosio;Saccarosio;Glucosio;Lattosio.');
     DomandeERisposte.Add('Cosa significa sognare una cipolla?;Simboleggia lacrime, verità nascoste, strati da scoprire.;Che riceverai tanti soldi.;Indica una dieta sbagliata.;Significa che ami cucinare.');
     DomandeERisposte.Add('Le cipolle sono velenose per gli animali?;Sì, sono tossiche per cani e gatti.;No, fanno bene anche ai cuccioli.;Solo crude sono pericolose, cotte sono un toccasana.;Solo le cipolle rosse sono tossiche.');
+    DomandeERisposte.Add('Quale pH ha mediamente il succo di cipolla?;Circa 5,5 (Leggermente Acido);E'' basico, sopra 8;Esattamente neutro, pH 7; Molto acido, sotto pH 3.');
     DomandeERisposte.Add('Si può coltivare la cipolla in vaso?;Sì, in vaso profondo con terra drenata e sole.;No, serve una serra con irrigazione automatica.; Solo se coltivata in acqua come le alghe.; Sì, ma solo nei mesi estivi al chiuso.');
+    DomandeERisposte.Add('Che cos''è la "Verninizzazione" nella coltivazione?;L''esposizione al freddo che induce la formazione del bulbo;Il processo che si scolorisce la cipolla;L''irrigazione continua per prevenire la fioritura;Il taglio precoce del germoglio per aumentare il bulbo');
+    DomandeERisposte.Add('Durante la cottura, cosa succede chimicamente?;I composti solforati si degradano, emergono zuccheri e avviene la reazione di Maillard.; Si trasformano in proteine; Nulla; Caramellano perchè contengono il lattosio');
+    DomandeERisposte.Add('Quale composto è responsabile dell''odore pungente tipico della cipolla?;Il propantial-S-ossido;Ilbiossido di carbonio;L''acido citrico;L''allicina');
+    DomandeERisposte.Add('Quale funzione ha la quercetina, un flavonoide presente nella cipolla rossa?;E'' un antiossidante naturale che aiuta a combattere i radicali liberi;Sostanza zuccherina che dà sapore dolce;E'' una fibra che favorisce la digestione;Serve solo a dare colore.');
+
 end;
 
 procedure TtQuestions.tPointTimer(Sender: TObject);
@@ -452,7 +489,7 @@ begin
         if tPoint.Enabled = False then
         begin
             NumeroCifre := 1;
-            for i := 1 to Length(lblPoint.Caption) do
+            for i := 1 to Length(lblPoint.Caption) - 1 do
             begin
                 NumeroCifre := NumeroCifre + 1;
             end;
@@ -477,7 +514,6 @@ procedure TtQuestions.tTempoDomandaTimer(Sender: TObject);
 begin
     pbLoading.Position := pbLoading.Position + 1;
     Application.ProcessMessages;
-
 end;
 
 

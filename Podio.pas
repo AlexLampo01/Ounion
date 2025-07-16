@@ -9,10 +9,9 @@ uses
 type
   TfPodio = class(TForm)
     Image1: TImage;
-    lblPrimo: TLabel;
-    lblSecondo: TLabel;
-    lblTerzo: TLabel;
     lblNome: TLabel;
+    lblName2: TLabel;
+    lblName3: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
@@ -32,7 +31,7 @@ procedure TfPodio.ControllaPunteggi;
 var
   Ini: TIniFile;
   Sezioni, GiocatoreEPunteggio, AggiornatoPodio: TStringList;
-  Giocatore, Punteggio, Riga: string;
+  Giocatore, Punteggio, Riga, Nome, PuntiString: string;
   i, Punti, MaxCount: Integer;
 begin
   if FileExists('\\srvsviluppo22\Common\PodioCipolla\Podio.ini') then
@@ -73,19 +72,19 @@ begin
       // Mostra il podio
       for i := 0 to AggiornatoPodio.Count - 1 do
       begin
-        //ShowMessage(Format('Posizione %d: %s', [i + 1, AggiornatoPodio[i]]));
+        Nome := Copy(AggiornatoPodio[i], 1, Pos(',', AggiornatoPodio[i]) - 1);
+        PuntiString := Copy(AggiornatoPodio[i], Pos(',', AggiornatoPodio[i]) + 1, Length(AggiornatoPodio[i]));
         if i = 0 then
         begin
-            lblNome.Caption := Copy(AggiornatoPodio[i], 1, Pos(',', AggiornatoPodio[i]) - 1);
-            lblPrimo.Caption := Copy(AggiornatoPodio[i], Pos(',', AggiornatoPodio[i]) + 1, Length(AggiornatoPodio[i]));
+            lblNome.Caption  := Copy(Trim(Nome), 1, Pos(' ', Trim(Nome)) - 1) + ' : ' + PuntiString;
         end
         else if i = 1 then
         begin
-            lblSecondo.Caption := Copy(AggiornatoPodio[i], Pos(',', AggiornatoPodio[i]) + 1, Length(AggiornatoPodio[i]));
+            lblName2.Caption   := Copy(Trim(Nome), 1, Pos(' ', Trim(Nome)) - 1) + ' : ' + PuntiString;
         end
         else if i = 2 then
         begin
-            lblTerzo.Caption := Copy(AggiornatoPodio[i], Pos(',', AggiornatoPodio[i]) + 1, Length(AggiornatoPodio[i]));
+            lblName3.Caption := Copy(Trim(Nome), 1, Pos(' ', Trim(Nome)) - 1) + ' : ' + PuntiString;
         end;
       end;
 
@@ -105,34 +104,6 @@ end;
 
 procedure TfPodio.FormCreate(Sender: TObject);
 begin
-    With lblPrimo do
-    begin
-        Top := 348;
-        Width := 137;
-        Left := 244;
-        Height := 15;
-    end;
-    With lblSecondo do
-    begin
-        Top := 348;
-        Width := 121;
-        Left := 124;
-        Height := 21;
-    end;
-    With lblTerzo do
-    begin
-        Top := 348;
-        Width := 114;
-        Left := 387;
-        Height := 21;
-    end;
-    With lblNome do
-    begin
-        Top := 326;
-        Width := 137;
-        Left := 244;
-        Height := 15;
-    end;
     ControllaPunteggi;
     Show;
 end;
