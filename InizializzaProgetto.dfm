@@ -200,8 +200,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
     Height = 504
     Align = alClient
     TabOrder = 1
-    ExplicitLeft = 225
-    ExplicitWidth = 397
+    ExplicitWidth = 394
     ExplicitHeight = 503
     object pnlUsernamePassword: TPanel
       Left = 0
@@ -561,7 +560,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Height = 56
       Align = alTop
       TabOrder = 2
-      ExplicitWidth = 395
+      ExplicitWidth = 392
       object Label2: TLabel
         Left = 1
         Top = 1
@@ -706,7 +705,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       TabOrder = 4
       Visible = False
       ExplicitTop = 485
-      ExplicitWidth = 395
+      ExplicitWidth = 392
     end
   end
   object dbDMIDatabasesMec: TXDatabase

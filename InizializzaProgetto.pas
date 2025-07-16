@@ -110,7 +110,7 @@ var
 implementation
 
 uses
-    System.IOUtils, IniFiles, System.Win.Registry, ShellApi, Clipbrd;
+    System.IOUtils, IniFiles, System.Win.Registry, ShellApi, Clipbrd, System.RegularExpressions, System.Generics.Collections;
 
 {$R *.dfm}
 
@@ -243,17 +243,33 @@ end;
 
 function TfInizializzaProgetto.GetServer: TStringList;
 var
-    DocumentPath, Riga, RigaPresa : String;
+    DocumentPath, Riga, RigaPresa, Versione, VersioneScelta : String;
     StringListCode, StringListServer, StringListTemp : TStringList;
+    VersioniMicrosoftSql : TArray<String>;
     i : Integer;
+    Reg : TRegEx;
 begin
     DocumentPath := TPath.GetHomePath;
-    DocumentPath := DocumentPath + '\Microsoft\SQL Server Management Studio\18.0\UserSettings.xml';
+    VersioneScelta := '';
+    //DocumentPath := DocumentPath + '\Microsoft\SQL Server Management Studio\18.0\UserSettings.xml';
+    DocumentPath := DocumentPath + '\Microsoft\SQL Server Management Studio';
+    VersioniMicrosoftSql := TDirectory.GetDirectories(DocumentPath);
+    Reg := TRegEx.Create('^\d{2}\.\d$');
+    for Versione in VersioniMicrosoftSql do
+    begin
+        if Reg.IsMatch(ExtractFileName(Versione)) then
+        begin
+            if VersioneScelta = '' then
+                VersioneScelta := ExtractFileName(Versione)
+            else if Trim(VersioneScelta) < ExtractFileName(Versione) then
+                VersioneScelta := ExtractFileName(Versione);
+        end;
+    end;
     StringListCode := TStringList.Create;
     StringListServer := TStringList.Create;
     StringListTemp := TStringList.Create;
     try
-        StringListCode.LoadFromFile(DocumentPath);
+        StringListCode.LoadFromFile(DocumentPath + '\' + VersioneScelta + '\UserSettings.xml');
 
         for i := 0 to StringListCode.Count - 1 do
         begin
