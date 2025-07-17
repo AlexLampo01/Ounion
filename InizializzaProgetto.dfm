@@ -202,6 +202,12 @@ object fInizializzaProgetto: TfInizializzaProgetto
     TabOrder = 1
     ExplicitWidth = 394
     ExplicitHeight = 503
+    object imgGif: TImage
+      Left = 152
+      Top = 368
+      Width = 105
+      Height = 105
+    end
     object pnlUsernamePassword: TPanel
       Left = 0
       Top = 68
@@ -561,7 +567,10 @@ object fInizializzaProgetto: TfInizializzaProgetto
       Align = alTop
       TabOrder = 0
       ExplicitWidth = 392
-      object Label2: TLabel
+      DesignSize = (
+        396
+        56)
+      object lblInizializzaProgettoNome: TLabel
         Left = 1
         Top = 1
         Width = 394
@@ -577,15 +586,49 @@ object fInizializzaProgetto: TfInizializzaProgetto
         Font.Style = [fsBold]
         ParentFont = False
         Layout = tlCenter
-        ExplicitLeft = 91
-        ExplicitTop = 9
-        ExplicitWidth = 234
-        ExplicitHeight = 28
+        ExplicitLeft = 5
+        ExplicitWidth = 180
+      end
+      object lblPrimoPunto: TLabel
+        Left = 262
+        Top = 1
+        Width = 9
+        Height = 54
+        Alignment = taCenter
+        Anchors = [akLeft, akTop, akRight]
+        AutoSize = False
+        Caption = '.'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -20
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Layout = tlCenter
+        Visible = False
+      end
+      object lblSecondoPunto: TLabel
+        Left = 272
+        Top = 1
+        Width = 9
+        Height = 54
+        Alignment = taCenter
+        Anchors = [akLeft, akTop, akRight]
+        AutoSize = False
+        Caption = '.'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -20
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Layout = tlCenter
+        Visible = False
       end
     end
     object pnlModificaDitta: TPanel
-      Left = 1
-      Top = 348
+      Left = 3
+      Top = 335
       Width = 400
       Height = 129
       TabOrder = 3
@@ -755,5 +798,11 @@ object fInizializzaProgetto: TfInizializzaProgetto
     Options = [fdoPickFolders]
     Left = 71
     Top = 452
+  end
+  object TempoGIF: TTimer
+    Enabled = False
+    OnTimer = TempoGIFTimer
+    Left = 528
+    Top = 408
   end
 end

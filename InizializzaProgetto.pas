@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Buttons,
-  DBXDevartSQLServer, Data.DB, XTable, XDBClient, Data.SqlExpr, Vcl.ComCtrls;
+  DBXDevartSQLServer, Data.DB, XTable, XDBClient, Data.SqlExpr, Vcl.ComCtrls, Vcl.Imaging.GIFImg;
 
 type
   TfInizializzaProgetto = class(TForm)
@@ -39,7 +39,7 @@ type
     lblDatabase: TLabel;
     lblDatabaseDitta: TLabel;
     Panel1: TPanel;
-    Label2: TLabel;
+    lblInizializzaProgettoNome: TLabel;
     Label3: TLabel;
     pnlModificaDitta: TPanel;
     btnModificaDitta: TBitBtn;
@@ -59,6 +59,10 @@ type
     Label8: TLabel;
     pbLoading: TProgressBar;
     Splitter1: TSplitter;
+    imgGif: TImage;
+    TempoGIF: TTimer;
+    lblPrimoPunto: TLabel;
+    lblSecondoPunto: TLabel;
     procedure cbVersioneEnter(Sender: TObject);
     procedure cbServerEnter(Sender: TObject);
     procedure cbDatabaseEnter(Sender: TObject);
@@ -78,6 +82,7 @@ type
     procedure btnCloseEnter(Sender: TObject);
     procedure btnCloseNomeProgettoEnter(Sender: TObject);
     procedure btnCloseModificaDittaEnter(Sender: TObject);
+    procedure TempoGIFTimer(Sender: TObject);
   private
     procedure RiempiComboBox(Percorso : String);
     function GetServer: TStringList;
@@ -101,7 +106,9 @@ type
   public
     Percorso, Server, Password, Username, NomeScelto, NumeroUtente, NomeDitta : String;
     ConfermataForm, StatoInizializzaGit, MostratiDatiUsernamePassword, StatoModificaDitta,
-    StatoVersioneAutomatica, ProgettoEsistente, ChiudiModificaDitta : Boolean;
+    StatoVersioneAutomatica, ProgettoEsistente, ChiudiModificaDitta, FineCaricamento : Boolean;
+    NumeroSecondi : Integer;
+    GIF : TGIFImage;
   end;
 
 var
@@ -535,7 +542,6 @@ procedure TfInizializzaProgetto.btnConfermaNomeClick(Sender: TObject);
 var
     Versione, PercorsoImpostazioni, Utente, Percorso : String;
     Ini : TIniFile;
-  i: Integer;
 begin
     pbLoading.Position := 0;
     if edNomeProgetto.Text <> '' then
@@ -584,7 +590,7 @@ begin
         end
         else
         begin
-            pbLoading.Visible := True;
+            {pbLoading.Visible := True;
             for i := 1 to 100 do
             begin
                 pbLoading.Position := i;
@@ -594,29 +600,9 @@ begin
                     Break;
                 end;
             end;
-            pbLoading.Visible := False;
-            if not ProgettoEsistente then
-                CreaCopiaProgetto(Percorso);
-            if NomeScelto <> '' then
-            begin
-                if cbLauncher.Checked then
-                    CreaConfig(Percorso);
-                if cbRegSetUp.Checked then
-                begin
-                    SistemaRegSetUp;
-                    ShowMessage('Ricorda di mettere la password nel RegSetUp!');
-                    Clipboard.AsText := Password;
-                end;
-                if cbInizializzaGit.Checked then
-                begin
-                    InizializzaGit;
-                end;
-                if cbRegSetUp.Checked then
-                    OpenRegSetUp;
-            end;
+            pbLoading.Visible := False;}
+            TempoGif.Enabled := True;
         end;
-        Reset;
-
     end;
 end;
 
@@ -927,6 +913,59 @@ begin
     end;
 end;
 
+procedure TfInizializzaProgetto.TempoGIFTimer(Sender: TObject);
+begin
+    if NumeroSecondi = 0 then
+    begin
+        imgGif.Picture.Graphic := GIF;
+        pnlUsernamePassword.Visible := False;
+        pnlRichiestaNome.Visible := False;
+        pnlModificaDitta.Visible := False;
+        imgGif.Align := alClient;
+        imgGif.Stretch := True;
+        imgGif.Visible := True;
+        lblInizializzaProgettoNome.Caption := 'Caricamento .';
+    end
+    else if NumeroSecondi >= 6 then
+    begin
+        imgGif.Visible := False;
+        TempoGif.Enabled := False;
+        if not ProgettoEsistente then
+                CreaCopiaProgetto(Percorso);
+            if NomeScelto <> '' then
+            begin
+                if cbLauncher.Checked then
+                    CreaConfig(Percorso);
+                if cbRegSetUp.Checked then
+                begin
+                    SistemaRegSetUp;
+                    ShowMessage('Ricordati di mettere la password nel RegSetup!');
+                    Clipboard.AsText := Password;
+                end;
+                if cbInizializzaGit.Checked then
+                begin
+                    InizializzaGit;
+                end;
+                if cbRegSetUp.Checked then
+                    OpenRegSetUp;
+            end;
+        lblInizializzaProgettoNome.Caption := 'Inizializzazione Progetto';
+        Reset;
+    end;
+    NumeroSecondi := NumeroSecondi + 1;
+    if (NumeroSecondi mod 2 = 0) then
+    begin
+        lblPrimoPunto.Visible := True;
+        lblSecondoPunto.Visible := False;
+    end
+    else
+    begin
+        lblSecondoPunto.Visible := True;
+        lblPrimoPunto.Visible := False;
+    end;
+
+end;
+
 procedure TfInizializzaProgetto.InizializzaGit;
 var
   SecurityAttr: TSecurityAttributes;
@@ -1102,7 +1141,15 @@ begin
     MostratiDatiUsernamePassword := False;
     ProgettoEsistente            := False;
     ChiudiModificaDitta          := False;
+    FineCaricamento              := False;
     Self.ShowHint                := True;
+    GIF := TGIFImage.Create;
+    try
+        GIF.LoadFromFile('\\srvsviluppo22\Common\Repositories\Gif\cat.gif');
+        GIF.Animate := True;
+    finally
+
+    end;
     SettaCheckBox;
 end;
 
