@@ -35,6 +35,8 @@ uses
 
 {$R *.dfm}
 
+//TODO Creare un modo per generare in automatico la release di delphi selezionata
+//TODO Creare un modo per generare la custom per l'assistenza
 procedure TfScegliCosaFare.btnInformazioniSuClick(Sender: TObject);
 begin
    if not Assigned(About.fInformazioniSu) then

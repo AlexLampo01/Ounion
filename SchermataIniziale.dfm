@@ -20,6 +20,7 @@ object fScegliCosaFare: TfScegliCosaFare
     Height = 53
     Align = alTop
     TabOrder = 0
+    ExplicitWidth = 610
     DesignSize = (
       614
       53)
@@ -1330,6 +1331,7 @@ object fScegliCosaFare: TfScegliCosaFare
         FF9E05FF9E05FF9E05FF}
       TabOrder = 2
       OnClick = btnInformazioniSuClick
+      ExplicitLeft = 554
     end
   end
   object pnlCentrale: TPanel
@@ -1339,5 +1341,7 @@ object fScegliCosaFare: TfScegliCosaFare
     Height = 535
     Align = alClient
     TabOrder = 1
+    ExplicitWidth = 610
+    ExplicitHeight = 534
   end
 end
