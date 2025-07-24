@@ -13,12 +13,15 @@ type
     btnInizializzaProgetto: TBitBtn;
     btnSpostaCartella: TBitBtn;
     btnInformazioniSu: TBitBtn;
+    btnCreaRelease: TBitBtn;
     procedure btnInizializzaProgettoClick(Sender: TObject);
     procedure btnSpostaCartellaClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnInizializzaProgettoEnter(Sender: TObject);
     procedure btnSpostaCartellaEnter(Sender: TObject);
     procedure btnInformazioniSuClick(Sender: TObject);
+    procedure btnCreaReleaseClick(Sender: TObject);
+    procedure btnCreaReleaseEnter(Sender: TObject);
   private
     { Private declarations }
   public
@@ -31,12 +34,58 @@ var
 implementation
 
 uses
-    InizializzaProgetto, CopiaFileConsegna, About;
+    InizializzaProgetto, CopiaFileConsegna, About, CreaRelease;
 
 {$R *.dfm}
 
 //TODO Creare un modo per generare in automatico la release di delphi selezionata
 //TODO Creare un modo per generare la custom per l'assistenza
+procedure TfScegliCosaFare.btnCreaReleaseClick(Sender: TObject);
+begin
+   if not Assigned(CreaRelease.fCreaRelease) then
+        CreaRelease.fCreaRelease := CreaRelease.TfCreaRelease.Create(Self);
+    with CreaRelease.fCreaRelease do
+    begin
+        Parent := pnlCentrale;
+        BorderStyle := bsNone;
+        Align := alClient;
+        Visible := True;
+    end;
+    if Assigned(CopiaFileConsegna.fCopiaFileConsegna) then
+    begin
+        with CopiaFileConsegna.fCopiaFileConsegna do
+        begin
+            Parent := pnlCentrale;
+            BorderStyle := bsNone;
+            Align := alNone;
+            Visible := False;
+        end;
+    end;
+    if Assigned(About.fInformazioniSu) then
+    with About.fInformazioniSu do
+    begin
+        Parent := pnlCentrale;
+        BorderStyle := bsNone;
+        Align := alNone;
+        Visible := False;
+    end;
+    if Assigned(InizializzaProgetto.fInizializzaProgetto) then
+    begin
+        with InizializzaProgetto.fInizializzaProgetto do
+        begin
+            Parent := pnlCentrale;
+            BorderStyle := bsNone;
+            Align := alNone;
+            Visible := False;
+        end;
+    end;
+end;
+
+procedure TfScegliCosaFare.btnCreaReleaseEnter(Sender: TObject);
+begin
+    btnCreaRelease.ShowHint := True;
+end;
+
 procedure TfScegliCosaFare.btnInformazioniSuClick(Sender: TObject);
 begin
    if not Assigned(About.fInformazioniSu) then
@@ -68,6 +117,14 @@ begin
             Visible := False;
         end;
     end;
+    if Assigned(CreaRelease.fCreaRelease) then
+    with CreaRelease.fCreaRelease do
+    begin
+        Parent := pnlCentrale;
+        BorderStyle := bsNone;
+        Align := alNone;
+        Visible := False;
+    end;
 end;
 
 procedure TfScegliCosaFare.btnInizializzaProgettoClick(Sender: TObject);
@@ -93,6 +150,14 @@ begin
     end;
     if Assigned(About.fInformazioniSu) then
     with About.fInformazioniSu do
+    begin
+        Parent := pnlCentrale;
+        BorderStyle := bsNone;
+        Align := alNone;
+        Visible := False;
+    end;
+    if Assigned(CreaRelease.fCreaRelease) then
+    with CreaRelease.fCreaRelease do
     begin
         Parent := pnlCentrale;
         BorderStyle := bsNone;
@@ -129,6 +194,14 @@ begin
     end;
     if Assigned(About.fInformazioniSu) then
     with About.fInformazioniSu do
+    begin
+        Parent := pnlCentrale;
+        BorderStyle := bsNone;
+        Align := alNone;
+        Visible := False;
+    end;
+    if Assigned(CreaRelease.fCreaRelease) then
+    with CreaRelease.fCreaRelease do
     begin
         Parent := pnlCentrale;
         BorderStyle := bsNone;

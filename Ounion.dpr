@@ -7,7 +7,8 @@ uses
   CopiaFileConsegna in 'CopiaFileConsegna.pas' {fCopiaFileConsegna},
   About in 'About.pas' {fInformazioniSu},
   Questions in 'Questions.pas' {tQuestions},
-  Podio in 'Podio.pas' {fPodio};
+  Podio in 'Podio.pas' {fPodio},
+  CreaRelease in 'CreaRelease.pas' {fCreaRelease};
 
 {$R *.res}
 
