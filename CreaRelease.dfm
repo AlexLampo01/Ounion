@@ -33,6 +33,15 @@ object fCreaRelease: TfCreaRelease
       TabOrder = 0
       ExplicitLeft = 532
     end
+    object btnSelezionaTutto: TBitBtn
+      Left = 432
+      Top = 4
+      Width = 91
+      Height = 25
+      Anchors = [akTop, akRight, akBottom]
+      Caption = 'SelezionaTutto'
+      TabOrder = 1
+    end
   end
   object pnlCenter: TFlowPanel
     Left = 0

@@ -11,6 +11,7 @@ type
     btnConferma: TBitBtn;
     pnlBottom: TPanel;
     pnlCenter: TFlowPanel;
+    btnSelezionaTutto: TBitBtn;
     procedure FormCreate(Sender: TObject);
   private
     procedure CercaVersioniBase(ListReleases : TStringList; Percorso : String);
