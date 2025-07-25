@@ -10,16 +10,14 @@ type
   TfCreaRelease = class(TForm)
     btnConferma: TBitBtn;
     pnlBottom: TPanel;
-    pnlCenter: TPanel;
+    pnlCenter: TFlowPanel;
     procedure FormCreate(Sender: TObject);
-    procedure pnlCenterResize(Sender: TObject);
   private
     procedure CercaVersioniBase(ListReleases : TStringList; Percorso : String);
     procedure CercaVersioniPatch(ListDa, ListA : TStringList);
     procedure TrasferisciInUnaStringList(ListDa, ListA : TStringList);
-    procedure CreaCheckBox(ListDa : TStringList; APanel: TPanel);
+    procedure CreaCheckBox(ListDa : TStringList; APanel: TFlowPanel);
     procedure RiordinaStringList(ListDa : TStringList);
-    procedure RimuoviCheckboxDaPanel(APanel: TPanel);
   public
     { Public declarations }
   end;
@@ -88,65 +86,36 @@ begin
     end;
 end;
 
-procedure TfCreaRelease.CreaCheckBox(ListDa: TStringList; APanel: TPanel);
+procedure TfCreaRelease.CreaCheckBox(ListDa: TStringList; APanel: TFlowPanel);
 const
-    Margine = 5;                  // margine interno e tra elementi
+    Margine = 3;                  // margine interno e tra elementi
     CheckBoxWidth = 150;
     CheckBoxHeight = 24;
 var
-    i, Col, Row, MaxCols, MaxRows: Integer;
-    AreaWidth, AreaHeight: Integer;
+    i: Integer;
     CheckBox: TCheckBox;
     Versione : String;
 begin
     RiordinaStringList(ListDa);
-    APanel.DisableAlign;
-    try
-        // Area interna effettiva
-        AreaWidth := APanel.Width - (2 * Margine);
-        AreaHeight := APanel.Height - (2 * Margine);
-
-        // Calcolo colonne e righe massime che ci stanno
-        MaxRows := AreaHeight div (CheckBoxHeight + Margine);
-        if MaxRows = 0 then Exit;
-
-        MaxCols := Ceil(ListDa.Count / MaxRows); // Ceil richiede Math unit
-
-        for i := 0 to ListDa.Count - 1 do
-        begin
-            Col := i mod MaxCols;
-            Row := i div MaxCols;
-            if ListDa[i].Contains(';') then
-                Versione := Copy(ListDa[i], Pos(';', ListDa[i]) + 1, Length(ListDa[i]))
-            else
-                Versione := ListDa[i];
-            CheckBox := TCheckBox.Create(APanel);
-            CheckBox.Parent := APanel;
-            CheckBox.Caption := Versione;
-            CheckBox.Width := CheckBoxWidth;
-            CheckBox.Height := CheckBoxHeight;
-            CheckBox.Left := Margine + Col * (CheckBoxWidth + Margine);
-            CheckBox.Top := Margine + Row * (CheckBoxHeight + Margine);
-        end;
-
-    finally
-        APanel.EnableAlign;
+    for i := 0 to ListDa.Count - 1 do
+    begin
+        if ListDa[i].Contains(';') then
+            Versione := 'OS1_' + Copy(ListDa[i], Pos(';', ListDa[i]) + 1, Length(ListDa[i]))
+        else
+            Versione := ListDa[i];
+        CheckBox := TCheckBox.Create(APanel);
+        CheckBox.Parent := APanel;
+        CheckBox.Caption := Versione;
+        CheckBox.Width := CheckBoxWidth;
+        CheckBox.Height := CheckBoxHeight;
+        CheckBox.Margins.Bottom := Margine;
+        CheckBox.AlignWithMargins := true;
     end;
-end;
-
-procedure TfCreaRelease.RimuoviCheckboxDaPanel(APanel: TPanel);
-var
-  i: Integer;
-begin
-  for i := APanel.ControlCount - 1 downto 0 do
-    if APanel.Controls[i] is TCheckBox then
-      APanel.Controls[i].Free;
 end;
 
 procedure TfCreaRelease.FormCreate(Sender: TObject);
 var
     ListReleases, ListNameReleases : TStringList;
-    i: Integer;
 begin
 
     ListReleases := TStringList.Create;
@@ -161,11 +130,6 @@ begin
         ListNameReleases.Free;
         ListReleases.Free;
     end;
-end;
-
-procedure TfCreaRelease.pnlCenterResize(Sender: TObject);
-begin
-    Application.ProcessMessages;
 end;
 
 procedure TfCreaRelease.RiordinaStringList(ListDa: TStringList);

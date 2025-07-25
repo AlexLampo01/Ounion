@@ -34,16 +34,17 @@ object fCreaRelease: TfCreaRelease
       ExplicitLeft = 532
     end
   end
-  object pnlCenter: TPanel
+  object pnlCenter: TFlowPanel
     Left = 0
     Top = 0
     Width = 626
     Height = 472
     Align = alClient
+    DoubleBuffered = True
+    ParentDoubleBuffered = False
     TabOrder = 1
-    OnResize = pnlCenterResize
-    ExplicitLeft = 252
-    ExplicitTop = 236
+    ExplicitLeft = 256
+    ExplicitTop = 160
     ExplicitWidth = 185
     ExplicitHeight = 41
   end
