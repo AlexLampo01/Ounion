@@ -31,6 +31,7 @@ object fCreaRelease: TfCreaRelease
       Anchors = [akTop, akRight, akBottom]
       Caption = 'Conferma'
       TabOrder = 0
+      OnClick = btnConfermaClick
       ExplicitLeft = 532
     end
     object btnSelezionaTutto: TBitBtn
@@ -39,8 +40,17 @@ object fCreaRelease: TfCreaRelease
       Width = 91
       Height = 25
       Anchors = [akTop, akRight, akBottom]
-      Caption = 'SelezionaTutto'
+      Caption = 'Seleziona Tutto'
       TabOrder = 1
+      OnClick = btnSelezionaTuttoClick
+    end
+    object pbLoading: TProgressBar
+      Left = 8
+      Top = 4
+      Width = 373
+      Height = 25
+      Anchors = [akLeft, akTop, akRight, akBottom]
+      TabOrder = 2
     end
   end
   object pnlCenter: TFlowPanel

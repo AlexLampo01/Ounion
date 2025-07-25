@@ -4,7 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls,
+  Vcl.ComCtrls;
 
 type
   TfCreaRelease = class(TForm)
@@ -12,13 +13,21 @@ type
     pnlBottom: TPanel;
     pnlCenter: TFlowPanel;
     btnSelezionaTutto: TBitBtn;
+    pbLoading: TProgressBar;
     procedure FormCreate(Sender: TObject);
+    procedure btnSelezionaTuttoClick(Sender: TObject);
+    procedure btnConfermaClick(Sender: TObject);
   private
+    ListeTotaliReleases : TStringList;
     procedure CercaVersioniBase(ListReleases : TStringList; Percorso : String);
     procedure CercaVersioniPatch(ListDa, ListA : TStringList);
     procedure TrasferisciInUnaStringList(ListDa, ListA : TStringList);
     procedure CreaCheckBox(ListDa : TStringList; APanel: TFlowPanel);
     procedure RiordinaStringList(ListDa : TStringList);
+    procedure AnalizzaCheckConStringList(ListDa : TStringList);
+    procedure AnalizzaECopiaDaServer(ListDa: TStringList);
+    procedure ControllaReleaseEsistenti;
+    procedure DisattivaAppenafatti;
   public
     { Public declarations }
   end;
@@ -32,6 +41,174 @@ uses
     System.IOUtils, System.Generics.Collections, System.Generics.Defaults, Math;
 
 {$R *.dfm}
+
+procedure TfCreaRelease.AnalizzaCheckConStringList(ListDa: TStringList);
+var
+    i, j, k, CountUnderscore : Integer;
+    CheckBox : TCheckBox;
+    Release, Versione, TestoCheckBox, TestoCheckBoxScan, CartellaCompleta : String;
+    ListInPanel, CartelleComplete : TStringList;
+begin
+    ListInPanel := TStringList.Create;
+    CartelleComplete := TStringList.Create;
+    pbLoading.Max := 100;
+    pbLoading.Position := 0;
+    try
+        pbLoading.Position := pbLoading.Position + 1;
+        for i := 0 to pnlCenter.ControlCount - 1  do
+        begin
+            if pnlCenter.Controls[i] is TCheckBox then
+            begin
+               CheckBox := TCheckBox(pnlCenter.Controls[i]);
+               if CheckBox.Checked = True then
+                ListInPanel.Add(CheckBox.Caption);
+            end;
+        end;
+        if ListInPanel.Count <> 0 then
+        begin
+            for j := 0 to ListInPanel.Count - 1 do
+            begin
+                TestoCheckBox := ListInPanel[j];
+                CountUnderscore := 0;
+                TestoCheckBoxScan := '';
+                for k := 1 to Length(TestoCheckBox) do
+                begin
+                    if TestoCheckBox[k] = '_' then
+                        CountUnderscore := CountUnderscore + 1;
+                end;
+                if CountUnderscore >= 2 then
+                begin
+                    TestoCheckBoxScan := Copy(TestoCheckBox, 5, Length(TestoCheckBox));
+                end
+                else
+                    TestoCheckBoxScan := TestoCheckBox;
+
+                for i := 0 to ListDa.Count - 1 do
+                begin
+                    Release := ListDa[i];
+                    CartellaCompleta := '';
+                    Versione := '';
+                    if Release.Contains(';') then
+                    begin
+                        Versione := Copy(Release, Pos(';', Release) + 1, Length(Release));
+                        CartellaCompleta := Copy(Release, 1, Pos(';', Release) - 1);
+                    end
+                    else
+                        Versione := Release;
+                    if Versione = TestoCheckBoxScan then
+                        if CartellaCompleta.IsEmpty then
+                            CartelleComplete.Add(Versione)
+                        else
+                            CartelleComplete.Add(CartellaCompleta);
+                end;
+            end;
+            pbLoading.Max := CartelleComplete.Count + 1;
+            AnalizzaECopiaDaServer(CartelleComplete);
+        end
+        else
+            MessageDlg('Nessuna Release selezionata!', mtError, [mbOk], 0);
+    finally
+        CartelleComplete.Free;
+        ListInPanel.Free;
+    end;
+end;
+
+procedure TfCreaRelease.AnalizzaECopiaDaServer(ListDa: TStringList);
+var
+    i, CountUnderscore, j: Integer;
+    Cartella, Percorso, PrimaParteCartella, SecondaParteCartella, PercorsoDestinazione : String;
+begin
+    Cartella := '';
+    for i := 0 to ListDa.Count - 1 do
+    begin
+        Cartella := ListDa[i];
+        CountUnderScore := 0;
+        PrimaParteCartella := '';
+        SecondaParteCartella := '';
+        pbLoading.Position := pbLoading.Position + 1;
+        Application.ProcessMessages;
+        for j := 1 to Length(Cartella) do
+        begin
+            if Cartella[j] = '_' then
+            begin
+                CountUnderscore := CountUnderscore + 1;
+            end
+            else if CountUnderscore < 1 then
+                PrimaParteCartella := PrimaParteCartella + Cartella[j]
+            else if CountUnderscore < 2 then
+                SecondaParteCartella := SecondaParteCartella + Cartella[j]
+            else
+                Break;
+        end;
+        if CountUnderscore = 1 then
+        begin
+            Percorso := '\\srvdb\e\OS1\OS1Svi\' + Cartella + '\' + Cartella;
+            TDirectory.Copy(Percorso, 'C:\OSItalia\' + Cartella);
+        end
+        else if CountUnderscore > 1 then
+        begin
+            Percorso := '\\srvdb\e\OS1\OS1Svi\OS1_' + PrimaParteCartella + '\OS1_' + PrimaParteCartella;
+            PercorsoDestinazione := 'C:\OSItalia\OS1_' + PrimaParteCartella + '_' + SecondaParteCartella;
+            TDirectory.Copy(Percorso, PercorsoDestinazione);
+            pbLoading.Max := pbLoading.Max + 1;
+            pbLoading.Position := pbLoading.Position + 1;
+            Application.ProcessMessages;
+            Percorso := '\\srvdb\e\OS1\OS1Svi\OS1_' + PrimaParteCartella + '\OS1_' + PrimaParteCartella  + '_Patch\' + Cartella;
+            TDirectory.Copy(Percorso, PercorsoDestinazione, True);
+            pbLoading.Max := pbLoading.Max + 1;
+            pbLoading.Position := pbLoading.Position + 1;
+            Application.ProcessMessages;
+        end;
+    end;
+end;
+
+procedure TfCreaRelease.btnConfermaClick(Sender: TObject);
+begin
+    try
+        Screen.Cursor := crHourGlass;
+        AnalizzaCheckConStringList(ListeTotaliReleases);
+    finally
+        ControllaReleaseEsistenti;
+        DisattivaAppenafatti;
+        ListeTotaliReleases.Free;
+        Screen.Cursor := crDefault;
+    end;
+end;
+
+procedure TfCreaRelease.btnSelezionaTuttoClick(Sender: TObject);
+var
+    i: Integer;
+    CheckBox : TCheckBox;
+begin
+    if btnSelezionaTutto.Caption = 'Seleziona Tutto' then
+    begin
+        for i := 0 to pnlCenter.ControlCount - 1  do
+        begin
+            if pnlCenter.Controls[i] is TCheckBox then
+            begin
+               CheckBox := TCheckBox(pnlCenter.Controls[i]);
+               if (CheckBox.Checked = False) and (CheckBox.Enabled = True) then
+                CheckBox.Checked := True;
+            end;
+        end;
+        btnSelezionaTutto.Caption := 'Deseleziona Tutto';
+        btnSelezionaTutto.Width := btnSelezionaTutto.Width + 10;
+    end
+    else if btnSelezionaTutto.Caption = 'Deseleziona Tutto' then
+    begin
+        for i := 0 to pnlCenter.ControlCount - 1  do
+        begin
+            if pnlCenter.Controls[i] is TCheckBox then
+            begin
+               CheckBox := TCheckBox(pnlCenter.Controls[i]);
+               if (CheckBox.Checked = True) and (CheckBox.Enabled = True) then
+                CheckBox.Checked := False;
+            end;
+        end;
+        btnSelezionaTutto.Caption := 'Seleziona Tutto';
+        btnSelezionaTutto.Width := btnSelezionaTutto.Width - 10;
+    end;
+end;
 
 procedure TfCreaRelease.CercaVersioniBase(ListReleases: TStringList; Percorso : String);
 var
@@ -87,6 +264,36 @@ begin
     end;
 end;
 
+procedure TfCreaRelease.ControllaReleaseEsistenti;
+var
+    CheckBox : TCheckBox;
+    TStringListCheckBox, ReleasesLocale : TStringList;
+    i,j : Integer;
+    ReleaseLocale : String;
+begin
+    TStringListCheckBox := TStringList.Create;
+    ReleasesLocale := TStringList.Create;
+    try
+        CercaVersioniBase(ReleasesLocale, 'C:\OSItalia');
+        for i := 0 to ReleasesLocale.Count - 1 do
+        begin
+            ReleaseLocale := ExtractFileName(ReleasesLocale[i]);
+            for j := 0 to pnlCenter.ControlCount - 1  do
+            begin
+                if pnlCenter.Controls[j] is TCheckBox then
+                begin
+                   CheckBox := TCheckBox(pnlCenter.Controls[j]);
+                   if CheckBox.Caption = ReleaseLocale then
+                    CheckBox.Enabled := False;
+                end;
+            end;
+        end;
+    finally
+        ReleasesLocale.Free;
+        TStringListCheckBox.Free;
+    end;
+end;
+
 procedure TfCreaRelease.CreaCheckBox(ListDa: TStringList; APanel: TFlowPanel);
 const
     Margine = 3;                  // margine interno e tra elementi
@@ -114,6 +321,22 @@ begin
     end;
 end;
 
+procedure TfCreaRelease.DisattivaAppenafatti;
+var
+    j: Integer;
+    CheckBox : TCheckBox;
+begin
+    for j := 0 to pnlCenter.ControlCount - 1  do
+    begin
+        if pnlCenter.Controls[j] is TCheckBox then
+        begin
+            CheckBox := TCheckBox(pnlCenter.Controls[j]);
+            if (not CheckBox.Enabled) and (CheckBox.Checked) then
+                CheckBox.Checked := False;
+        end;
+    end;
+end;
+
 procedure TfCreaRelease.FormCreate(Sender: TObject);
 var
     ListReleases, ListNameReleases : TStringList;
@@ -121,11 +344,14 @@ begin
 
     ListReleases := TStringList.Create;
     ListNameReleases := TStringList.Create;
+    ListeTotaliReleases := TStringList.Create;
     try
         CercaVersioniBase(ListReleases, '\\srvdb\e\OS1\OS1Svi');
         TrasferisciInUnaStringList(ListReleases, ListNameReleases);
         CercaVersioniPatch(ListReleases, ListNameReleases);
         CreaCheckBox(ListNameReleases, pnlCenter);
+        ListeTotaliReleases.Assign(ListNameReleases);
+        ControllaReleaseEsistenti;
         Show;
     finally
         ListNameReleases.Free;
