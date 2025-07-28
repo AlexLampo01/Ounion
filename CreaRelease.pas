@@ -30,6 +30,7 @@ type
     procedure ControllaReleaseEsistenti;
     procedure DisattivaAppenafatti;
     procedure CheckBoxClick(Sender: TObject);
+    procedure ControllaVersCliente;
   public
     { Public declarations }
   end;
@@ -241,8 +242,9 @@ begin
                     if Contenitore.Controls[j] is TCheckBox then
                     begin
                         CheckBox := TCheckBox(Contenitore.Controls[j]);
-                    if (CheckBox.Checked = False) and (CheckBox.Enabled = True) then
-                        CheckBox.Checked := True;
+                        CheckBox.Checked := False;
+                        if (CheckBox.Checked = False) and (CheckBox.Enabled = True) then
+                            CheckBox.Checked := True
                     end;
                 end;
             end;
@@ -356,8 +358,6 @@ begin
                            CheckBox := TCheckBox(Contenitore.Controls[k]);
                            if CheckBox.Caption = ReleaseLocale then
                             CheckBox.Enabled := False
-                            else if CheckBox.Name = 'cbCliente_' + ReleaseLocale then
-                                CheckBox.Enabled := False;
                         end;
                     end;
                 end;
@@ -366,6 +366,44 @@ begin
     finally
         ReleasesLocale.Free;
         TStringListCheckBox.Free;
+    end;
+end;
+
+procedure TfCreaRelease.ControllaVersCliente;
+var
+    Releases : TArray<String>;
+    Release, NomeCheckBox : String;
+    Contenitore : TPanel;
+    CheckBox : TCheckBox;
+  i,j: Integer;
+begin
+    for i := 0 to pnlCenter.ControlCount - 1 do
+    begin
+        if pnlCenter.Controls[i] is TPanel then
+        begin
+            Contenitore := TPanel(pnlCenter.Controls[i]);
+            for j := 0 to Contenitore.ControlCount - 1 do
+            begin
+                if Contenitore.Controls[j] is TCheckBox then
+                begin
+                    CheckBox := TCheckBox(Contenitore.Controls[j]);
+                    NomeCheckBox := CheckBox.Name;
+                    if NomeCheckBox.StartsWith('cbCliente_') then
+                    begin
+                        NomeCheckBox := Copy(NomeCheckBox, Pos('_', NomeCheckBox) + 1, Length(NomeCheckBox));
+                        Releases := TDirectory.GetDirectories('C:\OS1');
+                        for Release in Releases do
+                        begin
+                            if Trim(LowerCase(ExtractFileName(Release))) = LowerCase(NomeCheckBox) then
+                            begin
+                                CheckBox.Enabled := False;
+                            end;
+
+                        end;
+                    end;
+                end;
+            end;
+        end;
     end;
 end;
 
@@ -382,6 +420,7 @@ var
     CheckBox1, CheckBox2: TCheckBox;
     Versione : String;
 begin
+    RiordinaStringList(ListDa);
     for i := 0 to ListDa.Count - 1 do
     begin
         if ListDa[i].Contains(';') then
@@ -464,6 +503,7 @@ begin
         CreaCheckBox(ListNameReleases, pnlCenter);
         ListeTotaliReleases.Assign(ListNameReleases);
         ControllaReleaseEsistenti;
+        ControllaVersCliente;
         Show;
     finally
         ListNameReleases.Free;
@@ -561,7 +601,7 @@ begin
                     NomeCheckBoxContenitore := CheckBoxCOntenitore.Name;
                     if NomeCheckBoxContenitore = 'cbCliente_' + NomeCheckBox then
                     begin
-                        CheckBoxContenitore.Checked := True;
+                        CheckBoxContenitore.Checked := CheckBox.Checked;
                     end;
                 end;
             end;
