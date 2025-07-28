@@ -19,12 +19,13 @@ object fCreaRelease: TfCreaRelease
     Height = 32
     Align = alBottom
     TabOrder = 0
-    ExplicitWidth = 614
+    ExplicitTop = 471
+    ExplicitWidth = 622
     DesignSize = (
       626
       32)
     object btnConferma: TBitBtn
-      Left = 544
+      Left = 540
       Top = 4
       Width = 75
       Height = 25
@@ -32,10 +33,10 @@ object fCreaRelease: TfCreaRelease
       Caption = 'Conferma'
       TabOrder = 0
       OnClick = btnConfermaClick
-      ExplicitLeft = 532
+      ExplicitLeft = 536
     end
     object btnSelezionaTutto: TBitBtn
-      Left = 432
+      Left = 428
       Top = 4
       Width = 91
       Height = 25
@@ -43,14 +44,16 @@ object fCreaRelease: TfCreaRelease
       Caption = 'Seleziona Tutto'
       TabOrder = 1
       OnClick = btnSelezionaTuttoClick
+      ExplicitLeft = 424
     end
     object pbLoading: TProgressBar
       Left = 8
       Top = 4
-      Width = 373
+      Width = 369
       Height = 25
       Anchors = [akLeft, akTop, akRight, akBottom]
       TabOrder = 2
+      ExplicitWidth = 365
     end
   end
   object pnlCenter: TFlowPanel
@@ -62,9 +65,7 @@ object fCreaRelease: TfCreaRelease
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 1
-    ExplicitLeft = 256
-    ExplicitTop = 160
-    ExplicitWidth = 185
-    ExplicitHeight = 41
+    ExplicitWidth = 622
+    ExplicitHeight = 471
   end
 end

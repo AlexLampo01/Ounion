@@ -28,6 +28,7 @@ type
     procedure AnalizzaECopiaDaServer(ListDa: TStringList);
     procedure ControllaReleaseEsistenti;
     procedure DisattivaAppenafatti;
+    procedure CheckBoxClick(Sender: TObject);
   public
     { Public declarations }
   end;
@@ -296,29 +297,57 @@ end;
 
 procedure TfCreaRelease.CreaCheckBox(ListDa: TStringList; APanel: TFlowPanel);
 const
-    Margine = 3;                  // margine interno e tra elementi
-    CheckBoxWidth = 150;
-    CheckBoxHeight = 24;
+    CheckBoxWidth     = 150;
+    CheckBoxHeight    = 24;
+    MargineInferiore  = 5;
+    RientroFiglia     = 20;
+    PannelloAltezza   = (CheckBoxHeight * 2) + MargineInferiore;
 var
-    i: Integer;
-    CheckBox: TCheckBox;
+     i: Integer;
+    Contenitore: TPanel;
+    CheckBox1, CheckBox2: TCheckBox;
     Versione : String;
 begin
-    RiordinaStringList(ListDa);
     for i := 0 to ListDa.Count - 1 do
     begin
         if ListDa[i].Contains(';') then
             Versione := 'OS1_' + Copy(ListDa[i], Pos(';', ListDa[i]) + 1, Length(ListDa[i]))
         else
             Versione := ListDa[i];
-        CheckBox := TCheckBox.Create(APanel);
-        CheckBox.Parent := APanel;
-        CheckBox.Caption := Versione;
-        CheckBox.Width := CheckBoxWidth;
-        CheckBox.Height := CheckBoxHeight;
-        CheckBox.Margins.Bottom := Margine;
-        CheckBox.AlignWithMargins := true;
+        // Pannello contenitore per la coppia
+        Contenitore := TPanel.Create(APanel);
+        Contenitore.Parent := APanel;
+        Contenitore.Width := CheckBoxWidth + RientroFiglia;
+        Contenitore.Height := PannelloAltezza;
+        Contenitore.BevelOuter := bvNone;
+        Contenitore.BorderStyle := bsSingle;
+        Contenitore.AlignWithMargins := True;
+        Contenitore.Margins.Bottom := MargineInferiore;
+        Contenitore.Caption := ''; // no testo visivo
+        Contenitore.Name := 'pnl' + Versione;
+
+        // CheckBox principale
+        CheckBox1 := TCheckBox.Create(Contenitore);
+        CheckBox1.Parent := Contenitore;
+        CheckBox1.Caption := Versione;
+        CheckBox1.Left := 5;
+        CheckBox1.Top := 0;
+        CheckBox1.Width := CheckBoxWidth;
+        CheckBox1.Height := CheckBoxHeight;
+        CheckBox1.Name := 'cbVersione_' + Versione;
+        CheckBox1.OnClick := CheckBoxClick;
+
+        // CheckBox secondaria, rientrata
+        CheckBox2 := TCheckBox.Create(Contenitore);
+        CheckBox2.Parent := Contenitore;
+        CheckBox2.Caption := 'Modifica Cliente';
+        CheckBox2.Left := RientroFiglia;
+        CheckBox2.Top := CheckBoxHeight;
+        CheckBox2.Width := CheckBoxWidth;
+        CheckBox2.Height := CheckBoxHeight;
+        CheckBox2.Name := 'cbCliente_' + Versione;
     end;
+
 end;
 
 procedure TfCreaRelease.DisattivaAppenafatti;
@@ -423,6 +452,37 @@ begin
     for i := 0 to ListDa.Count - 1 do
     begin
         ListA.Add(ExtractFileName(ListDa[i]));
+    end;
+end;
+
+procedure TfCreaRelease.CheckBoxClick(Sender: TObject);
+var
+    CheckBox, CheckBoxContenitore : TCheckBox;
+    Contenitore : TPanel;
+    i : Integer;
+    NomeCheckBox, NomeCheckBoxContenitore : String;
+begin
+    if Sender is TCheckBox then
+    begin
+        CheckBox := TCheckBox(Sender);
+        NomeCheckBox := CheckBox.Name;
+        NomeCheckBox := Copy(NomeCheckBox, Pos('_', NomeCheckBox) + 1, Length(NomeCheckBox));
+        if CheckBox.Parent is TPanel then
+        begin
+            Contenitore := TPanel(CheckBox.Parent);
+            for i := 0 to Contenitore.ControlCount - 1 do
+            begin
+                if Contenitore.Controls[i] is TCheckBox then
+                begin
+                    CheckBoxContenitore := TCheckBox(Contenitore.Controls[i]);
+                    NomeCheckBoxContenitore := CheckBoxCOntenitore.Name;
+                    if NomeCheckBoxContenitore = 'cbCliente_' + NomeCheckBox then
+                    begin
+                        CheckBoxContenitore.Checked := True;
+                    end;
+                end;
+            end;
+        end;
     end;
 end;
 
