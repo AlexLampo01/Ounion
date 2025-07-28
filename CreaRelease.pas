@@ -25,6 +25,7 @@ type
     procedure CreaCheckBox(ListDa : TStringList; APanel: TFlowPanel);
     procedure RiordinaStringList(ListDa : TStringList);
     procedure AnalizzaCheckConStringList(ListDa : TStringList);
+    procedure AnalizzaCheckCliente(ListDa : TStringList);
     procedure AnalizzaECopiaDaServer(ListDa: TStringList);
     procedure ControllaReleaseEsistenti;
     procedure DisattivaAppenafatti;
@@ -42,6 +43,42 @@ uses
     System.IOUtils, System.Generics.Collections, System.Generics.Defaults, Math;
 
 {$R *.dfm}
+
+procedure TfCreaRelease.AnalizzaCheckCliente(ListDa: TStringList);
+var
+    ClientList : TStringList;
+    i,j : Integer;
+    CheckBox : TCheckBox;
+    Contenitore : TPanel;
+    NomeCheckBox : String;
+begin
+    ClientList := TStringList.Create;
+    try
+        for i := 0 to pnlCenter.ControlCount - 1 do
+        begin
+            if pnlCenter.Controls[i] is TPanel then
+            begin
+                Contenitore := TPanel(pnlCenter.Controls[i]);
+                for j := 0 to Contenitore.ControlCount - 1  do
+                begin
+                    if Contenitore.Controls[j] is TCheckBox then
+                    begin
+                        CheckBox := TCheckBox(Contenitore.Controls[j]);
+                        NomeCheckBox := CheckBox.Name;
+                        if (NomeCheckBox.StartsWith('cbCliente_')) and (CheckBox.Checked) then
+                        begin
+                            NomeCheckBox := Copy(NomeCheckBox, 3, Length(NomeCheckBox));
+                            ClientList.Add(NomeCheckBox);
+                        end;
+                    end;
+                end;
+            end;
+        end;
+        ShowMessage(ClientList.Text);
+    finally
+        ClientList.Free;
+    end;
+end;
 
 procedure TfCreaRelease.AnalizzaCheckConStringList(ListDa: TStringList);
 var
@@ -175,7 +212,8 @@ procedure TfCreaRelease.btnConfermaClick(Sender: TObject);
 begin
     try
         Screen.Cursor := crHourGlass;
-        AnalizzaCheckConStringList(ListeTotaliReleases);
+        //AnalizzaCheckConStringList(ListeTotaliReleases);
+        AnalizzaCheckCliente(ListeTotaliReleases);
     finally
         ControllaReleaseEsistenti;
         DisattivaAppenafatti;
