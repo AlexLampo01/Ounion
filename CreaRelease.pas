@@ -47,6 +47,7 @@ procedure TfCreaRelease.AnalizzaCheckConStringList(ListDa: TStringList);
 var
     i, j, k, CountUnderscore : Integer;
     CheckBox : TCheckBox;
+    Contenitore : TPanel;
     Release, Versione, TestoCheckBox, TestoCheckBoxScan, CartellaCompleta : String;
     ListInPanel, CartelleComplete : TStringList;
 begin
@@ -58,11 +59,18 @@ begin
         pbLoading.Position := pbLoading.Position + 1;
         for i := 0 to pnlCenter.ControlCount - 1  do
         begin
-            if pnlCenter.Controls[i] is TCheckBox then
+            if pnlCenter.Controls[i] is TPanel then
             begin
-               CheckBox := TCheckBox(pnlCenter.Controls[i]);
-               if CheckBox.Checked = True then
-                ListInPanel.Add(CheckBox.Caption);
+                Contenitore := TPanel(pnlCenter.Controls[i]);
+                for j := 0 to Contenitore.ControlCount - 1 do
+                begin
+                    if Contenitore.Controls[j] is TCheckBox then
+                    begin
+                        CheckBox := TCheckBox(Contenitore.Controls[j]);
+                        if CheckBox.Checked = True then
+                            ListInPanel.Add(CheckBox.Caption);
+                    end;
+                end;
             end;
         end;
         if ListInPanel.Count <> 0 then
@@ -173,23 +181,32 @@ begin
         DisattivaAppenafatti;
         ListeTotaliReleases.Free;
         Screen.Cursor := crDefault;
+        pbLoading.Position := 0;
     end;
 end;
 
 procedure TfCreaRelease.btnSelezionaTuttoClick(Sender: TObject);
 var
-    i: Integer;
+    i,j: Integer;
+    Contenitore : TPanel;
     CheckBox : TCheckBox;
 begin
     if btnSelezionaTutto.Caption = 'Seleziona Tutto' then
     begin
         for i := 0 to pnlCenter.ControlCount - 1  do
         begin
-            if pnlCenter.Controls[i] is TCheckBox then
+            if pnlCenter.Controls[i] is TPanel then
             begin
-               CheckBox := TCheckBox(pnlCenter.Controls[i]);
-               if (CheckBox.Checked = False) and (CheckBox.Enabled = True) then
-                CheckBox.Checked := True;
+                Contenitore := TPanel(pnlCenter.Controls[i]);
+                for j := 0 to Contenitore.ControlCount - 1 do
+                begin
+                    if Contenitore.Controls[j] is TCheckBox then
+                    begin
+                        CheckBox := TCheckBox(Contenitore.Controls[j]);
+                    if (CheckBox.Checked = False) and (CheckBox.Enabled = True) then
+                        CheckBox.Checked := True;
+                    end;
+                end;
             end;
         end;
         btnSelezionaTutto.Caption := 'Deseleziona Tutto';
@@ -199,11 +216,18 @@ begin
     begin
         for i := 0 to pnlCenter.ControlCount - 1  do
         begin
-            if pnlCenter.Controls[i] is TCheckBox then
+            if pnlCenter.Controls[i] is TPanel then
             begin
-               CheckBox := TCheckBox(pnlCenter.Controls[i]);
-               if (CheckBox.Checked = True) and (CheckBox.Enabled = True) then
-                CheckBox.Checked := False;
+                Contenitore := TPanel(pnlCenter.Controls[i]);
+                for j := 0 to Contenitore.ControlCount - 1 do
+                begin
+                    if Contenitore.Controls[j] is TCheckBox then
+                    begin
+                        CheckBox := TCheckBox(Contenitore.Controls[j]);
+                    if (CheckBox.Checked = True) and (CheckBox.Enabled = True) then
+                        CheckBox.Checked := False;
+                    end;
+                end;
             end;
         end;
         btnSelezionaTutto.Caption := 'Seleziona Tutto';
@@ -268,9 +292,10 @@ end;
 procedure TfCreaRelease.ControllaReleaseEsistenti;
 var
     CheckBox : TCheckBox;
+    Contenitore : TPanel;
     TStringListCheckBox, ReleasesLocale : TStringList;
-    i,j : Integer;
-    ReleaseLocale : String;
+    i,j,k : Integer;
+    ReleaseLocale, NomeContenitore : String;
 begin
     TStringListCheckBox := TStringList.Create;
     ReleasesLocale := TStringList.Create;
@@ -281,11 +306,22 @@ begin
             ReleaseLocale := ExtractFileName(ReleasesLocale[i]);
             for j := 0 to pnlCenter.ControlCount - 1  do
             begin
-                if pnlCenter.Controls[j] is TCheckBox then
+                if pnlCenter.Controls[j] is TPanel then
                 begin
-                   CheckBox := TCheckBox(pnlCenter.Controls[j]);
-                   if CheckBox.Caption = ReleaseLocale then
-                    CheckBox.Enabled := False;
+                    Contenitore := TPanel(pnlCenter.Controls[j]);
+                    if Contenitore.Name = 'pnl' + ReleaseLocale then
+                        Contenitore.Enabled := False;
+                    for k := 0 to Contenitore.ControlCount - 1 do
+                    begin
+                        if Contenitore.Controls[k] is TCheckBox then
+                        begin
+                           CheckBox := TCheckBox(Contenitore.Controls[k]);
+                           if CheckBox.Caption = ReleaseLocale then
+                            CheckBox.Enabled := False
+                            else if CheckBox.Name = 'cbCliente_' + ReleaseLocale then
+                                CheckBox.Enabled := False;
+                        end;
+                    end;
                 end;
             end;
         end;
@@ -352,17 +388,26 @@ end;
 
 procedure TfCreaRelease.DisattivaAppenafatti;
 var
-    j: Integer;
+    j,i: Integer;
     CheckBox : TCheckBox;
+    Contenitore : TPanel;
 begin
     for j := 0 to pnlCenter.ControlCount - 1  do
     begin
-        if pnlCenter.Controls[j] is TCheckBox then
+        if pnlCenter.Controls[j] is TPanel then
         begin
-            CheckBox := TCheckBox(pnlCenter.Controls[j]);
-            if (not CheckBox.Enabled) and (CheckBox.Checked) then
-                CheckBox.Checked := False;
+            Contenitore := TPanel(pnlCenter.Controls[j]);
+            for i := 0 to Contenitore.ControlCount - 1 do
+            begin
+                if Contenitore.Controls[i] is TCheckBox then
+                begin
+                    CheckBox := TCheckBox(Contenitore.Controls[i]);
+                    if (not CheckBox.Enabled) and (CheckBox.Checked) then
+                        CheckBox.Checked := False;
+                end;
+            end;
         end;
+
     end;
 end;
 
