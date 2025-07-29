@@ -713,7 +713,7 @@ end;
 
 procedure TfCopiaFileConsegna.FormCreate(Sender: TObject);
 begin
-    Self.ShowHint := True;
+    ShowHint := True;
 end;
 
 procedure TfCopiaFileConsegna.lbFileConfermatiDblClick(Sender: TObject);
