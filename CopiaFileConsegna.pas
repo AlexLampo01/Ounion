@@ -360,7 +360,7 @@ begin
     for i := 1 to 100 do
     begin
         pbLoading.Position := i;
-        Sleep(100);
+        Sleep(25);
         Application.ProcessMessages;
         if pbLoading.Position = 100 then
         begin
@@ -519,7 +519,7 @@ var
   BytesRead: DWORD;
   Stream: TStringStream;
   I: Integer;
-  Command, Percorso: string;
+  Command, Percorso, Commit: string;
 
   function RunGitCommand(const GitArgs: string): string;
   var
@@ -577,12 +577,14 @@ begin
     SA.lpSecurityDescriptor := nil;
 
     // Ottieni lista commit del branch
-    CommitList.Text := RunGitCommand(Format('log --pretty=format:%%H %s', [cbBranch.Text]));
+
+    CommitList.Text   := RunGitCommand('log ' + cbBranch.Text + ' ^^master --pretty=format:"%H"');
     pbLoading.Max := CommitList.Count;
     // Per ogni commit, estrai i file modificati
     for I := 0 to CommitList.Count - 1 do
     begin
-      Sleep(250);
+      Sleep(25);
+
       Command := Format('diff-tree --no-commit-id --name-status --diff-filter=AM -r %s', [CommitList[I]]);
       FileList.Text := FileList.Text + RunGitCommand(Command);
       Application.ProcessMessages;
