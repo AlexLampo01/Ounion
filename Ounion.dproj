@@ -132,6 +132,10 @@
             <Form>fCreaRelease</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="CreaRelease_Istanza.pas">
+            <Form>fIstanza</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

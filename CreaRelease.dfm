@@ -50,13 +50,22 @@ object fCreaRelease: TfCreaRelease
     object pbLoading: TProgressBar
       Left = 8
       Top = 4
-      Width = 361
+      Width = 165
       Height = 25
       Anchors = [akLeft, akTop, akRight, akBottom]
       Max = 0
       Step = 1
       TabOrder = 2
-      ExplicitWidth = 357
+    end
+    object cbIstanza: TComboBox
+      Left = 184
+      Top = 6
+      Width = 213
+      Height = 23
+      Anchors = [akTop, akRight, akBottom]
+      TabOrder = 3
+      OnChange = cbIstanzaChange
+      OnEnter = cbIstanzaEnter
     end
   end
   object pnlCenter: TFlowPanel

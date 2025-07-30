@@ -8,7 +8,8 @@ uses
   About in 'About.pas' {fInformazioniSu},
   Questions in 'Questions.pas' {tQuestions},
   Podio in 'Podio.pas' {fPodio},
-  CreaRelease in 'CreaRelease.pas' {fCreaRelease};
+  CreaRelease in 'CreaRelease.pas' {fCreaRelease},
+  CreaRelease_Istanza in 'CreaRelease_Istanza.pas' {fIstanza};
 
 {$R *.res}
 

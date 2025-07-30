@@ -75,9 +75,12 @@ type
     pbLoading: TProgressBar;
     ConnServer: TFDConnection;
     qBackupRestore: TFDQuery;
+    cbIstanza: TComboBox;
     procedure FormCreate(Sender: TObject);
     procedure btnSelezionaTuttoClick(Sender: TObject);
     procedure btnConfermaClick(Sender: TObject);
+    procedure cbIstanzaEnter(Sender: TObject);
+    procedure cbIstanzaChange(Sender: TObject);
   private
     ListeTotaliReleases : TStringList;
     procedure CercaVersioniBase(ListReleases : TStringList; Percorso : String);
@@ -96,9 +99,14 @@ type
     procedure EseguiBackup(Versione : String);
     procedure ConnessioneServer(Server, UserName, Password : String);
     procedure ImpostaQuery(Database : TStringList);
-    procedure EseguiRestore(Messaggio, PercorsoServer : String);
+    procedure EseguiRestore(Messaggio, PercorsoServer : String; Database: TStringList);
+    function  ControllaEsistenza(Database: TStringList) : TStringList;
+    function GetServer: TStringList;
+    function GetWindowsUsername: String;
+    function ReadFileIni : String;
+    procedure CreaFileIni(Percorso : String);
   public
-    { Public declarations }
+    UserName, Password, GlobalPercorso, Server : String;
   end;
 
 var
@@ -107,7 +115,7 @@ var
 implementation
 
 uses
-    System.IOUtils, System.Generics.Defaults, Math;
+    System.IOUtils, System.Generics.Defaults, Math, System.RegularExpressions, IniFiles, CreaRelease_Istanza;
 
 {$R *.dfm}
 
@@ -364,6 +372,141 @@ begin
     end;
 end;
 
+procedure TfCreaRelease.cbIstanzaChange(Sender: TObject);
+begin
+    Server := cbIstanza.Text;
+    ReadFileIni;
+end;
+
+function TfCreaRelease.GetWindowsUsername: String;
+var
+    Buffer: Array[0..255] of Char;
+    Size: DWORD;
+begin
+    Size := Length(Buffer);
+    if GetUserName(Buffer, Size) then
+        Result := Buffer
+    else
+        Result := 'Errore nel recupero del nome utente';
+end;
+
+function TfCreaRelease.ReadFileIni : String;
+var
+    Ini: TIniFile;
+    Utente, Username, Password, Percorso, Cartella : String;
+    Section : TStringList;
+    i: Integer;
+    TrovataSezione : Boolean;
+begin
+    Utente := GetWindowsUsername;
+    TrovataSezione := False;
+    Cartella := 'C:\Users\'+ Utente + '\AppData\Roaming\MECTools\MECToolsIstanze\';
+    Percorso := Cartella + 'Istanze.ini';
+    GlobalPercorso := Percorso;
+    if FileExists(Percorso) then
+    begin
+        Ini := TIniFile.Create(Percorso);
+        try
+            Section := TStringList.Create;
+            try
+                Ini.ReadSections(Section);
+                for i := 0 to Section.Count - 1 do
+                begin
+                    if Section[i] = cbIstanza.Text then
+                    begin
+                        TrovataSezione := True;
+                    end;
+                end;
+            finally
+                Section.Free;
+            end;
+            if TrovataSezione then
+            begin
+                Username := Ini.ReadString(cbIstanza.Text, 'Username', Username);
+                Password := Ini.ReadString(cbIstanza.Text, 'Password', Password);
+            end
+            else
+            begin
+                fIstanza := TfIstanza.Create(Self);
+                try
+                    fIstanza.ShowModal;
+                finally
+                    fIstanza.Free;
+                end;
+            end;
+        finally
+            Ini.Free;
+        end;
+    end
+    else
+        CreaFileIni(Percorso);
+    Result := cbIstanza.Text + ';' + Username + ';' + Password;
+end;
+
+procedure TfCreaRelease.cbIstanzaEnter(Sender: TObject);
+var
+    Server : TStringList;
+begin
+    Server := TStringList.Create;
+    try
+        Server := GetServer;
+        cbIstanza.Items.Assign(Server);
+    finally
+        Server.Free;
+    end;
+end;
+
+function TfCreaRelease.GetServer : TStringList;
+var
+    DocumentPath, Riga, RigaPresa, Versione, VersioneScelta : String;
+    StringListCode, StringListServer, StringListTemp : TStringList;
+    VersioniMicrosoftSql : TArray<String>;
+    i : Integer;
+    Reg : TRegEx;
+begin
+    DocumentPath := TPath.GetHomePath;
+    VersioneScelta := '';
+    DocumentPath := DocumentPath + '\Microsoft\SQL Server Management Studio';
+    VersioniMicrosoftSql := TDirectory.GetDirectories(DocumentPath);
+    Reg := TRegEx.Create('^\d{2}\.\d$');
+    for Versione in VersioniMicrosoftSql do
+    begin
+        if Reg.IsMatch(ExtractFileName(Versione)) then
+        begin
+            if VersioneScelta = '' then
+                VersioneScelta := ExtractFileName(Versione)
+            else if Trim(VersioneScelta) < ExtractFileName(Versione) then
+                VersioneScelta := ExtractFileName(Versione);
+        end;
+    end;
+    StringListCode := TStringList.Create;
+    StringListServer := TStringList.Create;
+    StringListTemp := TStringList.Create;
+    try
+        StringListCode.LoadFromFile(DocumentPath + '\' + VersioneScelta + '\UserSettings.xml');
+
+        for i := 0 to StringListCode.Count - 1 do
+        begin
+            Riga := Trim(LowerCase(StringListCode[i]));
+            if Riga.StartsWith('<instance>') then
+            begin
+                RigaPresa := Copy(Riga, Pos('>', Riga), Length(Riga));
+                StringListServer.Add(Copy(RigaPresa, Pos('>', RigaPresa) + 1, Pos('<', RigaPresa) - Pos('>', RigaPresa) - 1));
+            end;
+        end;
+
+        for i := 0 to StringListServer.Count - 1 do
+        begin
+            if StringListTemp.IndexOf(StringListServer[i]) = - 1 then
+                StringListTemp.Add(StringListServer[i]);
+        end;
+    finally
+        StringListCode.Free;
+        StringListServer.Free;
+    end;
+    Result := StringListTemp;
+end;
+
 procedure TfCreaRelease.CercaVersioniBase(ListReleases: TStringList; Percorso : String);
 var
     Releases : TArray<String>;
@@ -427,6 +570,34 @@ begin
     ConnServer.Params.Add('User_Name=' + Username);
     ConnServer.Params.Add('Password=' + Password);
     ConnServer.LoginPrompt := False;
+end;
+
+function TfCreaRelease.ControllaEsistenza(Database: TStringList): TStringList;
+var
+    i: Integer;
+    TestoQuery, Risultato : String;
+begin
+    Result := TStringList.Create;
+    try
+        for i := 0 to Database.Count - 1 do
+        begin
+            TestoQuery := 'SELECT 1 FROM sys.databases WHERE name = '+ QuotedStr(Database[i]);
+            with qBackupRestore do
+            begin
+                if Active then
+                    Close;
+                SQL.Text := TestoQuery;
+                Open;
+
+                if isEmpty then
+                    Result.Add(Database[i]);
+
+            end;
+
+        end;
+    finally
+
+    end;
 end;
 
 procedure TfCreaRelease.ControllaReleaseEsistenti;
@@ -587,6 +758,27 @@ begin
 
 end;
 
+procedure TfCreaRelease.CreaFileIni(Percorso: String);
+var
+    Utente, Cartella : String;
+    Ini: TIniFile;
+begin
+    Utente := GetWindowsUsername;
+    Cartella := 'C:\Users\'+ Utente + '\AppData\Roaming\MECTools\MECToolsIstanze\';
+    Percorso := Cartella + 'Istanze.ini';
+    GlobalPercorso := Percorso;
+    if not DirectoryExists(Cartella) then
+        ForceDirectories(Cartella);
+        Ini := TIniFile.Create(Percorso);
+        try
+            Ini.WriteString('Inizio', 'Username', Username);
+            Ini.WriteString('Inizio', 'Password', Password);
+        finally
+            Ini.Free;
+            ReadFileIni;
+        end;
+end;
+
 procedure TfCreaRelease.DisattivaAppenafatti;
 var
     j,i: Integer;
@@ -638,13 +830,45 @@ begin
     end;
 end;
 
-procedure TfCreaRelease.EseguiRestore(Messaggio, PercorsoServer: String);
+procedure TfCreaRelease.EseguiRestore(Messaggio, PercorsoServer: String; Database : TStringList);
+var
+    FileBackup : TArray<String>;
+    Server, Username, Password, RisultatoIni : String;
+    CountPuntoEVirgola,i : Integer;
+    DatabaseNonEsistenti : TStringList;
 begin
 {if Messaggio = 'Backup Eseguiti:' then
         ShowMessage('')
     else
         ShowMessage(Messaggio);
 }
+    DatabaseNonEsistenti := TStringList.Create;
+    try
+        RisultatoIni := ReadFileIni;
+        CountPuntoEVirgola := 0;
+        Server := '';
+        Username := '';
+        Password := '';
+        for i := 1 to Length(RisultatoIni) do
+        begin
+            if RisultatoIni[i] = ';' then
+            begin
+                CountPuntoEVirgola := CountPuntoEVirgola + 1;
+                Continue;
+            end;
+            if CountPuntoEVirgola < 1 then
+                Server := Server + RisultatoIni[i]
+            else if (CountPuntoEVirgola >= 1) and (CountPuntoEVirgola < 2) then
+                Username := Username + RisultatoIni[i]
+            else if (CountPuntoEVirgola >= 2) then
+                 Password := Password + RisultatoIni[i];
+        end;
+        ConnessioneServer(Server, Username, Password);
+        DatabaseNonEsistenti := ControllaEsistenza(Database);
+        ShowMessage(DatabaseNonEsistenti.Text);
+    finally
+        DatabaseNonEsistenti.Free;
+    end;
 end;
 
 procedure TfCreaRelease.FormCreate(Sender: TObject);
@@ -697,7 +921,7 @@ begin
             Messaggio := Messaggio + #13#10 + Database[i] + ',';
     end;
     Messaggio := Copy(Messaggio, 1, Length(Messaggio) - 1);
-    EseguiRestore(Messaggio, PercorsoServer);
+    EseguiRestore(Messaggio, PercorsoServer, Database);
 end;
 
 procedure TfCreaRelease.RiordinaStringList(ListDa: TStringList);
