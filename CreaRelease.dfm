@@ -25,7 +25,7 @@ object fCreaRelease: TfCreaRelease
       626
       32)
     object btnConferma: TBitBtn
-      Left = 536
+      Left = 532
       Top = 4
       Width = 75
       Height = 25
@@ -33,10 +33,10 @@ object fCreaRelease: TfCreaRelease
       Caption = 'Conferma'
       TabOrder = 0
       OnClick = btnConfermaClick
-      ExplicitLeft = 532
+      ExplicitLeft = 528
     end
     object btnSelezionaTutto: TBitBtn
-      Left = 424
+      Left = 420
       Top = 4
       Width = 91
       Height = 25
@@ -45,18 +45,18 @@ object fCreaRelease: TfCreaRelease
       Enabled = False
       TabOrder = 1
       OnClick = btnSelezionaTuttoClick
-      ExplicitLeft = 420
+      ExplicitLeft = 416
     end
     object pbLoading: TProgressBar
       Left = 8
       Top = 4
-      Width = 365
+      Width = 361
       Height = 25
       Anchors = [akLeft, akTop, akRight, akBottom]
       Max = 0
       Step = 1
       TabOrder = 2
-      ExplicitWidth = 361
+      ExplicitWidth = 357
     end
   end
   object pnlCenter: TFlowPanel
@@ -70,5 +70,16 @@ object fCreaRelease: TfCreaRelease
     TabOrder = 1
     ExplicitWidth = 622
     ExplicitHeight = 471
+  end
+  object ConnServer: TFDConnection
+    Params.Strings = (
+      '')
+    Left = 80
+    Top = 56
+  end
+  object qBackupRestore: TFDQuery
+    Connection = ConnServer
+    Left = 168
+    Top = 56
   end
 end

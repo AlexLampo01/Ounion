@@ -5,7 +5,13 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls,
-  Vcl.ComCtrls, System.Threading, System.SyncObjs, System.Generics.Collections;
+  Vcl.ComCtrls, System.Threading, System.SyncObjs, System.Generics.Collections,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf,
+  FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async,
+  FireDAC.Phys, FireDAC.Phys.MSSQL, FireDAC.Phys.MSSQLDef, FireDAC.VCLUI.Wait,
+  FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt, Data.DB,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, FireDAC.Phys.MySQL,
+  FireDAC.Phys.MySQLDef;
 
 type
     ThreadRicercaFile = Class(TThread)
@@ -67,6 +73,8 @@ type
     pnlCenter: TFlowPanel;
     btnSelezionaTutto: TBitBtn;
     pbLoading: TProgressBar;
+    ConnServer: TFDConnection;
+    qBackupRestore: TFDQuery;
     procedure FormCreate(Sender: TObject);
     procedure btnSelezionaTuttoClick(Sender: TObject);
     procedure btnConfermaClick(Sender: TObject);
@@ -84,6 +92,11 @@ type
     procedure DisattivaAppenafatti;
     procedure CheckBoxClick(Sender: TObject);
     procedure ControllaVersCliente;
+    procedure CopiaDatabase(CartelleVers : TStringList);
+    procedure EseguiBackup(Versione : String);
+    procedure ConnessioneServer(Server, UserName, Password : String);
+    procedure ImpostaQuery(Database : TStringList);
+    procedure EseguiRestore(Messaggio, PercorsoServer : String);
   public
     { Public declarations }
   end;
@@ -222,7 +235,8 @@ begin
                 end;
             end;
             //pbLoading.Max := CartelleComplete.Count + 1;
-            AnalizzaECopiaDaServer(CartelleComplete);
+           // AnalizzaECopiaDaServer(CartelleComplete);
+           CopiaDatabase(CartelleComplete);
         end
         else
             MessageDlg('Nessuna Release selezionata!', mtError, [mbOk], 0);
@@ -288,7 +302,7 @@ begin
     try
         Screen.Cursor := crHourGlass;
         AnalizzaCheckConStringList(ListeTotaliReleases);
-        AnalizzaCheckCliente;
+        //AnalizzaCheckCliente;
     finally
         ControllaReleaseEsistenti;
         ControllaVersCliente;
@@ -404,6 +418,17 @@ begin
     end;
 end;
 
+procedure TfCreaRelease.ConnessioneServer(Server, UserName, Password: String);
+begin
+    ConnServer.Close;
+    ConnServer.Params.Clear;
+    ConnServer.Params.Add('Server=' + Server);
+    ConnServer.Params.Add('DriverID=MSSQL');
+    ConnServer.Params.Add('User_Name=' + Username);
+    ConnServer.Params.Add('Password=' + Password);
+    ConnServer.LoginPrompt := False;
+end;
+
 procedure TfCreaRelease.ControllaReleaseEsistenti;
 var
     CheckBox : TCheckBox;
@@ -478,6 +503,31 @@ begin
                 end;
             end;
         end;
+    end;
+end;
+
+procedure TfCreaRelease.CopiaDatabase(CartelleVers: TStringList);
+var
+    i,j, CountUnderscore: Integer;
+    Versione, Cartella : String;
+begin
+    for i := 0 to CartelleVers.Count - 1 do
+    begin
+        Cartella := CartelleVers[i];
+        CountUnderscore := 0;
+        Versione := '';
+        for j := 1 to Length(Cartella) do
+        begin
+            if Cartella[j] = '_' then
+                CountUnderScore := CountUnderScore + 1;
+            if CountUnderScore <= 1 then
+            begin
+                Versione := Versione + Cartella[j];
+            end
+            else
+                Break;
+        end;
+        EseguiBackup(Versione);
     end;
 end;
 
@@ -562,6 +612,41 @@ begin
     end;
 end;
 
+procedure TfCreaRelease.EseguiBackup(Versione: String);
+const
+    Server = 'srvdb01\assistenza';
+    UserName = 'sa';
+    Password = 'Grsys01*';
+var
+    Database : TStringList;
+begin
+    ConnessioneServer(Server, UserName, Password);
+    try
+        ConnServer.Open();
+        Database := TStringList.Create;
+        try
+            Database.Add('OS1_BASE_' + Versione);
+            Database.Add('OS1_DemoE_'+ Versione);
+            Database.Add('OSILogon_' + Versione);
+            ImpostaQuery(Database);
+        finally
+            Database.Free;
+        end;
+    except
+        on E: Exception do
+            ShowMessage('Errore connessione: ' + E.Message);
+    end;
+end;
+
+procedure TfCreaRelease.EseguiRestore(Messaggio, PercorsoServer: String);
+begin
+{if Messaggio = 'Backup Eseguiti:' then
+        ShowMessage('')
+    else
+        ShowMessage(Messaggio);
+}
+end;
+
 procedure TfCreaRelease.FormCreate(Sender: TObject);
 var
     ListReleases, ListNameReleases : TStringList;
@@ -583,6 +668,36 @@ begin
         ListNameReleases.Free;
         ListReleases.Free;
     end;
+end;
+
+procedure TfCreaRelease.ImpostaQuery(Database: TStringList);
+const
+    PercorsoServer = 'E:\BackupTemp\';
+var
+    i : Integer;
+    TestoQuery, Messaggio : String;
+begin
+    Messaggio := 'Backup Eseguiti: ';
+    for i := 0 to Database.Count - 1 do
+    begin
+        TestoQuery := 'BACKUP DATABASE [' + Database[i] + '] ' +
+        'TO DISK = N' + QuotedStr(PercorsoServer + 'Backup_' + Database[i] + '.bck') + ' WITH NOFORMAT, INIT, ' +
+        'NAME = N' + QuotedStr(Database[i] + '-Completo Database Backup') + ', SKIP, NOREWIND, NOUNLOAD, STATS = 10';
+
+        with qBackupRestore do
+        begin
+            if Active then
+                Close;
+            SQL.Text := TestoQuery;
+            ExecSQL;
+        end;
+        if Messaggio = 'Backup Eseguiti: ' then
+            Messaggio := Messaggio + Database[i] + ','
+        else
+            Messaggio := Messaggio + #13#10 + Database[i] + ',';
+    end;
+    Messaggio := Copy(Messaggio, 1, Length(Messaggio) - 1);
+    EseguiRestore(Messaggio, PercorsoServer);
 end;
 
 procedure TfCreaRelease.RiordinaStringList(ListDa: TStringList);
