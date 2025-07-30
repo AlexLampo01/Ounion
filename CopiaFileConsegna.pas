@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ExtCtrls,
-  Vcl.Buttons, Vcl.Grids, System.ImageList, Vcl.ImgList, System.IOUtils;
+  Vcl.Buttons, Vcl.Grids, System.ImageList, Vcl.ImgList, System.IOUtils,
+  Vcl.Menus;
 
 type
   PListBoxItemData = ^TListBoxItemData;
@@ -40,6 +41,8 @@ type
     imgListStatoFile: TImageList;
     pbFile: TProgressBar;
     imgListSpostabileAuto: TImageList;
+    popMDoppioClick: TPopupMenu;
+    SpostaiSelezionati: TMenuItem;
     procedure btnEsploraRisorseClick(Sender: TObject);
     procedure cbBranchEnter(Sender: TObject);
     procedure btnAnalizzatoreClick(Sender: TObject);
@@ -63,6 +66,13 @@ type
     procedure pbFileChange(Sender: TObject);
     procedure lbFileDblClick(Sender: TObject);
     procedure lbFileConfermatiDblClick(Sender: TObject);
+    procedure lbMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure popMDoppioClickPopup(Sender: TObject);
+    procedure SpostaiSelezionatiClick(Sender: TObject);
+    procedure lbFileConfermatiKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure lbFileKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     function RecuperaRemote(Percorso: String): TStringList;
     function RecuperaBranch(Percorso: String): TStringList;
@@ -71,6 +81,7 @@ type
     procedure CercaFileRicorsivo(const Percorso, FileDaCercare: String;
       var Trovato: String);
     procedure SpostaElementiListBox(ListBoxOrigine, ListBoxDestinazione : TListBox; FileDaSpostare, FileDaNonSpostare : TStringList);
+    procedure ControllaSelezionati(ListBox: TListBox);
     function MaxValuePixel(AListBox : TListBox) : Integer;
 
   public
@@ -702,6 +713,44 @@ begin
     end;
 end;
 
+procedure TfCopiaFileConsegna.SpostaiSelezionatiClick(Sender: TObject);
+var
+    ListBox,ListBoxDestinazione : TListBox;
+    ElementiMultipliSelect, ElementiMultipliNonSelect : TStringList;
+    i : Integer;
+begin
+    ElementiMultipliSelect := TStringList.Create;
+    ElementiMultipliNonSelect := TStringList.Create;
+    try
+        ListBox := nil;
+        ListBoxDestinazione := nil;
+        if (popMDoppioClick.PopupComponent is TListBox) then
+        begin
+            ListBox := TListBox(popMDoppioClick.PopupComponent);
+            for i := 0 to ListBox.Items.Count - 1 do
+            begin
+                if ListBox.Selected[i] then
+                    ElementiMultipliSelect.Add(ListBox.Items[i])
+                else
+                    ElementiMultipliNonSelect.Add(ListBox.Items[i])
+            end;
+        end;
+        if ListBox.Name = 'lbFile' then
+        begin
+            ListBoxDestinazione := lbFileConfermati;
+        end
+        else if ListBox.Name = 'lbFileConfermati' then
+        begin
+            ListBoxDestinazione := lbFile;
+        end;
+        if ElementiMultipliSelect.Count <> 0 then
+            SpostaElementiListBox(ListBox, ListBoxDestinazione, ElementiMultipliSelect, ElementiMultipliNonSelect);
+    finally
+        ElementiMultipliNonSelect.Free;
+        ElementiMultipliSelect.Free;
+    end;
+end;
+
 procedure TfCopiaFileConsegna.CercaFileRicorsivo(const Percorso, FileDaCercare : String; var Trovato: String);
 var
     CostruzionePercorso: String;
@@ -709,6 +758,40 @@ begin
     CostruzionePercorso := IncludeTrailingPathDelimiter(Trim(Percorso)) + Trim(FileDaCercare);
     CostruzionePercorso := StringReplace(CostruzionePercorso, '/', '\', [rfReplaceAll]);
     Trovato := CostruzionePercorso;
+end;
+
+procedure TfCopiaFileConsegna.ControllaSelezionati(ListBox: TListBox);
+var
+   ElementiMultipliSelect, ElementiMultipliNonSelect : TStringList;
+   ListBoxDestinazione : TListBox;
+   i: Integer;
+begin
+    ElementiMultipliSelect := TStringList.Create;
+    ElementiMultipliNonSelect := TStringList.Create;
+    try
+        ListBoxDestinazione := nil;
+        for i := 0 to ListBox.Items.Count - 1 do
+        begin
+            if ListBox.Selected[i] then
+                ElementiMultipliSelect.Add(ListBox.Items[i])
+            else
+                ElementiMultipliNonSelect.Add(ListBox.Items[i])
+        end;
+
+        if ListBox.Name = 'lbFile' then
+        begin
+            ListBoxDestinazione := lbFileConfermati;
+        end
+        else if ListBox.Name = 'lbFileConfermati' then
+        begin
+            ListBoxDestinazione := lbFile;
+        end;
+        if ElementiMultipliSelect.Count <> 0 then
+            SpostaElementiListBox(ListBox, ListBoxDestinazione, ElementiMultipliSelect, ElementiMultipliNonSelect);
+    finally
+        ElementiMultipliNonSelect.Free;
+        ElementiMultipliSelect.Free;
+    end;
 end;
 
 procedure TfCopiaFileConsegna.FormCreate(Sender: TObject);
@@ -780,6 +863,34 @@ begin
   end;
 end;
 
+procedure TfCopiaFileConsegna.lbFileConfermatiKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+    if (ssCtrl in Shift) then
+    begin
+        case Key of
+            VK_LEFT: ControllaSelezionati(lbFileConfermati);
+        end;
+    end;
+end;
+
+procedure TfCopiaFileConsegna.lbMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+    ListBox : TListBox;
+begin
+    if Button = mbRight then
+    begin
+        if Sender is TListBox then
+        begin
+            ListBox := TListBox(Sender);
+            ListBox.PopupMenu := popMDoppioClick;
+            popMDoppioClick.PopupComponent := TListBox(Sender);
+            popMDoppioClick.Popup(Mouse.CursorPos.X, Mouse.CursorPos.Y);
+        end;
+    end;
+end;
+
 procedure TfCopiaFileConsegna.lbFileDblClick(Sender: TObject);
 var
     Indice, i : Integer;
@@ -844,6 +955,17 @@ begin
   end;
 end;
 
+procedure TfCopiaFileConsegna.lbFileKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+    if (ssCtrl in Shift) then
+    begin
+        case Key of
+            VK_RIGHT: ControllaSelezionati(lbFile);
+        end;
+    end;
+end;
+
 function TfCopiaFileConsegna.MaxValuePixel(AListBox: TListBox): Integer;
 var
     i, ItemWidth: Integer;
@@ -882,6 +1004,42 @@ end;
 procedure TfCopiaFileConsegna.pnlSelezionaTuttoResize(Sender: TObject);
 begin
     lbFile.Invalidate;
+end;
+
+procedure TfCopiaFileConsegna.popMDoppioClickPopup(Sender: TObject);
+var
+    ListBox, ListBoxDestinazione : TListBox;
+    i,CounterElementi : Integer;
+begin
+    {
+    var
+        i: Integer;
+    begin
+      for i := 0 to ListBox1.Items.Count - 1 do
+      begin
+        if ListBox1.Selected[i] then
+          ShowMessage('Selezionato: ' + ListBox1.Items[i]);
+      end;
+    end;
+    }
+    ListBox := nil;
+    ListBoxDestinazione := nil;
+    CounterElementi := 0;
+    if (popMDoppioClick.PopupComponent is TListBox) then
+    begin
+        ListBox := TListBox(popMDoppioClick.PopupComponent);
+        for i := 0 to ListBox.Items.Count - 1 do
+        begin
+            if ListBox.Selected[i] then
+                CounterElementi := CounterElementi + 1;
+        end;
+    end;
+    if CounterElementi = 0 then
+        SpostaiSelezionati.Enabled := False
+    else if CounterElementi > 0 then
+        SpostaiSelezionati.Enabled := True;
+
+
 end;
 
 end.
