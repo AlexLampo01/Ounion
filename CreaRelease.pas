@@ -65,12 +65,6 @@ type
         constructor Create(const Files: TArray<string>; const SourceBase, DestFolder, PatchPath: string);
     end;
 
-    ThreadDatabase = class(TThread)
-        public
-            constructor Create(CartelleComplete: TStringList);
-    end;
-
-
 
   TfCreaRelease = class(TForm)
     btnConferma: TBitBtn;
@@ -81,13 +75,16 @@ type
     ConnServer: TFDConnection;
     qBackupRestore: TFDQuery;
     cbIstanza: TComboBox;
+    TControllo: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure btnSelezionaTuttoClick(Sender: TObject);
     procedure btnConfermaClick(Sender: TObject);
     procedure cbIstanzaEnter(Sender: TObject);
     procedure cbIstanzaChange(Sender: TObject);
+    procedure TControlloTimer(Sender: TObject);
   private
     ListeTotaliReleases : TStringList;
+    ValoreProgressBar, GiriTimer : Integer;
     procedure CercaVersioniBase(ListReleases : TStringList; Percorso : String);
     procedure CercaVersioniPatch(ListDa, ListA : TStringList);
     procedure TrasferisciInUnaStringList(ListDa, ListA : TStringList);
@@ -104,7 +101,7 @@ type
     procedure EseguiBackup(Versione : String);
     procedure ConnessioneServer(Server, UserName, Password, Database : String);
     procedure ImpostaQuery(Database : TStringList);
-    procedure EseguiRestore(Messaggio, PercorsoServer : String; Database: TStringList);
+    procedure EseguiRestore(PercorsoServer : String; Database: TStringList);
     function  ControllaEsistenza(Database: TStringList) : TStringList;
     function GetServer: TStringList;
     function GetWindowsUsername: String;
@@ -174,7 +171,7 @@ begin
                     Files := nil;
                     ThreadRicercaFile.Create('\\srvxapp\C\OS1\' + Cartella, 'C:\OS1\' + Cartella);
                     ForceDirectories('C:\OS1\' + Cartella + '\TEMP');
-                    ThreadDatabase.Create(CartelleComplete);
+                    CopiaDatabase(CartelleComplete);
                 end;
             end;
         end;
@@ -892,7 +889,7 @@ begin
     end;
 end;
 
-procedure TfCreaRelease.EseguiRestore(Messaggio, PercorsoServer: String; Database : TStringList);
+procedure TfCreaRelease.EseguiRestore(PercorsoServer: String; Database : TStringList);
 var
     FileBackup : TArray<String>;
     Server, Username, Password, RisultatoIni : String;
@@ -925,10 +922,6 @@ begin
         ImpostaRestore(DatabaseNonEsistenti);
         ModificaOSILogon(DatabaseNonEsistenti, Server, Username, Password);
         EliminaFileDaServer(DatabaseNonEsistenti);
-        if Messaggio = 'Backup Eseguiti:' then
-            ShowMessage('')
-        else
-            ShowMessage(Messaggio);
     finally
         DatabaseNonEsistenti.Free;
     end;
@@ -1020,7 +1013,7 @@ begin
             DatabaseConFile.Add(Database[i] + ',' + LogicalDataFile + ',' + LogicalLogFile + ';');
         end;
         Messaggio := Copy(Messaggio, 1, Length(Messaggio) - 1);
-        EseguiRestore(Messaggio, PercorsoServer, DatabaseConFile);
+        EseguiRestore(PercorsoServer, DatabaseConFile);
     finally
         DatabaseConFile.Free;
     end;
@@ -1222,6 +1215,34 @@ begin
     end;
 end;
 
+procedure TfCreaRelease.TControlloTimer(Sender: TObject);
+var
+    Terzo: Integer;
+begin
+    if GiriTimer = 2 then
+    begin
+        Terzo := pbLoading.Max div 3;
+        pbLoading.Position := pbLoading.Position + Terzo;
+        if pbLoading.Position = pbLoading.Max then
+        begin
+            ShowMessage('Completato!');
+            TControllo.Enabled := False;
+        end;
+    end
+    else if ValoreProgressBar < pbLoading.Position then
+    begin
+        ValoreProgressBar := pbLoading.Position;
+    end
+    else
+    begin
+        GiriTimer := GiriTimer + 1;
+    end;
+
+
+
+
+end;
+
 procedure TfCreaRelease.TrasferisciInUnaStringList(ListDa, ListA: TStringList);
 var
     i : Integer;
@@ -1270,9 +1291,12 @@ begin
     inherited Create(False);  //False parte subito
     FreeOnTerminate := True;  //Una volta finito libera la memoria
     fCreaRelease.btnConferma.Enabled := False;
+    if not fCreaRelease.TControllo.Enabled then
+        fCreaRelease.TControllo.Enabled := True;
     SorgenteThread := PercorsoSorgente;
     DestinazioneThread := PercorsoDestinazione;
     FileEsaminati := TStringList.Create;
+
 end;
 
 destructor ThreadRicercaFile.Destroy;
@@ -1465,6 +1489,8 @@ begin
     inherited Create(False);  //False parte subito
     FreeOnTerminate := True;  //Una volta finito libera la memoria
     fCreaRelease.btnConferma.Enabled := False;
+    if not fCreaRelease.TControllo.Enabled then
+        fCreaRelease.TControllo.Enabled := True;
     SorgenteThreadVer := PercorsoSorgenteVer;
     DestinazioneThreadVer := PercorsoDestinazioneVer;
     FileEsaminatiVer := TStringList.Create;
@@ -1529,13 +1555,6 @@ begin
     fCreaRelease.pbLoading.Min := 0;
     fCreaRelease.pbLoading.Max := FFileCountVer;
     fCreaRelease.pbLoading.Position := 0;
-end;
-
-{ ThreadDatabase }
-
-constructor ThreadDatabase.Create(CartelleComplete : TStringList);
-begin
-    fCreaRelease.CopiaDatabase(CartelleComplete);
 end;
 
 end.
