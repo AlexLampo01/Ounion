@@ -89,7 +89,7 @@ type
     procedure CreaCheckBox(ListDa : TStringList; APanel: TFlowPanel);
     procedure RiordinaStringList(ListDa : TStringList);
     function  AnalizzaCheckConStringList(ListDa : TStringList) : TStringList;
-    procedure AnalizzaCheckCliente;
+    procedure AnalizzaCheckCliente(CartelleComplete : TStringList);
     procedure AnalizzaECopiaDaServer(ListDa: TStringList);
     procedure ControllaReleaseEsistenti;
     procedure DisattivaAppenafatti;
@@ -106,6 +106,7 @@ type
     function ReadFileIni : String;
     procedure CreaFileIni(Percorso : String);
     procedure ImpostaRestore(Database : TStringList);
+    procedure EliminaFileDaServer(Database : TStringList);
   public
     UserName, Password, GlobalPercorso, Server : String;
   end;
@@ -120,7 +121,7 @@ uses
 
 {$R *.dfm}
 
-procedure TfCreaRelease.AnalizzaCheckCliente;
+procedure TfCreaRelease.AnalizzaCheckCliente(CartelleComplete : TStringList);
 var
     ClientList : TStringList;
     i,j : Integer;
@@ -167,6 +168,7 @@ begin
                     Files := nil;
                     ThreadRicercaFile.Create('\\srvxapp\C\OS1\' + Cartella, 'C:\OS1\' + Cartella);
                     ForceDirectories('C:\OS1\' + Cartella + '\TEMP');
+                    CopiaDatabase(CartelleComplete);
                 end;
             end;
         end;
@@ -314,7 +316,7 @@ begin
     try
         Screen.Cursor := crHourGlass;
         CartelleComplete := AnalizzaCheckConStringList(ListeTotaliReleases);
-        //AnalizzaCheckCliente;
+        //AnalizzaCheckCliente(CartelleComplete;
         CopiaDatabase(CartelleComplete);
     finally
         ControllaReleaseEsistenti;
@@ -821,6 +823,37 @@ begin
     end;
 end;
 
+procedure TfCreaRelease.EliminaFileDaServer(Database: TStringList);
+var
+    i, j : Integer;
+    Riga, Db, PercorsoDb, TestoQuery : String;
+begin
+    for i := 0 to Database.Count - 1 do
+    begin
+        Riga := Database[i];
+        Db := '';
+        for j := 1 to Length(Riga) do
+        begin
+            if Riga[j] = ',' then
+                Break
+            else
+                Db := Db + Riga[j];
+        end;
+        Db := 'Backup_'+ Db + '.bck';
+        PercorsoDb := 'E:\BackupTemp\' + Db;
+        TestoQuery :=
+            'DECLARE @cmd NVARCHAR(4000) = ''DEL "' + PercorsoDb + '"''; ' +
+            'EXEC xp_cmdshell @cmd;';
+        with qBackupRestore do
+        begin
+            if Active then
+                Close;
+            SQL.Text := TestoQuery;
+            ExecSQL;
+        end;
+    end;
+end;
+
 procedure TfCreaRelease.EseguiBackup(Versione: String);
 const
     Server = 'srvdb01\assistenza';
@@ -882,9 +915,8 @@ begin
         end;
         ConnessioneServer(Server, Username, Password);
         DatabaseNonEsistenti := ControllaEsistenza(Database);
-        ImpostaRestore(DatabaseNonEsistenti);
-        ShowMessage(DatabaseNonEsistenti.Text);
-        //EliminaFileDaServer()
+        //ImpostaRestore(DatabaseNonEsistenti);
+        EliminaFileDaServer(DatabaseNonEsistenti);
 
     finally
         DatabaseNonEsistenti.Free;
