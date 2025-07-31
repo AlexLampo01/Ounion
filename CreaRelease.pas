@@ -97,7 +97,7 @@ type
     procedure ControllaVersCliente;
     procedure CopiaDatabase(CartelleVers : TStringList);
     procedure EseguiBackup(Versione : String);
-    procedure ConnessioneServer(Server, UserName, Password : String);
+    procedure ConnessioneServer(Server, UserName, Password, Database : String);
     procedure ImpostaQuery(Database : TStringList);
     procedure EseguiRestore(Messaggio, PercorsoServer : String; Database: TStringList);
     function  ControllaEsistenza(Database: TStringList) : TStringList;
@@ -107,6 +107,7 @@ type
     procedure CreaFileIni(Percorso : String);
     procedure ImpostaRestore(Database : TStringList);
     procedure EliminaFileDaServer(Database : TStringList);
+    procedure ModificaOSILogon(Database : TStringList; Server, UserName, Password : String);
   public
     UserName, Password, GlobalPercorso, Server : String;
   end;
@@ -569,11 +570,13 @@ begin
     end;
 end;
 
-procedure TfCreaRelease.ConnessioneServer(Server, UserName, Password: String);
+procedure TfCreaRelease.ConnessioneServer(Server, UserName, Password, Database: String);
 begin
     ConnServer.Close;
     ConnServer.Params.Clear;
     ConnServer.Params.Add('Server=' + Server);
+    if Database <> '' then
+        ConnServer.Params.Add('Database=' + Database);
     ConnServer.Params.Add('DriverID=MSSQL');
     ConnServer.Params.Add('User_Name=' + Username);
     ConnServer.Params.Add('Password=' + Password);
@@ -824,10 +827,15 @@ begin
 end;
 
 procedure TfCreaRelease.EliminaFileDaServer(Database: TStringList);
+const
+    Server = 'srvdb01\assistenza';
+    UserName = 'sa';
+    Password = 'Grsys01*';
 var
     i, j : Integer;
     Riga, Db, PercorsoDb, TestoQuery : String;
 begin
+    ConnessioneServer(Server, UserName, Password, '');
     for i := 0 to Database.Count - 1 do
     begin
         Riga := Database[i];
@@ -862,7 +870,7 @@ const
 var
     Database : TStringList;
 begin
-    ConnessioneServer(Server, UserName, Password);
+    ConnessioneServer(Server, UserName, Password, '');
     try
         ConnServer.Open();
         Database := TStringList.Create;
@@ -913,10 +921,11 @@ begin
             else if (CountPuntoEVirgola >= 2) then
                  Password := Password + RisultatoIni[i];
         end;
-        ConnessioneServer(Server, Username, Password);
+        ConnessioneServer(Server, Username, Password, '');
         DatabaseNonEsistenti := ControllaEsistenza(Database);
-        //ImpostaRestore(DatabaseNonEsistenti);
-        EliminaFileDaServer(DatabaseNonEsistenti);
+        ImpostaRestore(DatabaseNonEsistenti);
+        ModificaOSILogon(DatabaseNonEsistenti, Server, Username, Password);
+        //EliminaFileDaServer(DatabaseNonEsistenti);
 
     finally
         DatabaseNonEsistenti.Free;
@@ -1085,6 +1094,59 @@ begin
                 Close;
             SQL.Text := TestoQuery;
             ExecSQL;
+        end;
+    end;
+end;
+
+procedure TfCreaRelease.ModificaOSILogon(Database: TStringList; Server, Username, Password : String);
+var
+    i,j: Integer;
+    Db, Riga, TestoQuery : String;
+begin
+    for i := 0 to Database.Count - 1 do
+    begin
+        Riga := Database[i];
+        Db := '';
+        for j := 1 to Length(Riga) do
+        begin
+            if Riga[j] = ',' then
+            begin
+                Break;
+            end
+            else
+            begin
+                Db := Db + Riga[j];
+            end;
+        end;
+        if Db.StartsWith('OSILogon_') then
+        begin
+            ConnessioneServer(Server, Username, Password, Db);
+            TestoQuery :=
+            'DELETE FROM dbo.Ditte'+
+            ' Where IdDitta <> ' + QuotedStr('Base') + 'and IdDitta <> ' + QuotedStr('Demo');
+
+            with qBackupRestore do
+            begin
+                if Active then
+                    Close;
+                SQL.Text := TestoQuery;
+                ExecSQL;
+            end;
+
+            TestoQuery :=
+            'UPDATE Ditte' +
+            ' SET Params = REPLACE(REPLACE(Params,'+
+                QuotedStr('srvdb01\assistenza') + ','
+                + QuotedStr(Server) + '),' + QuotedStr('Grsys01*') + ',' + QuotedStr(Password) + ')'+
+            'WHERE Params LIKE ' + QuotedStr('%srvdb01\assistenza%') + ' OR Params LIKE ' + QuotedStr('%Grsys01*%') + ';';
+
+            with qBackupRestore do
+            begin
+                if Active then
+                    Close;
+                SQL.Text := TestoQuery;
+                ExecSQL;
+            end;
         end;
     end;
 end;
