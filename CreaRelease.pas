@@ -65,6 +65,11 @@ type
         constructor Create(const Files: TArray<string>; const SourceBase, DestFolder, PatchPath: string);
     end;
 
+    ThreadDatabase = class(TThread)
+        public
+            constructor Create(CartelleComplete: TStringList);
+    end;
+
 
 
   TfCreaRelease = class(TForm)
@@ -169,7 +174,7 @@ begin
                     Files := nil;
                     ThreadRicercaFile.Create('\\srvxapp\C\OS1\' + Cartella, 'C:\OS1\' + Cartella);
                     ForceDirectories('C:\OS1\' + Cartella + '\TEMP');
-                    CopiaDatabase(CartelleComplete);
+                    ThreadDatabase.Create(CartelleComplete);
                 end;
             end;
         end;
@@ -247,7 +252,7 @@ begin
                 end;
             end;
             //pbLoading.Max := CartelleComplete.Count + 1;
-           // AnalizzaECopiaDaServer(CartelleComplete);
+           AnalizzaECopiaDaServer(CartelleComplete);
 
         end
         else
@@ -317,8 +322,7 @@ begin
     try
         Screen.Cursor := crHourGlass;
         CartelleComplete := AnalizzaCheckConStringList(ListeTotaliReleases);
-        //AnalizzaCheckCliente(CartelleComplete;
-        CopiaDatabase(CartelleComplete);
+        AnalizzaCheckCliente(CartelleComplete);
     finally
         ControllaReleaseEsistenti;
         ControllaVersCliente;
@@ -895,11 +899,6 @@ var
     CountPuntoEVirgola,i : Integer;
     DatabaseNonEsistenti : TStringList;
 begin
-{if Messaggio = 'Backup Eseguiti:' then
-        ShowMessage('')
-    else
-        ShowMessage(Messaggio);
-}
     DatabaseNonEsistenti := TStringList.Create;
     try
         RisultatoIni := ReadFileIni;
@@ -925,8 +924,11 @@ begin
         DatabaseNonEsistenti := ControllaEsistenza(Database);
         ImpostaRestore(DatabaseNonEsistenti);
         ModificaOSILogon(DatabaseNonEsistenti, Server, Username, Password);
-        //EliminaFileDaServer(DatabaseNonEsistenti);
-
+        EliminaFileDaServer(DatabaseNonEsistenti);
+        if Messaggio = 'Backup Eseguiti:' then
+            ShowMessage('')
+        else
+            ShowMessage(Messaggio);
     finally
         DatabaseNonEsistenti.Free;
     end;
@@ -1139,6 +1141,18 @@ begin
                 QuotedStr('srvdb01\assistenza') + ','
                 + QuotedStr(Server) + '),' + QuotedStr('Grsys01*') + ',' + QuotedStr(Password) + ')'+
             'WHERE Params LIKE ' + QuotedStr('%srvdb01\assistenza%') + ' OR Params LIKE ' + QuotedStr('%Grsys01*%') + ';';
+
+            with qBackupRestore do
+            begin
+                if Active then
+                    Close;
+                SQL.Text := TestoQuery;
+                ExecSQL;
+            end;
+
+            TestoQuery :=
+            'DELETE FROM dbo.UtentiDitte'+
+            ' Where IdDitta <> ' + QuotedStr('Base') + ' and IdDitta <> ' + QuotedStr('Demo') + ' and IdDitta <> ''''';
 
             with qBackupRestore do
             begin
@@ -1515,6 +1529,13 @@ begin
     fCreaRelease.pbLoading.Min := 0;
     fCreaRelease.pbLoading.Max := FFileCountVer;
     fCreaRelease.pbLoading.Position := 0;
+end;
+
+{ ThreadDatabase }
+
+constructor ThreadDatabase.Create(CartelleComplete : TStringList);
+begin
+    fCreaRelease.CopiaDatabase(CartelleComplete);
 end;
 
 end.
