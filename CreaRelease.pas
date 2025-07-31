@@ -88,7 +88,7 @@ type
     procedure TrasferisciInUnaStringList(ListDa, ListA : TStringList);
     procedure CreaCheckBox(ListDa : TStringList; APanel: TFlowPanel);
     procedure RiordinaStringList(ListDa : TStringList);
-    procedure AnalizzaCheckConStringList(ListDa : TStringList);
+    function  AnalizzaCheckConStringList(ListDa : TStringList) : TStringList;
     procedure AnalizzaCheckCliente;
     procedure AnalizzaECopiaDaServer(ListDa: TStringList);
     procedure ControllaReleaseEsistenti;
@@ -105,6 +105,7 @@ type
     function GetWindowsUsername: String;
     function ReadFileIni : String;
     procedure CreaFileIni(Percorso : String);
+    procedure ImpostaRestore(Database : TStringList);
   public
     UserName, Password, GlobalPercorso, Server : String;
   end;
@@ -174,7 +175,7 @@ begin
     end;
 end;
 
-procedure TfCreaRelease.AnalizzaCheckConStringList(ListDa: TStringList);
+function TfCreaRelease.AnalizzaCheckConStringList(ListDa: TStringList) : TStringList;
 var
     i, j, k, CountUnderscore : Integer;
     CheckBox : TCheckBox;
@@ -244,12 +245,12 @@ begin
             end;
             //pbLoading.Max := CartelleComplete.Count + 1;
            // AnalizzaECopiaDaServer(CartelleComplete);
-           CopiaDatabase(CartelleComplete);
+
         end
         else
             MessageDlg('Nessuna Release selezionata!', mtError, [mbOk], 0);
+         Result := CartelleComplete;
     finally
-        CartelleComplete.Free;
         ListInPanel.Free;
     end;
 end;
@@ -306,15 +307,20 @@ begin
 end;
 
 procedure TfCreaRelease.btnConfermaClick(Sender: TObject);
+var
+    CartelleComplete : TStringList;
 begin
+    CartelleComplete := TStringList.Create;
     try
         Screen.Cursor := crHourGlass;
-        AnalizzaCheckConStringList(ListeTotaliReleases);
+        CartelleComplete := AnalizzaCheckConStringList(ListeTotaliReleases);
         //AnalizzaCheckCliente;
+        CopiaDatabase(CartelleComplete);
     finally
         ControllaReleaseEsistenti;
         ControllaVersCliente;
         DisattivaAppenafatti;
+        CartelleComplete.Free;
         ListeTotaliReleases.Free;
         Screen.Cursor := crDefault;
         pbLoading.Position := 0;
@@ -574,14 +580,25 @@ end;
 
 function TfCreaRelease.ControllaEsistenza(Database: TStringList): TStringList;
 var
-    i: Integer;
-    TestoQuery, Risultato : String;
+    i,j: Integer;
+    TestoQuery, Risultato, FiltratoDatabase, Riga : String;
 begin
     Result := TStringList.Create;
     try
         for i := 0 to Database.Count - 1 do
         begin
-            TestoQuery := 'SELECT 1 FROM sys.databases WHERE name = '+ QuotedStr(Database[i]);
+            Riga := Database[i];
+            FiltratoDatabase := '';
+            for j := 1 to Length(Riga) do
+            begin
+                if Riga[j] = ',' then
+                begin
+                    Break;
+                end
+                else
+                    FiltratoDatabase := FiltratoDatabase + Riga[j]
+            end;
+            TestoQuery := 'SELECT 1 FROM sys.databases WHERE name = '+ QuotedStr(FiltratoDatabase);
             with qBackupRestore do
             begin
                 if Active then
@@ -865,7 +882,10 @@ begin
         end;
         ConnessioneServer(Server, Username, Password);
         DatabaseNonEsistenti := ControllaEsistenza(Database);
+        ImpostaRestore(DatabaseNonEsistenti);
         ShowMessage(DatabaseNonEsistenti.Text);
+        //EliminaFileDaServer()
+
     finally
         DatabaseNonEsistenti.Free;
     end;
@@ -899,29 +919,142 @@ const
     PercorsoServer = 'E:\BackupTemp\';
 var
     i : Integer;
-    TestoQuery, Messaggio : String;
+    TestoQuery, Messaggio, LogicalDataFile, LogicalLogFile : String;
+    DatabaseConFile : TStringList;
 begin
     Messaggio := 'Backup Eseguiti: ';
+    DatabaseConFile := TStringList.Create;
+    try
+        for i := 0 to Database.Count - 1 do
+        begin
+            TestoQuery := 'BACKUP DATABASE [' + Database[i] + '] ' +
+            'TO DISK = N' + QuotedStr(PercorsoServer + 'Backup_' + Database[i] + '.bck') + ' WITH NOFORMAT, INIT, ' +
+            'NAME = N' + QuotedStr(Database[i] + '-Completo Database Backup') + ', SKIP, NOREWIND, NOUNLOAD, STATS = 10';
+
+            with qBackupRestore do
+            begin
+                if Active then
+                    Close;
+                SQL.Text := TestoQuery;
+                ExecSQL;
+            end;
+
+            TestoQuery :=
+            'declare @DBName  sysname' + #13#10 +
+            ' ,@LogicalDataFile  sysname' + #13#10 +
+            ' ,@LogicalLogFile  sysname' + #13#10 +
+            ' ,@PhysicalDataFile  nvarchar(260)' + #13#10 +
+            ' ,@PhysicalLogFile  nvarchar(260)' + #13#10 +
+            ' set @DBName='+QuotedStr(Database[i]) + #13#10 +
+            ' select @LogicalDataFile = name' + #13#10 +
+            ' ,@PhysicalDataFile = physical_name' + #13#10 +
+            ' from sys.master_files' + #13#10 +
+            ' where database_id = db_id(@DBName)' + #13#10 +
+            ' and type_desc = ' + QuotedStr('ROWS') + #13#10 +
+            ' select @LogicalLogFile = name' + #13#10 +
+            ' ,@PhysicalLogFile = physical_name' + #13#10 +
+            ' from sys.master_files' + #13#10 +
+            ' where database_id = db_id(@DBName)' + #13#10 +
+            ' and type_desc = ' +QuotedStr('LOG') + #13#10 +
+            ' select @LogicalDataFile as [LogicalDataFile]' + #13#10 +
+            ' ,@LogicalLogFile as [LogicalLogFile]' + #13#10 +
+            ' ,@PhysicalDataFile as [PhysicalDataFile]' + #13#10 +
+            ' ,@PhysicalLogFile as [PhysicalLogFile]'
+            ;
+            with qBackupRestore do
+            begin
+                if Active then
+                    Close;
+                SQL.Text := TestoQuery;
+                Open;
+            end;
+            if Messaggio = 'Backup Eseguiti: ' then
+                Messaggio := Messaggio + Database[i] + ','
+            else
+                Messaggio := Messaggio + #13#10 + Database[i] + ',';
+            LogicalDataFile := qBackupRestore.FieldByName('LogicalDataFile').AsString;
+            LogicalLogFile  := qBackupRestore.FieldByName('LogicalLogFile').AsString;
+            DatabaseConFile.Add(Database[i] + ',' + LogicalDataFile + ',' + LogicalLogFile + ';');
+        end;
+        Messaggio := Copy(Messaggio, 1, Length(Messaggio) - 1);
+        EseguiRestore(Messaggio, PercorsoServer, DatabaseConFile);
+    finally
+        DatabaseConFile.Free;
+    end;
+end;
+
+procedure TfCreaRelease.ImpostaRestore(Database: TStringList);
+var
+    i,j, CountVirgola, CountUnderscore: Integer;
+    VersioneTrovata : Boolean;
+    TestoQuery, PercorsoServer, Riga, Db, DataFile, LogFile, Versione, PercorsoData : String;
+begin
+    PercorsoServer := '\\srvdb01\E\BackupTemp\';
+    VersioneTrovata := False;
+    Versione := 'OS1';
     for i := 0 to Database.Count - 1 do
     begin
-        TestoQuery := 'BACKUP DATABASE [' + Database[i] + '] ' +
-        'TO DISK = N' + QuotedStr(PercorsoServer + 'Backup_' + Database[i] + '.bck') + ' WITH NOFORMAT, INIT, ' +
-        'NAME = N' + QuotedStr(Database[i] + '-Completo Database Backup') + ', SKIP, NOREWIND, NOUNLOAD, STATS = 10';
+        db := '';
+        DataFile := '';
+        LogFile := '';
+        CountVirgola := 0;
+        Riga := Database[i];
+        CountUnderscore := 0;
+        PercorsoData := '';
+        for j := 1 to Length(Riga) do
+        begin
+            if Riga[j] = ',' then
+            begin
+                CountVirgola := CountVirgola + 1;
+                Continue;
+            end;
+            if CountVirgola < 1 then
+            begin
+                Db := Db + Riga[j];
+                if Riga[j] = '_' then
+                begin
+                    CountUnderscore := CountUnderscore + 1;
+                end;
+                if (CountUnderscore >= 2) and (not VersioneTrovata) then
+                begin
+                    Versione := Versione + Riga[j];
+                end;
 
-        with qBackupRestore do
+            end
+            else if (CountVirgola >= 1) and (CountVirgola < 2) then
+            begin
+                DataFile := DataFile + Riga[j];
+            end
+            else if (CountVirgola >= 2) and (Riga[j] <> ';') then
+            begin
+                LogFile := LogFile + Riga[j];
+            end;
+        end;
+        if TRegEx.IsMatch(Versione, '^OS1_\d{3}_A\d{2}$') then
+        begin
+            VersioneTrovata := True;
+        end;
+
+        PercorsoData := 'C:\OS1\'+ Versione +'\DATA\';
+        ForceDirectories(PercorsoData);
+        TestoQuery :=
+        'USE [master]' +
+        ' RESTORE DATABASE ['+ Db + ']' +
+        ' FROM DISK = N' + QuotedStr(PercorsoServer + 'Backup_' + Db + '.bck') +
+        ' WITH FILE = 1,' +
+        ' MOVE N' + QuotedStr(DataFile) + 'TO N' + QuotedStr(PercorsoData + DataFile + '.mdf') + ',' +
+        ' MOVE N' + QuotedStr(LogFile) + 'TO N' + QuotedStr(PercorsoData + LogFile + '.ldf') + ',' +
+        ' NOUNLOAD, REPLACE, STATS = 5'
+        ;
+
+       with qBackupRestore do
         begin
             if Active then
                 Close;
             SQL.Text := TestoQuery;
             ExecSQL;
         end;
-        if Messaggio = 'Backup Eseguiti: ' then
-            Messaggio := Messaggio + Database[i] + ','
-        else
-            Messaggio := Messaggio + #13#10 + Database[i] + ',';
     end;
-    Messaggio := Copy(Messaggio, 1, Length(Messaggio) - 1);
-    EseguiRestore(Messaggio, PercorsoServer, Database);
 end;
 
 procedure TfCreaRelease.RiordinaStringList(ListDa: TStringList);

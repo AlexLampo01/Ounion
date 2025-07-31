@@ -25,7 +25,7 @@ object fCreaRelease: TfCreaRelease
       626
       32)
     object btnConferma: TBitBtn
-      Left = 532
+      Left = 524
       Top = 4
       Width = 75
       Height = 25
@@ -33,10 +33,10 @@ object fCreaRelease: TfCreaRelease
       Caption = 'Conferma'
       TabOrder = 0
       OnClick = btnConfermaClick
-      ExplicitLeft = 528
+      ExplicitLeft = 520
     end
     object btnSelezionaTutto: TBitBtn
-      Left = 420
+      Left = 412
       Top = 4
       Width = 91
       Height = 25
@@ -45,20 +45,21 @@ object fCreaRelease: TfCreaRelease
       Enabled = False
       TabOrder = 1
       OnClick = btnSelezionaTuttoClick
-      ExplicitLeft = 416
+      ExplicitLeft = 408
     end
     object pbLoading: TProgressBar
       Left = 8
       Top = 4
-      Width = 165
+      Width = 157
       Height = 25
       Anchors = [akLeft, akTop, akRight, akBottom]
       Max = 0
       Step = 1
       TabOrder = 2
+      ExplicitWidth = 153
     end
     object cbIstanza: TComboBox
-      Left = 184
+      Left = 176
       Top = 6
       Width = 213
       Height = 23
@@ -66,6 +67,7 @@ object fCreaRelease: TfCreaRelease
       TabOrder = 3
       OnChange = cbIstanzaChange
       OnEnter = cbIstanzaEnter
+      ExplicitLeft = 172
     end
   end
   object pnlCenter: TFlowPanel
