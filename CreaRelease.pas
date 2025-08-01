@@ -70,14 +70,14 @@ type
     btnConferma: TBitBtn;
     pnlBottom: TPanel;
     pnlCenter: TFlowPanel;
-    btnSelezionaTutto: TBitBtn;
     pbLoading: TProgressBar;
     ConnServer: TFDConnection;
     qBackupRestore: TFDQuery;
     cbIstanza: TComboBox;
     TControllo: TTimer;
+    pnlSettings: TPanel;
+    BitBtn1: TBitBtn;
     procedure FormCreate(Sender: TObject);
-    procedure btnSelezionaTuttoClick(Sender: TObject);
     procedure btnConfermaClick(Sender: TObject);
     procedure cbIstanzaEnter(Sender: TObject);
     procedure cbIstanzaChange(Sender: TObject);
@@ -331,57 +331,6 @@ begin
     end;
 end;
 
-procedure TfCreaRelease.btnSelezionaTuttoClick(Sender: TObject);
-var
-    i,j: Integer;
-    Contenitore : TPanel;
-    CheckBox : TCheckBox;
-begin
-    if btnSelezionaTutto.Caption = 'Seleziona Tutto' then
-    begin
-        for i := 0 to pnlCenter.ControlCount - 1  do
-        begin
-            if pnlCenter.Controls[i] is TPanel then
-            begin
-                Contenitore := TPanel(pnlCenter.Controls[i]);
-                for j := 0 to Contenitore.ControlCount - 1 do
-                begin
-                    if Contenitore.Controls[j] is TCheckBox then
-                    begin
-                        CheckBox := TCheckBox(Contenitore.Controls[j]);
-                        CheckBox.Checked := False;
-                        if (CheckBox.Checked = False) and (CheckBox.Enabled = True) then
-                            CheckBox.Checked := True
-                    end;
-                end;
-            end;
-        end;
-        btnSelezionaTutto.Caption := 'Deseleziona Tutto';
-        btnSelezionaTutto.Width := btnSelezionaTutto.Width + 10;
-    end
-    else if btnSelezionaTutto.Caption = 'Deseleziona Tutto' then
-    begin
-        for i := 0 to pnlCenter.ControlCount - 1  do
-        begin
-            if pnlCenter.Controls[i] is TPanel then
-            begin
-                Contenitore := TPanel(pnlCenter.Controls[i]);
-                for j := 0 to Contenitore.ControlCount - 1 do
-                begin
-                    if Contenitore.Controls[j] is TCheckBox then
-                    begin
-                        CheckBox := TCheckBox(Contenitore.Controls[j]);
-                    if (CheckBox.Checked = True) and (CheckBox.Enabled = True) then
-                        CheckBox.Checked := False;
-                    end;
-                end;
-            end;
-        end;
-        btnSelezionaTutto.Caption := 'Seleziona Tutto';
-        btnSelezionaTutto.Width := btnSelezionaTutto.Width - 10;
-    end;
-end;
-
 procedure TfCreaRelease.cbIstanzaChange(Sender: TObject);
 begin
     Server := cbIstanza.Text;
@@ -425,6 +374,7 @@ begin
                     if Section[i] = cbIstanza.Text then
                     begin
                         TrovataSezione := True;
+                        pnlSettings.Visible := False;
                     end;
                 end;
             finally
@@ -437,12 +387,20 @@ begin
             end
             else
             begin
-                fIstanza := TfIstanza.Create(Self);
-                try
-                    fIstanza.ShowModal;
-                finally
-                    fIstanza.Free;
+                if not Assigned(CreaRelease_Istanza.fIstanza) then
+                begin
+                    pnlSettings.Visible := True;
+                    CreaRelease_Istanza.fIstanza := CreaRelease_Istanza.TfIstanza.Create(Self);
                 end;
+                with CreaRelease_Istanza.fIstanza do
+                begin
+                    Parent := pnlSettings;
+                    BorderStyle := bsNone;
+                    Align := alClient;
+                    Visible := True;
+                    Show;
+                end;
+
             end;
         finally
             Ini.Free;
@@ -1225,8 +1183,9 @@ begin
         pbLoading.Position := pbLoading.Position + Terzo;
         if pbLoading.Position = pbLoading.Max then
         begin
-            ShowMessage('Completato!');
             TControllo.Enabled := False;
+            ShowMessage('Completato!');
+            pbLoading.Position := 0;
         end;
     end
     else if ValoreProgressBar < pbLoading.Position then

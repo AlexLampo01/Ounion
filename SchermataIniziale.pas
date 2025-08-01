@@ -43,7 +43,10 @@ uses
 procedure TfScegliCosaFare.btnCreaReleaseClick(Sender: TObject);
 begin
    if not Assigned(CreaRelease.fCreaRelease) then
+   begin
         CreaRelease.fCreaRelease := CreaRelease.TfCreaRelease.Create(Self);
+        WindowState := wsMaximized;
+   end;
     with CreaRelease.fCreaRelease do
     begin
         Parent := pnlCentrale;

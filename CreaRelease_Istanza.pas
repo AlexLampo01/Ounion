@@ -15,6 +15,7 @@ type
     btnConferma: TButton;
     procedure btnConfermaClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     procedure ScriviIni;
   public
@@ -40,6 +41,11 @@ begin
     end
     else
         ShowMessage('Campi non completi');
+end;
+
+procedure TfIstanza.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+    fCreaRelease.pnlSettings.Visible := False;
 end;
 
 procedure TfIstanza.FormShow(Sender: TObject);

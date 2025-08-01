@@ -11,7 +11,7 @@ object fIstanza: TfIstanza
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
-  Position = poScreenCenter
+  OnClose = FormClose
   OnShow = FormShow
   TextHeight = 15
   object lblUsername: TLabel
