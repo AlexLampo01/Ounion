@@ -110,8 +110,9 @@ type
     procedure ModificaOSILogon(Database : TStringList; Server, UserName, Password : String);
     procedure SalvaUltimaistanza;
     procedure LeggiIni;
+    procedure CancellaCustom;
   public
-    UserName, Password, GlobalPercorso, Server : String;
+    UserName, Password, GlobalPercorso, Server, PercorsoVersione : String;
     function GetServer: TStringList;
     function ReadFileIni : String;
     function GetWindowsUsername: String;
@@ -340,6 +341,28 @@ begin
             BorderStyle := bsNone;
             Align := alNone;
             Visible := False;
+        end;
+    end;
+end;
+
+procedure TfCreaRelease.CancellaCustom;
+var
+    PercorsoSistemato, FilePath, DirPath : String;
+    CountFilesInDirectory : Integer;
+begin
+    PercorsoSistemato := PercorsoVersione;
+    PercorsoSistemato := StringReplace(PercorsoSistemato, 'OSItalia', 'OS1', [rfReplaceAll]);
+    PercorsoSistemato := PercorsoSistemato + 'BIN\Custom';
+    if TDirectory.Exists(PercorsoSistemato) then
+    begin
+        CountFilesInDirectory := Length(TDirectory.GetFiles(PercorsoSistemato));
+        CountFilesInDirectory := Length(TDirectory.GetDirectories(PercorsoSistemato)) + CountFilesInDirectory;
+        if CountFilesInDirectory > 0 then
+        begin
+            for FilePath in TDirectory.GetFiles(PercorsoSistemato) do
+                TFile.Delete(FilePath);
+            for DirPath in TDirectory.GetDirectories(PercorsoSistemato) do
+                TDirectory.Delete(DirPath, True);
         end;
     end;
 end;
@@ -1285,6 +1308,7 @@ begin
             TControllo.Enabled := False;
             btnSettings.Enabled := True;
             btnConferma.Enabled := True;
+            CancellaCustom;
             ShowMessage('Completato!');
             pbLoading.Position := 0;
         end;
@@ -1503,6 +1527,7 @@ begin
   FFiles := Files;
   FSourceBase := IncludeTrailingPathDelimiter(SourceBase);
   FDestFolder := IncludeTrailingPathDelimiter(DestFolder);
+  fCreaRelease.PercorsoVersione := FDestFolder;
   FPatchPath := IncludeTrailingPathDelimiter(PatchPath);
 end;
 
