@@ -519,7 +519,7 @@ var
   BytesRead: DWORD;
   Stream: TStringStream;
   I: Integer;
-  Command, Percorso, Commit: string;
+  Command, Percorso: string;
 
   function RunGitCommand(const GitArgs: string): string;
   var
@@ -1010,7 +1010,7 @@ end;
 
 procedure TfCopiaFileConsegna.popMDoppioClickPopup(Sender: TObject);
 var
-    ListBox, ListBoxDestinazione : TListBox;
+    ListBox : TListBox;
     i,CounterElementi : Integer;
 begin
     {
@@ -1024,8 +1024,6 @@ begin
       end;
     end;
     }
-    ListBox := nil;
-    ListBoxDestinazione := nil;
     CounterElementi := 0;
     if (popMDoppioClick.PopupComponent is TListBox) then
     begin

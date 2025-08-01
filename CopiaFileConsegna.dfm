@@ -2,8 +2,8 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
   Left = 0
   Top = 0
   Caption = 'Copia File Consegna'
-  ClientHeight = 441
-  ClientWidth = 968
+  ClientHeight = 440
+  ClientWidth = 964
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,28 +15,26 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 968
+    Width = 964
     Height = 85
     Align = alTop
     TabOrder = 0
-    ExplicitWidth = 964
     DesignSize = (
-      968
+      964
       85)
     object pbLoading: TProgressBar
       Left = 1
       Top = 67
-      Width = 966
+      Width = 962
       Height = 17
       Align = alBottom
       TabOrder = 4
       Visible = False
-      ExplicitWidth = 962
     end
     object pPercorso: TPanel
       Left = 2
       Top = 8
-      Width = 871
+      Width = 863
       Height = 17
       Anchors = [akLeft, akTop, akRight]
       Enabled = False
@@ -51,7 +49,7 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
       end
     end
     object btnEsploraRisorse: TBitBtn
-      Left = 879
+      Left = 871
       Top = 5
       Width = 36
       Height = 25
@@ -171,16 +169,15 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
     object cbBranch: TComboBox
       Left = 1
       Top = 31
-      Width = 872
+      Width = 864
       Height = 23
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 1
       Visible = False
       OnEnter = cbBranchEnter
-      ExplicitWidth = 868
     end
     object btnAnalizzatore: TBitBtn
-      Left = 879
+      Left = 871
       Top = 31
       Width = 36
       Height = 23
@@ -299,19 +296,17 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
   end
   object pnlConferma: TPanel
     Left = 0
-    Top = 407
-    Width = 968
+    Top = 406
+    Width = 964
     Height = 34
     Align = alBottom
     TabOrder = 2
     Visible = False
-    ExplicitTop = 406
-    ExplicitWidth = 964
     DesignSize = (
-      968
+      964
       34)
     object btnConferma: TBitBtn
-      Left = 879
+      Left = 871
       Top = 5
       Width = 36
       Height = 25
@@ -427,7 +422,7 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
       ExplicitLeft = 875
     end
     object btnRestart: TBitBtn
-      Left = 835
+      Left = 827
       Top = 5
       Width = 36
       Height = 25
@@ -464,12 +459,10 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
   object Panel3: TPanel
     Left = 0
     Top = 85
-    Width = 968
-    Height = 322
+    Width = 964
+    Height = 321
     Align = alClient
     TabOrder = 1
-    ExplicitWidth = 964
-    ExplicitHeight = 321
     object Splitter1: TSplitter
       Left = 313
       Top = 1
@@ -548,26 +541,23 @@ object fCopiaFileConsegna: TfCopiaFileConsegna
       end
       object pbFile: TProgressBar
         Left = 1
-        Top = 302
+        Top = 301
         Width = 310
         Height = 17
         Align = alBottom
         TabOrder = 2
         Visible = False
         OnChange = pbFileChange
-        ExplicitTop = 301
       end
     end
     object pnlDeselezionaTutto: TPanel
       Left = 316
       Top = 1
-      Width = 651
-      Height = 320
+      Width = 647
+      Height = 319
       Align = alClient
       TabOrder = 1
       Visible = False
-      ExplicitWidth = 647
-      ExplicitHeight = 319
       object pnlButtons: TPanel
         Left = 1
         Top = 1

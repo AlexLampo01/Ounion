@@ -19,7 +19,6 @@ type
             SorgenteThread, DestinazioneThread, FileEsaminato : String;
             FileEsaminati : TStringList;
             FFileCount: Integer;
-            procedure InitProgressBar;
         Protected
             procedure Execute; Override;
         Public
@@ -31,7 +30,6 @@ type
         FFiles: TArray<string>;
         FSourceBase: string;     // ← la cartella "Bin"
         FDestFolder: string;     // ← es. "D:\Backup"
-        FPatchPath: string;
         procedure StepProgressBar;
     protected
         procedure Execute; override;
@@ -44,7 +42,6 @@ type
             FileEsaminatiVer : TStringList;
             FFileCountVer: Integer;
             FPatchPathVers: String;
-            procedure InitProgressBar;
         Protected
             procedure Execute; Override;
         Public
@@ -135,7 +132,7 @@ var
     CheckBox : TCheckBox;
     Contenitore : TPanel;
     NomeCheckBox, Cartella : String;
-    Cartelle,Files, Dir : TArray<String>;
+    Cartelle,Files: TArray<String>;
     CartellaScelta : String;
 begin
     ClientList := TStringList.Create;
@@ -268,7 +265,7 @@ procedure TfCreaRelease.AnalizzaECopiaDaServer(ListDa: TStringList);
 var
     i, CountUnderscore, j: Integer;
     Cartella, Percorso, PrimaParteCartella, SecondaParteCartella, PercorsoDestinazione : String;
-    Files, Dir : TArray<String>;
+    Files: TArray<String>;
 begin
     Cartella := '';
     for i := 0 to ListDa.Count - 1 do
@@ -611,7 +608,7 @@ end;
 function TfCreaRelease.ControllaEsistenza(Database: TStringList): TStringList;
 var
     i,j: Integer;
-    TestoQuery, Risultato, FiltratoDatabase, Riga : String;
+    TestoQuery, FiltratoDatabase, Riga : String;
 begin
     Result := TStringList.Create;
     try
@@ -653,7 +650,7 @@ var
     Contenitore : TPanel;
     TStringListCheckBox, ReleasesLocale : TStringList;
     i,j,k : Integer;
-    ReleaseLocale, NomeContenitore : String;
+    ReleaseLocale: String;
 begin
     TStringListCheckBox := TStringList.Create;
     ReleasesLocale := TStringList.Create;
@@ -915,7 +912,6 @@ end;
 
 procedure TfCreaRelease.EseguiRestore(PercorsoServer: String; Database : TStringList);
 var
-    FileBackup : TArray<String>;
     Server, Username, Password, RisultatoIni : String;
     CountPuntoEVirgola,i : Integer;
     DatabaseNonEsistenti : TStringList;
@@ -1284,7 +1280,6 @@ end;
 procedure TfCreaRelease.SalvaUltimaistanza;
 var
     Ini: TIniFile;
-    Keys : TStringList;
 begin
     Ini := TIniFile.Create(fCreaRelease.GlobalPercorso);
     try
@@ -1433,13 +1428,6 @@ begin
       end;
 end;
 
-procedure ThreadRicercaFile.InitProgressBar;
-begin
-    fCreaRelease.pbLoading.Min := 0;
-    fCreaRelease.pbLoading.Max := FFileCount;
-    fCreaRelease.pbLoading.Position := 0;
-end;
-
 { TCopyFileThread }
 
 constructor TCopyFileThread.Create(const Files: TArray<string>; const SourceBase, DestFolder: string);
@@ -1494,14 +1482,12 @@ procedure TCopyFileThreadVers.CopyPatchContents;
 var
   PatchFiles: TArray<string>;
   SrcFile, RelativePath, DestPath, DestFolder: string;
-  TotFile : Integer;
 begin
   PatchFiles := TDirectory.GetFiles(FPatchPath, '*.*', TSearchOption.soAllDirectories);
 
   for SrcFile in PatchFiles do
   begin
     if Terminated then Exit;
-    TotFile := Length(SrcFile);
     //fCreaRelease.pbLoading.Max := fCreaRelease.pbLoading.Max + TotFile;
     RelativePath := StringReplace(SrcFile, FPatchPath, '', [rfIgnoreCase]);
     DestPath := FDestFolder + RelativePath;
@@ -1633,13 +1619,6 @@ begin
               ShowMessage('Errore: ' + E.Message);
             end);
       end;
-end;
-
-procedure ThreadRicercaFileVers.InitProgressBar;
-begin
-    fCreaRelease.pbLoading.Min := 0;
-    fCreaRelease.pbLoading.Max := FFileCountVer;
-    fCreaRelease.pbLoading.Position := 0;
 end;
 
 end.
