@@ -76,12 +76,13 @@ type
     cbIstanza: TComboBox;
     TControllo: TTimer;
     pnlSettings: TPanel;
-    BitBtn1: TBitBtn;
+    btnSettings: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure btnConfermaClick(Sender: TObject);
     procedure cbIstanzaEnter(Sender: TObject);
     procedure cbIstanzaChange(Sender: TObject);
     procedure TControlloTimer(Sender: TObject);
+    procedure btnSettingsClick(Sender: TObject);
   private
     ListeTotaliReleases : TStringList;
     ValoreProgressBar, GiriTimer : Integer;
@@ -103,15 +104,17 @@ type
     procedure ImpostaQuery(Database : TStringList);
     procedure EseguiRestore(PercorsoServer : String; Database: TStringList);
     function  ControllaEsistenza(Database: TStringList) : TStringList;
-    function GetServer: TStringList;
-    function GetWindowsUsername: String;
-    function ReadFileIni : String;
     procedure CreaFileIni(Percorso : String);
     procedure ImpostaRestore(Database : TStringList);
     procedure EliminaFileDaServer(Database : TStringList);
     procedure ModificaOSILogon(Database : TStringList; Server, UserName, Password : String);
+    procedure SalvaUltimaistanza;
+    procedure LeggiIni;
   public
     UserName, Password, GlobalPercorso, Server : String;
+    function GetServer: TStringList;
+    function ReadFileIni : String;
+    function GetWindowsUsername: String;
   end;
 
 var
@@ -120,7 +123,7 @@ var
 implementation
 
 uses
-    System.IOUtils, System.Generics.Defaults, Math, System.RegularExpressions, IniFiles, CreaRelease_Istanza;
+    System.IOUtils, System.Generics.Defaults, Math, System.RegularExpressions, IniFiles, CreaRelease_Istanza, SettingsIstanza;
 
 {$R *.dfm}
 
@@ -311,15 +314,52 @@ begin
     end;
 end;
 
+procedure TfCreaRelease.btnSettingsClick(Sender: TObject);
+begin
+    pnlSettings.Height := 192;
+    pnlSettings.Visible := True;
+    pnlSettings.Top := 10;
+    if not Assigned(SettingsIstanza.fSettingsIstanza) then
+    begin
+        SettingsIstanza.fSettingsIstanza := SettingsIstanza.TfSettingsIstanza.Create(Self);
+        WindowState := wsMaximized;
+    end;
+    with SettingsIstanza.fSettingsIstanza do
+    begin
+        Parent := pnlSettings;
+        BorderStyle := bsNone;
+        Align := alClient;
+        Visible := True;
+        Show;
+    end;
+    if Assigned(CreaRelease_Istanza.fIstanza) then
+    begin
+        with CreaRelease_Istanza.fIstanza do
+        begin
+            Parent := pnlSettings;
+            BorderStyle := bsNone;
+            Align := alNone;
+            Visible := False;
+        end;
+    end;
+end;
+
 procedure TfCreaRelease.btnConfermaClick(Sender: TObject);
 var
     CartelleComplete : TStringList;
 begin
     CartelleComplete := TStringList.Create;
     try
+        if cbIstanza.Text <> '' then
+        begin
         Screen.Cursor := crHourGlass;
+        SalvaUltimaistanza;
+        btnSettings.Enabled := False;
         CartelleComplete := AnalizzaCheckConStringList(ListeTotaliReleases);
         AnalizzaCheckCliente(CartelleComplete);
+        end
+        else
+            MessageDlg('Nessuna Istanza selezionata!', mtError, [mbOk], 0);
     finally
         ControllaReleaseEsistenti;
         ControllaVersCliente;
@@ -334,7 +374,8 @@ end;
 procedure TfCreaRelease.cbIstanzaChange(Sender: TObject);
 begin
     Server := cbIstanza.Text;
-    ReadFileIni;
+    if Server <> '' then
+        ReadFileIni;
 end;
 
 function TfCreaRelease.GetWindowsUsername: String;
@@ -389,9 +430,11 @@ begin
             begin
                 if not Assigned(CreaRelease_Istanza.fIstanza) then
                 begin
-                    pnlSettings.Visible := True;
                     CreaRelease_Istanza.fIstanza := CreaRelease_Istanza.TfIstanza.Create(Self);
                 end;
+                pnlSettings.Visible := True;
+                pnlSettings.Height := 157;
+                pnlSettings.Top := 10;
                 with CreaRelease_Istanza.fIstanza do
                 begin
                     Parent := pnlSettings;
@@ -901,7 +944,8 @@ begin
         ListeTotaliReleases.Assign(ListNameReleases);
         ControllaReleaseEsistenti;
         ControllaVersCliente;
-        Show;
+        LeggiIni;
+        //Show;
     finally
         ListNameReleases.Free;
         ListReleases.Free;
@@ -1051,6 +1095,47 @@ begin
     end;
 end;
 
+procedure TfCreaRelease.LeggiIni;
+var
+    Ini: TIniFile;
+    Utente, Istanza, Percorso, Cartella : String;
+    Section : TStringList;
+    i: Integer;
+    TrovataSezione : Boolean;
+begin
+    Utente := GetWindowsUsername;
+    TrovataSezione := False;
+    Cartella := 'C:\Users\'+ Utente + '\AppData\Roaming\MECTools\MECToolsIstanze\';
+    Percorso := Cartella + 'Istanze.ini';
+    GlobalPercorso := Percorso;
+    if FileExists(Percorso) then
+    begin
+        Ini := TIniFile.Create(Percorso);
+        try
+            Section := TStringList.Create;
+            try
+                Ini.ReadSections(Section);
+                for i := 0 to Section.Count - 1 do
+                begin
+                    if Section[i] = 'UltimaIstanza' then
+                    begin
+                        TrovataSezione := True;
+                    end;
+                end;
+            finally
+                Section.Free;
+            end;
+            if TrovataSezione then
+            begin
+                Istanza := Ini.ReadString('UltimaIstanza', 'Nome', Server);
+            end;
+            cbIstanza.Text := Istanza;
+        finally
+            Ini.Free;
+        end;
+    end;
+end;
+
 procedure TfCreaRelease.ModificaOSILogon(Database: TStringList; Server, Username, Password : String);
 var
     i,j: Integer;
@@ -1173,6 +1258,20 @@ begin
     end;
 end;
 
+procedure TfCreaRelease.SalvaUltimaistanza;
+var
+    Ini: TIniFile;
+    Keys : TStringList;
+begin
+    Ini := TIniFile.Create(fCreaRelease.GlobalPercorso);
+    try
+        Ini.WriteString('UltimaIstanza', 'Nome', Server);
+    finally
+        Ini.Free;
+    end;
+
+end;
+
 procedure TfCreaRelease.TControlloTimer(Sender: TObject);
 var
     Terzo: Integer;
@@ -1184,6 +1283,8 @@ begin
         if pbLoading.Position = pbLoading.Max then
         begin
             TControllo.Enabled := False;
+            btnSettings.Enabled := True;
+            btnConferma.Enabled := True;
             ShowMessage('Completato!');
             pbLoading.Position := 0;
         end;

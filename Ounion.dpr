@@ -9,7 +9,8 @@ uses
   Questions in 'Questions.pas' {tQuestions},
   Podio in 'Podio.pas' {fPodio},
   CreaRelease in 'CreaRelease.pas' {fCreaRelease},
-  CreaRelease_Istanza in 'CreaRelease_Istanza.pas' {fIstanza};
+  CreaRelease_Istanza in 'CreaRelease_Istanza.pas' {fIstanza},
+  SettingsIstanza in 'SettingsIstanza.pas' {fSettingsIstanza};
 
 {$R *.res}
 

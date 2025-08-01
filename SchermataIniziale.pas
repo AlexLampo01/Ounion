@@ -53,6 +53,7 @@ begin
         BorderStyle := bsNone;
         Align := alClient;
         Visible := True;
+        Show;
     end;
     if Assigned(CopiaFileConsegna.fCopiaFileConsegna) then
     begin

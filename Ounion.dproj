@@ -136,6 +136,10 @@
             <Form>fIstanza</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="SettingsIstanza.pas">
+            <Form>fSettingsIstanza</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

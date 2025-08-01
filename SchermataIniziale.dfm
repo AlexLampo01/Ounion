@@ -20,6 +20,7 @@ object fScegliCosaFare: TfScegliCosaFare
     Height = 53
     Align = alTop
     TabOrder = 0
+    ExplicitWidth = 602
     DesignSize = (
       606
       53)
@@ -1066,7 +1067,7 @@ object fScegliCosaFare: TfScegliCosaFare
       OnEnter = btnSpostaCartellaEnter
     end
     object btnInformazioniSu: TBitBtn
-      Left = 546
+      Left = 542
       Top = 3
       Width = 45
       Height = 45
@@ -1330,6 +1331,7 @@ object fScegliCosaFare: TfScegliCosaFare
         FF9E05FF9E05FF9E05FF}
       TabOrder = 2
       OnClick = btnInformazioniSuClick
+      ExplicitLeft = 538
     end
     object btnCreaRelease: TBitBtn
       Left = 138
@@ -1860,5 +1862,7 @@ object fScegliCosaFare: TfScegliCosaFare
     Height = 533
     Align = alClient
     TabOrder = 1
+    ExplicitWidth = 602
+    ExplicitHeight = 532
   end
 end
