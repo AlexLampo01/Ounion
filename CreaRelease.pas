@@ -108,11 +108,13 @@ type
     procedure SalvaUltimaistanza;
     procedure LeggiIni;
     procedure CancellaCustom;
+    procedure FiltraReleases(Releases : TStringList);
   public
     UserName, Password, GlobalPercorso, Server, PercorsoVersione : String;
     function GetServer: TStringList;
     function ReadFileIni : String;
     function GetWindowsUsername: String;
+    function GetMachineName : String;
   end;
 
 var
@@ -172,7 +174,8 @@ begin
                     Files := nil;
                     ThreadRicercaFile.Create('\\srvxapp\C\OS1\' + Cartella, 'C:\OS1\' + Cartella);
                     ForceDirectories('C:\OS1\' + Cartella + '\TEMP');
-                    CopiaDatabase(CartelleComplete);
+                    if cbIstanza.Text <> '' then
+                        CopiaDatabase(CartelleComplete);
                 end;
             end;
         end;
@@ -370,16 +373,11 @@ var
 begin
     CartelleComplete := TStringList.Create;
     try
-        if cbIstanza.Text <> '' then
-        begin
         Screen.Cursor := crHourGlass;
         SalvaUltimaistanza;
         btnSettings.Enabled := False;
         CartelleComplete := AnalizzaCheckConStringList(ListeTotaliReleases);
         AnalizzaCheckCliente(CartelleComplete);
-        end
-        else
-            MessageDlg('Nessuna Istanza selezionata!', mtError, [mbOk], 0);
     finally
         ControllaReleaseEsistenti;
         ControllaVersCliente;
@@ -481,10 +479,23 @@ begin
     Server := TStringList.Create;
     try
         Server := GetServer;
+        FiltraReleases(Server);
         cbIstanza.Items.Assign(Server);
     finally
         Server.Free;
     end;
+end;
+
+function TfCreaRelease.GetMachineName: String;
+var
+  Buffer: array[0..MAX_COMPUTERNAME_LENGTH + 1] of Char;
+  Size: DWORD;
+begin
+  Size := Length(Buffer);
+  if GetComputerName(Buffer, Size) then
+    Result := Buffer
+  else
+    RaiseLastOSError;
 end;
 
 function TfCreaRelease.GetServer : TStringList;
@@ -944,6 +955,28 @@ begin
         EliminaFileDaServer(DatabaseNonEsistenti);
     finally
         DatabaseNonEsistenti.Free;
+    end;
+end;
+
+procedure TfCreaRelease.FiltraReleases(Releases: TStringList);
+var
+    i : Integer;
+    NomeMacchina : String;
+    ReleasesFiltrate : TStringList;
+begin
+    NomeMacchina := GetMachineName;
+    ReleasesFiltrate := TStringList.Create;
+    try
+        for i := 0 to Releases.Count - 1  do
+        begin
+            if Releases[i].StartsWith(Lowercase(NomeMacchina)) then
+            begin
+                ReleasesFiltrate.Add(Releases[i]);
+            end;
+        end;
+        Releases.Assign(ReleasesFiltrate);
+    finally
+        ReleasesFiltrate.Free;
     end;
 end;
 

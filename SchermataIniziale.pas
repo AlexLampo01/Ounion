@@ -14,6 +14,7 @@ type
     btnSpostaCartella: TBitBtn;
     btnInformazioniSu: TBitBtn;
     btnCreaRelease: TBitBtn;
+    btnCreaTest: TBitBtn;
     procedure btnInizializzaProgettoClick(Sender: TObject);
     procedure btnSpostaCartellaClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -22,6 +23,7 @@ type
     procedure btnInformazioniSuClick(Sender: TObject);
     procedure btnCreaReleaseClick(Sender: TObject);
     procedure btnCreaReleaseEnter(Sender: TObject);
+    procedure btnCreaTestClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -34,11 +36,10 @@ var
 implementation
 
 uses
-    InizializzaProgetto, CopiaFileConsegna, About, CreaRelease;
+    InizializzaProgetto, CopiaFileConsegna, About, CreaRelease, CreaTest;
 
 {$R *.dfm}
 
-//TODO Creare un modo per generare in automatico la release di delphi selezionata
 //TODO Creare un modo per generare la custom per l'assistenza
 procedure TfScegliCosaFare.btnCreaReleaseClick(Sender: TObject);
 begin
@@ -83,11 +84,68 @@ begin
             Visible := False;
         end;
     end;
+    if Assigned(CreaTest.fCreaTest) then
+    with CreaTest.fCreaTest do
+    begin
+        Parent := pnlCentrale;
+        BorderStyle := bsNone;
+        Align := alNone;
+        Visible := False;
+    end;
 end;
 
 procedure TfScegliCosaFare.btnCreaReleaseEnter(Sender: TObject);
 begin
     btnCreaRelease.ShowHint := True;
+end;
+
+procedure TfScegliCosaFare.btnCreaTestClick(Sender: TObject);
+begin
+    if not Assigned(CreaTest.fCreaTest) then
+        CreaTest.fCreaTest := CreaTest.TfCreaTest.Create(Self);
+    with CreaTest.fCreaTest do
+    begin
+        Parent := pnlCentrale;
+        BorderStyle := bsNone;
+        Align := alClient;
+        Visible := True;
+    end;
+    if Assigned(CopiaFileConsegna.fCopiaFileConsegna) then
+    begin
+        with CopiaFileConsegna.fCopiaFileConsegna do
+        begin
+            Parent := pnlCentrale;
+            BorderStyle := bsNone;
+            Align := alNone;
+            Visible := False;
+        end;
+    end;
+    if Assigned(InizializzaProgetto.fInizializzaProgetto) then
+    begin
+        with InizializzaProgetto.fInizializzaProgetto do
+        begin
+            Parent := pnlCentrale;
+            BorderStyle := bsNone;
+            Align := alNone;
+            Visible := False;
+        end;
+    end;
+    if Assigned(CreaRelease.fCreaRelease) then
+    with CreaRelease.fCreaRelease do
+    begin
+        Parent := pnlCentrale;
+        BorderStyle := bsNone;
+        Align := alNone;
+        Visible := False;
+    end;
+    if Assigned(About.fInformazioniSu) then
+    with About.fInformazioniSu do
+    begin
+        Parent := pnlCentrale;
+        BorderStyle := bsNone;
+        Align := alNone;
+        Visible := False;
+    end;
 end;
 
 procedure TfScegliCosaFare.btnInformazioniSuClick(Sender: TObject);
@@ -123,6 +181,14 @@ begin
     end;
     if Assigned(CreaRelease.fCreaRelease) then
     with CreaRelease.fCreaRelease do
+    begin
+        Parent := pnlCentrale;
+        BorderStyle := bsNone;
+        Align := alNone;
+        Visible := False;
+    end;
+    if Assigned(CreaTest.fCreaTest) then
+    with CreaTest.fCreaTest do
     begin
         Parent := pnlCentrale;
         BorderStyle := bsNone;
@@ -168,6 +234,14 @@ begin
         Align := alNone;
         Visible := False;
     end;
+    if Assigned(CreaTest.fCreaTest) then
+    with CreaTest.fCreaTest do
+    begin
+        Parent := pnlCentrale;
+        BorderStyle := bsNone;
+        Align := alNone;
+        Visible := False;
+    end;
 end;
 
 procedure TfScegliCosaFare.btnInizializzaProgettoEnter(Sender: TObject);
@@ -206,6 +280,14 @@ begin
     end;
     if Assigned(CreaRelease.fCreaRelease) then
     with CreaRelease.fCreaRelease do
+    begin
+        Parent := pnlCentrale;
+        BorderStyle := bsNone;
+        Align := alNone;
+        Visible := False;
+    end;
+    if Assigned(CreaTest.fCreaTest) then
+    with CreaTest.fCreaTest do
     begin
         Parent := pnlCentrale;
         BorderStyle := bsNone;

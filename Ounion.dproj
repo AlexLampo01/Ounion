@@ -140,6 +140,10 @@
             <Form>fSettingsIstanza</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="CreaTest.pas">
+            <Form>fCreaTest</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

@@ -3,7 +3,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
   Top = 0
   Caption = 'Inizializza Progetto'
   ClientHeight = 504
-  ClientWidth = 626
+  ClientWidth = 602
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -196,7 +196,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
   object Panel3: TPanel
     Left = 228
     Top = 0
-    Width = 398
+    Width = 374
     Height = 504
     Align = alClient
     TabOrder = 1
@@ -562,18 +562,18 @@ object fInizializzaProgetto: TfInizializzaProgetto
     object Panel1: TPanel
       Left = 1
       Top = 1
-      Width = 396
+      Width = 372
       Height = 56
       Align = alTop
       TabOrder = 0
       ExplicitWidth = 392
       DesignSize = (
-        396
+        372
         56)
       object lblInizializzaProgettoNome: TLabel
         Left = 1
         Top = 1
-        Width = 394
+        Width = 370
         Height = 54
         Align = alClient
         Alignment = taCenter
@@ -592,7 +592,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
       object lblPrimoPunto: TLabel
         Left = 262
         Top = 1
-        Width = 9
+        Width = -15
         Height = 54
         Alignment = taCenter
         Anchors = [akLeft, akTop, akRight]
@@ -606,11 +606,12 @@ object fInizializzaProgetto: TfInizializzaProgetto
         ParentFont = False
         Layout = tlCenter
         Visible = False
+        ExplicitWidth = 9
       end
       object lblSecondoPunto: TLabel
         Left = 272
         Top = 1
-        Width = 9
+        Width = -15
         Height = 54
         Alignment = taCenter
         Anchors = [akLeft, akTop, akRight]
@@ -624,6 +625,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
         ParentFont = False
         Layout = tlCenter
         Visible = False
+        ExplicitWidth = 9
       end
     end
     object pnlModificaDitta: TPanel
@@ -742,7 +744,7 @@ object fInizializzaProgetto: TfInizializzaProgetto
     object pbLoading: TProgressBar
       Left = 1
       Top = 486
-      Width = 396
+      Width = 372
       Height = 17
       Align = alBottom
       TabOrder = 4

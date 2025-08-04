@@ -10,7 +10,8 @@ uses
   Podio in 'Podio.pas' {fPodio},
   CreaRelease in 'CreaRelease.pas' {fCreaRelease},
   CreaRelease_Istanza in 'CreaRelease_Istanza.pas' {fIstanza},
-  SettingsIstanza in 'SettingsIstanza.pas' {fSettingsIstanza};
+  SettingsIstanza in 'SettingsIstanza.pas' {fSettingsIstanza},
+  CreaTest in 'CreaTest.pas' {fCreaTest};
 
 {$R *.res}
 
