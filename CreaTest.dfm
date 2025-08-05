@@ -1190,6 +1190,16 @@ object fCreaTest: TfCreaTest
       Visible = False
       OnEnter = cbDatabaseEnter
     end
+    object cbIstanze: TComboBox
+      Left = 336
+      Top = 18
+      Width = 257
+      Height = 23
+      TabOrder = 4
+      Visible = False
+      OnEnter = cbIstanzeEnter
+      OnExit = cbIstanzeExit
+    end
   end
   object opCartelle: TFileOpenDialog
     FavoriteLinks = <>
@@ -1219,7 +1229,6 @@ object fCreaTest: TfCreaTest
     Params.Strings = (
       'DriverID=MSSQL'
       'Server=NB-ALESSANDRO\SQLEXPRESS2022'
-      'Database=OS1_SAND'
       'Username=sa'
       'Password=Grsys2022*'
       'User_Name=sa')
