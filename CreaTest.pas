@@ -36,6 +36,9 @@ type
     SelezionaTutto1: TMenuItem;
     qScripts: TFDQuery;
     ConnScripts: TFDConnection;
+    cbDatabase: TComboBox;
+    qDatabase: TFDQuery;
+    ConnDatabase: TFDConnection;
     procedure edCartellaDblClick(Sender: TObject);
     procedure TVCartelleChange(Sender: TObject; Node: TTreeNode);
     procedure btnContinuaClick(Sender: TObject);
@@ -46,6 +49,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure DeselezionaTutto1Click(Sender: TObject);
     procedure SelezionaTutto1Click(Sender: TObject);
+    procedure cbDatabaseEnter(Sender: TObject);
   private
     procedure RiempiTreeView(PercorsoCustom : String; ParentNode: TTreeNode = nil);
     procedure CopiaCartelle;
@@ -91,7 +95,10 @@ begin
     end
     else if SceltaDb = '3. Hanno già il db su SRVDB01\ASSISTENZA' then
     begin
-        ControllaSelezione;
+        if cbDatabase.Text <> '' then
+            ControllaSelezione
+        else
+            MessageDlg('Nessun database selezionato!', mtError, [mbOk], 0);
     end
     else if SceltaDb = '4. Va copiato il db su SRVDB01\ASSISTENZA' then
     begin
@@ -109,12 +116,52 @@ begin
     CopiaCartelle;
 end;
 
+procedure TfCreaTest.cbDatabaseEnter(Sender: TObject);
+var
+    Istanza, TestoQuery : String;
+    NomiDatabase : TStringList;
+begin
+    NomiDatabase := TStringList.Create;
+    try
+        Istanza := ConnScripts.Params.Values['Server'];
+        TestoQuery := 'SELECT name AS DatabaseName' + #13#10 +
+                      'FROM sys.databases' + #13#10 +
+                      'WHERE name NOT IN (' + QuotedStr('master') + ',' + QuotedStr('tempdb') + ',' +QuotedStr('model') + ',' +QuotedStr('msdb') + ')' +
+                      'ORDER BY name';
+        ConnDatabase.Params.Values['Server'] := Istanza;
+        ConnDatabase.Params.Values['User_Name'] := 'sa';
+        ConnDatabase.Params.Values['Password'] := 'Grsys2022*';
+        ConnDatabase.Connected := True;
+        With qDatabase do
+        begin
+            if Active then
+                Close;
+            SQL.Text := TestoQuery;
+            Open;
+
+            while not Eof do
+            begin
+                NomiDatabase.Add(FieldByName('DatabaseName').AsString);
+                Next;
+            end;
+        end;
+        cbDatabase.Items.Assign(NomiDatabase);
+    finally
+        NomiDatabase.Free;
+    end;
+end;
+
 procedure TfCreaTest.cbDbChange(Sender: TObject);
 var
     FileName, Percorso : String;
 begin
+    if cbDb.Text = '1. Non serve un database particolare, usano la demo' then
+    begin
+        cbDatabase.Visible := False;
+    end;
     if cbDb.Text = '3. Hanno già il db su SRVDB01\ASSISTENZA' then
     begin
+        cbDatabase.Visible := True;
         pnlSceltadb.Height := 116;
         lbDb.Visible    := True;
         lbDb.Items.BeginUpdate;

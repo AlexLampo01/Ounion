@@ -1181,6 +1181,15 @@ object fCreaTest: TfCreaTest
       Visible = False
       OnMouseDown = lbDbMouseDown
     end
+    object cbDatabase: TComboBox
+      Left = 8
+      Top = 47
+      Width = 229
+      Height = 23
+      TabOrder = 3
+      Visible = False
+      OnEnter = cbDatabaseEnter
+    end
   end
   object opCartelle: TFileOpenDialog
     FavoriteLinks = <>
@@ -1216,5 +1225,16 @@ object fCreaTest: TfCreaTest
       'User_Name=sa')
     Left = 460
     Top = 312
+  end
+  object qDatabase: TFDQuery
+    Connection = ConnScripts
+    Left = 508
+    Top = 364
+  end
+  object ConnDatabase: TFDConnection
+    Params.Strings = (
+      'DriverID=MSSQL')
+    Left = 460
+    Top = 364
   end
 end
