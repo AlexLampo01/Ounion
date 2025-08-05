@@ -18,6 +18,7 @@ object fCreaTest: TfCreaTest
     Height = 61
     Align = alTop
     TabOrder = 0
+    ExplicitWidth = 598
     object Label1: TLabel
       Left = 64
       Top = 17
@@ -34,7 +35,7 @@ object fCreaTest: TfCreaTest
     object lblNomeCartella: TLabel
       Left = 464
       Top = 8
-      Width = 129
+      Width = 3
       Height = 15
       Alignment = taCenter
     end
@@ -1128,29 +1129,57 @@ object fCreaTest: TfCreaTest
       Visible = False
       OnClick = btnContinuaClick
     end
+    object btnBack: TBitBtn
+      Left = 8
+      Top = 228
+      Width = 75
+      Height = 25
+      Caption = '<-- Back'
+      TabOrder = 4
+      Visible = False
+      OnClick = btnBackClick
+    end
   end
   object pnlSceltaDb: TPanel
     Left = 0
     Top = 145
     Width = 602
-    Height = 41
+    Height = 80
     Align = alTop
     TabOrder = 2
     Visible = False
-    ExplicitLeft = 28
-    ExplicitTop = 252
-    ExplicitWidth = 566
-    object ComboBox1: TComboBox
-      Left = 98
-      Top = 10
-      Width = 395
+    object cbDb: TComboBox
+      Left = 8
+      Top = 18
+      Width = 317
       Height = 23
       TabOrder = 0
+      OnChange = cbDbChange
       Items.Strings = (
         '1. Non serve un database particolare, usano la demo'
         '2. Usano il db sul pc dello sviluppatore'
         '3. Hanno gi'#224' il db su SRVDB01\ASSISTENZA'
         '4. Va copiato il db su SRVDB01\ASSISTENZA')
+    end
+    object btnConfermaDb: TBitBtn
+      Left = 255
+      Top = 47
+      Width = 70
+      Height = 25
+      Caption = 'Conferma'
+      TabOrder = 1
+      OnClick = btnConfermaDbClick
+    end
+    object lbDb: TListBox
+      Left = 336
+      Top = 10
+      Width = 257
+      Height = 97
+      ItemHeight = 15
+      MultiSelect = True
+      TabOrder = 2
+      Visible = False
+      OnMouseDown = lbDbMouseDown
     end
   end
   object opCartelle: TFileOpenDialog
@@ -1159,5 +1188,33 @@ object fCreaTest: TfCreaTest
     Options = [fdoPickFolders]
     Left = 520
     Top = 440
+  end
+  object popMlbDb: TPopupMenu
+    Left = 508
+    Top = 256
+    object SelezionaTutto1: TMenuItem
+      Caption = 'Seleziona Tutto'
+      OnClick = SelezionaTutto1Click
+    end
+    object DeselezionaTutto1: TMenuItem
+      Caption = 'Deseleziona Tutto'
+      OnClick = DeselezionaTutto1Click
+    end
+  end
+  object qScripts: TFDQuery
+    Connection = ConnScripts
+    Left = 508
+    Top = 312
+  end
+  object ConnScripts: TFDConnection
+    Params.Strings = (
+      'DriverID=MSSQL'
+      'Server=NB-ALESSANDRO\SQLEXPRESS2022'
+      'Database=OS1_SAND'
+      'Username=sa'
+      'Password=Grsys2022*'
+      'User_Name=sa')
+    Left = 460
+    Top = 312
   end
 end
