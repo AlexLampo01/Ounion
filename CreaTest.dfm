@@ -1084,6 +1084,7 @@ object fCreaTest: TfCreaTest
     Height = 84
     Align = alTop
     TabOrder = 1
+    ExplicitWidth = 598
     object Label2: TLabel
       Left = 8
       Top = 36
@@ -1148,6 +1149,7 @@ object fCreaTest: TfCreaTest
     Align = alTop
     TabOrder = 2
     Visible = False
+    ExplicitWidth = 598
     object cbDb: TComboBox
       Left = 8
       Top = 18
@@ -1229,14 +1231,14 @@ object fCreaTest: TfCreaTest
     Params.Strings = (
       'DriverID=MSSQL'
       'Server=NB-ALESSANDRO\SQLEXPRESS2022'
-      'Username=sa'
+      'User_Name=sa'
       'Password=Grsys2022*'
-      'User_Name=sa')
+      '')
     Left = 460
     Top = 312
   end
   object qDatabase: TFDQuery
-    Connection = ConnScripts
+    Connection = ConnDatabase
     Left = 508
     Top = 364
   end

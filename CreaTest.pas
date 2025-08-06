@@ -57,10 +57,11 @@ type
     procedure RiempiTreeView(PercorsoCustom : String; ParentNode: TTreeNode = nil);
     procedure CopiaCartelle;
     procedure ControllaSelezione;
-    procedure ModificaRegSetup(SceltaDb : String);
+    procedure ModificaConfig(SceltaDb : String);
     function AnalizzaStringPerDemo(Versione: String) : String;
     function GetServer : TStringList;
     function GetMachineName : String;
+    function ElaboraPassword(Istanza: String) : String;
   public
     CartellaSelezionata, CartellaFiltrata : String;
   end;
@@ -71,7 +72,7 @@ var
 implementation
 
 uses
-    System.IOUtils, Registry, System.RegularExpressions;
+    System.IOUtils, Registry, System.RegularExpressions, System.Character;
 
 {$R *.dfm}
 
@@ -114,16 +115,22 @@ begin
     SceltaDb := cbDb.Text;
     if SceltaDb = '1. Non serve un database particolare, usano la demo' then
     begin
-        ModificaRegSetup(SceltaDb);
+        ModificaConfig(SceltaDb);
     end
     else if SceltaDb = '2. Usano il db sul pc dello sviluppatore' then
     begin
-        ModificaRegSetup(SceltaDb);
+        if cbDatabase.Text <> '' then
+            ModificaConfig(SceltaDb)
+        else
+            MessageDlg('Nessun database selezionato!', mtError, [mbOk], 0);
     end
     else if SceltaDb = '3. Hanno già il db su SRVDB01\ASSISTENZA' then
     begin
         if cbDatabase.Text <> '' then
-            ControllaSelezione
+        begin
+            ControllaSelezione;
+            ModificaConfig(SceltaDb);
+        end
         else
             MessageDlg('Nessun database selezionato!', mtError, [mbOk], 0);
     end
@@ -145,16 +152,24 @@ end;
 
 procedure TfCreaTest.cbDatabaseEnter(Sender: TObject);
 var
-    Istanza, TestoQuery : String;
+    Istanza, TestoQuery, Username, Password : String;
     NomiDatabase : TStringList;
 begin
     cbDatabase.Items.Clear;
     NomiDatabase := TStringList.Create;
     try
         if not cbIstanze.Visible then
-            Istanza := ConnScripts.Params.Values['Server']
+        begin
+            Istanza := ConnScripts.Params.Values['Server'];
+            Username := ConnScripts.Params.Values['User_Name'];
+            Password := ConnScripts.Params.Values['Password'];
+        end
         else
+        begin
             Istanza := cbIstanze.Text;
+            Username := 'sa';
+            Password := ElaboraPassword(Istanza);
+        end;
         if Istanza <> '' then
         begin
             TestoQuery := 'SELECT name AS DatabaseName' + #13#10 +
@@ -162,8 +177,8 @@ begin
                           'WHERE name NOT IN (' + QuotedStr('master') + ',' + QuotedStr('tempdb') + ',' +QuotedStr('model') + ',' +QuotedStr('msdb') + ')' +
                           'ORDER BY name';
             ConnDatabase.Params.Values['Server'] := Istanza;
-            ConnDatabase.Params.Values['User_Name'] := 'sa';
-            ConnDatabase.Params.Values['Password'] := 'Grsys2022*';
+            ConnDatabase.Params.Values['User_Name'] := Username;
+            ConnDatabase.Params.Values['Password'] := Password;
             ConnDatabase.Connected := True;
             With qDatabase do
             begin
@@ -364,6 +379,30 @@ begin
 
 end;
 
+function TfCreaTest.ElaboraPassword(Istanza: String): String;
+var
+    IstanzaDaElaborare, Numero, Caratteri : String;
+    i: Integer;
+begin
+    Result := 'Grsys01*';
+    Numero := '';
+    Caratteri := '';
+    IstanzaDaElaborare := Istanza;
+    for i := 1 to Length(IstanzaDaElaborare) do
+    begin
+        if IstanzaDaElaborare[i].IsDigit then
+            Numero := Numero + IstanzaDaElaborare[i]
+        else
+            Caratteri := Caratteri + IstanzaDaElaborare[i];
+    end;
+    if Numero <> '' then
+    begin
+        Result := 'Grsys' + Numero + '*';
+    end;
+
+
+end;
+
 function TfCreaTest.GetServer: TStringList;
 var
     DocumentPath, Riga, RigaPresa, Versione, VersioneScelta : String;
@@ -442,7 +481,7 @@ begin
     end;
 end;
 
-procedure TfCreaTest.ModificaRegSetup(SceltaDb: String);
+procedure TfCreaTest.ModificaConfig(SceltaDb: String);
 var
     Versione, Percorso, VersioneSeparata, DbDemo, Database, NomeProgetto, Username, Password, Server : String;
     i: Integer;
@@ -474,6 +513,15 @@ begin
     begin
         Server := cbIstanze.Text;
         Database := cbDatabase.Text;
+        Username := ConnDatabase.Params.Values['User_Name'];
+        Password := ConnDatabase.Params.Values['Password'];
+    end;
+    if SceltaDb.StartsWith('3') then
+    begin
+        Server := 'srvdb01\assistenza';
+        Database := cbDatabase.Text;
+        Username := 'sa';
+        Password := 'Grsys01*';
     end;
     if not FileExists('C:\OS1\OS1 LAUNCHER\Custom.Config\' + NomeProgetto + '.config') then
     begin
