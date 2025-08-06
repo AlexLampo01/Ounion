@@ -62,8 +62,8 @@ type
     procedure ModificaConfig(SceltaDb : String);
     procedure RecuperaDatabase(ListaDb : TStringList);
     procedure RecuperaDatabaseAssistenza(ListaDb : TStringList);
-    procedure EseguiBackup;
-    procedure EseguiRestore;
+    function  EseguiBackup : String;
+    procedure EseguiRestore(NomeLogicalDataLogFile : String);
     function AnalizzaStringPerDemo(Versione: String) : String;
     function GetServer : TStringList;
     function GetMachineName : String;
@@ -116,7 +116,7 @@ end;
 
 procedure TfCreaTest.btnConfermaDbClick(Sender: TObject);
 var
-    SceltaDb, Db : String;
+    SceltaDb, Db, NomeLogicalDataLogFile : String;
     ListaDb : TStringList;
     i : Integer;
 begin
@@ -167,8 +167,8 @@ begin
                     ConnBackupRestore.Params.Values['User_Name'] := 'sa';
                     ConnBackupRestore.Params.Values['Password'] := ElaboraPassword(cbIstanze.Text);
                     ConnBackupRestore.Params.Values['Database'] := cbDatabase.Text;
-                    EseguiBackup;
-                    EseguiRestore;
+                    NomeLogicalDataLogFile := EseguiBackup;
+                    EseguiRestore(NomeLogicalDataLogFile);
                 end;
 
             finally
@@ -414,7 +414,7 @@ begin
     end;
 end;
 
-procedure TfCreaTest.EseguiBackup;
+function TfCreaTest.EseguiBackup: String;
 var
     TestoQuery : String;
 begin
@@ -429,11 +429,69 @@ begin
         SQL.Text := TestoQuery;
         ExecSQL;
     end;
+
+    TestoQuery :=
+            'declare @DBName  sysname' + #13#10 +
+            ' ,@LogicalDataFile  sysname' + #13#10 +
+            ' ,@LogicalLogFile  sysname' + #13#10 +
+            ' ,@PhysicalDataFile  nvarchar(260)' + #13#10 +
+            ' ,@PhysicalLogFile  nvarchar(260)' + #13#10 +
+            ' set @DBName='+QuotedStr(cbDatabase.Text) + #13#10 +
+            ' select @LogicalDataFile = name' + #13#10 +
+            ' ,@PhysicalDataFile = physical_name' + #13#10 +
+            ' from sys.master_files' + #13#10 +
+            ' where database_id = db_id(@DBName)' + #13#10 +
+            ' and type_desc = ' + QuotedStr('ROWS') + #13#10 +
+            ' select @LogicalLogFile = name' + #13#10 +
+            ' ,@PhysicalLogFile = physical_name' + #13#10 +
+            ' from sys.master_files' + #13#10 +
+            ' where database_id = db_id(@DBName)' + #13#10 +
+            ' and type_desc = ' +QuotedStr('LOG') + #13#10 +
+            ' select @LogicalDataFile as [LogicalDataFile]' + #13#10 +
+            ' ,@LogicalLogFile as [LogicalLogFile]' + #13#10 +
+            ' ,@PhysicalDataFile as [PhysicalDataFile]' + #13#10 +
+            ' ,@PhysicalLogFile as [PhysicalLogFile]'
+            ;
+    with qBackupRestore do
+    begin
+        if Active then
+            Close;
+        SQL.Text := TestoQuery;
+        Open;
+    end;
+    Result := qBackupRestore.FieldByName('LogicalDataFile').AsString + ';' + qBackupRestore.FieldByName('LogicalLogFile').AsString;
 end;
 
-procedure TfCreaTest.EseguiRestore;
+procedure TfCreaTest.EseguiRestore(NomeLogicalDataLogFile : String);
+var
+    TestoQuery, PercorsoData, LogicalDataFile, LogicalLogFile : String;
 begin
-//
+    PercorsoData := 'C:\TEMP\Data\Data\';
+    ConnBackupRestore.Close;
+    ConnBackupRestore.Params.Clear;
+    ConnBackupRestore.Params.Values['Server'] := 'NB-ALESSANDRO\SQLEXPRESS2022';
+    ConnBackupRestore.Params.Values['User_Name'] := 'sa';
+    ConnBackupRestore.Params.Values['Password'] := 'Grsys2022*';
+    ConnBackupRestore.Params.Add('DriverID=MSSQL');
+    LogicalDataFile := Copy(NomeLogicalDataLogFile, 1, Pos(';', NomeLogicalDataLogFile) - 1);
+    LogicalLogFile  := Copy(NomeLogicalDataLogFile, Pos(';', NomeLogicalDataLogFile) + 1, Length(NomeLogicalDataLogFile));
+    TestoQuery :=
+        'USE [master]' +
+        ' RESTORE DATABASE ['+ cbDatabase.Text + ']' +
+        ' FROM DISK = N' + QuotedStr('C:\TEMP\Data\' + 'Backup_' + cbDatabase.Text + '.bck') +
+        ' WITH FILE = 1,' +
+        ' MOVE N' + QuotedStr(LogicalDataFile) + 'TO N' + QuotedStr(PercorsoData + LogicalDataFile + '.mdf') + ',' +
+        ' MOVE N' + QuotedStr(LogicalLogFile) + 'TO N' + QuotedStr(PercorsoData + LogicalLogFile + '.ldf') + ',' +
+        ' NOUNLOAD, REPLACE, STATS = 5'
+        ;
+
+       with qBackupRestore do
+        begin
+            if Active then
+                Close;
+            SQL.Text := TestoQuery;
+            ExecSQL;
+        end;
 end;
 
 function TfCreaTest.GetServer: TStringList;
