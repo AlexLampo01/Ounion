@@ -1249,8 +1249,14 @@ object fCreaTest: TfCreaTest
     Top = 364
   end
   object qBackupRestore: TFDQuery
-    Connection = ConnDatabase
-    Left = 456
-    Top = 420
+    Connection = ConnBackupRestore
+    Left = 508
+    Top = 416
+  end
+  object ConnBackupRestore: TFDConnection
+    Params.Strings = (
+      'DriverID=MSSQL')
+    Left = 460
+    Top = 416
   end
 end

@@ -41,6 +41,7 @@ type
     ConnDatabase: TFDConnection;
     cbIstanze: TComboBox;
     qBackupRestore: TFDQuery;
+    ConnBackupRestore: TFDConnection;
     procedure edCartellaDblClick(Sender: TObject);
     procedure TVCartelleChange(Sender: TObject; Node: TTreeNode);
     procedure btnContinuaClick(Sender: TObject);
@@ -62,6 +63,7 @@ type
     procedure RecuperaDatabase(ListaDb : TStringList);
     procedure RecuperaDatabaseAssistenza(ListaDb : TStringList);
     procedure EseguiBackup;
+    procedure EseguiRestore;
     function AnalizzaStringPerDemo(Versione: String) : String;
     function GetServer : TStringList;
     function GetMachineName : String;
@@ -161,7 +163,12 @@ begin
                 end;
                 if Db = '' then
                 begin
+                    ConnBackupRestore.Params.Values['Server'] := cbIstanze.Text;
+                    ConnBackupRestore.Params.Values['User_Name'] := 'sa';
+                    ConnBackupRestore.Params.Values['Password'] := ElaboraPassword(cbIstanze.Text);
+                    ConnBackupRestore.Params.Values['Database'] := cbDatabase.Text;
                     EseguiBackup;
+                    EseguiRestore;
                 end;
 
             finally
@@ -422,6 +429,11 @@ begin
         SQL.Text := TestoQuery;
         ExecSQL;
     end;
+end;
+
+procedure TfCreaTest.EseguiRestore;
+begin
+//
 end;
 
 function TfCreaTest.GetServer: TStringList;
