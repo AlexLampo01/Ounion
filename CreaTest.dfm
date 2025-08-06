@@ -1248,4 +1248,9 @@ object fCreaTest: TfCreaTest
     Left = 460
     Top = 364
   end
+  object qBackupRestore: TFDQuery
+    Connection = ConnDatabase
+    Left = 456
+    Top = 420
+  end
 end

@@ -40,6 +40,7 @@ type
     qDatabase: TFDQuery;
     ConnDatabase: TFDConnection;
     cbIstanze: TComboBox;
+    qBackupRestore: TFDQuery;
     procedure edCartellaDblClick(Sender: TObject);
     procedure TVCartelleChange(Sender: TObject; Node: TTreeNode);
     procedure btnContinuaClick(Sender: TObject);
@@ -58,6 +59,9 @@ type
     procedure CopiaCartelle;
     procedure ControllaSelezione;
     procedure ModificaConfig(SceltaDb : String);
+    procedure RecuperaDatabase(ListaDb : TStringList);
+    procedure RecuperaDatabaseAssistenza(ListaDb : TStringList);
+    procedure EseguiBackup;
     function AnalizzaStringPerDemo(Versione: String) : String;
     function GetServer : TStringList;
     function GetMachineName : String;
@@ -110,7 +114,9 @@ end;
 
 procedure TfCreaTest.btnConfermaDbClick(Sender: TObject);
 var
-    SceltaDb : String;
+    SceltaDb, Db : String;
+    ListaDb : TStringList;
+    i : Integer;
 begin
     SceltaDb := cbDb.Text;
     if SceltaDb = '1. Non serve un database particolare, usano la demo' then
@@ -136,7 +142,35 @@ begin
     end
     else if SceltaDb = '4. Va copiato il db su SRVDB01\ASSISTENZA' then
     begin
+        if cbDatabase.Text <> '' then
+        begin
+            ListaDb := TStringList.Create;
+            try
+                RecuperaDatabaseAssistenza(ListaDb);
+                for i := 0 to ListaDb.Count - 1 do
+                begin
+                    Db := ListaDb[i];
+                    if Db = cbDatabase.Text then
+                    begin
+                        Break;
+                    end
+                    else
+                    begin
+                        Db := '';
+                    end;
+                end;
+                if Db = '' then
+                begin
+                    EseguiBackup;
+                end;
 
+            finally
+                ListaDb.Free;
+            end;
+            ModificaConfig(SceltaDb)
+        end
+        else
+            MessageDlg('Nessun database selezionato!', mtError, [mbOk], 0);
     end;
 
 end;
@@ -158,43 +192,8 @@ begin
     cbDatabase.Items.Clear;
     NomiDatabase := TStringList.Create;
     try
-        if not cbIstanze.Visible then
-        begin
-            Istanza := ConnScripts.Params.Values['Server'];
-            Username := ConnScripts.Params.Values['User_Name'];
-            Password := ConnScripts.Params.Values['Password'];
-        end
-        else
-        begin
-            Istanza := cbIstanze.Text;
-            Username := 'sa';
-            Password := ElaboraPassword(Istanza);
-        end;
-        if Istanza <> '' then
-        begin
-            TestoQuery := 'SELECT name AS DatabaseName' + #13#10 +
-                          'FROM sys.databases' + #13#10 +
-                          'WHERE name NOT IN (' + QuotedStr('master') + ',' + QuotedStr('tempdb') + ',' +QuotedStr('model') + ',' +QuotedStr('msdb') + ')' +
-                          'ORDER BY name';
-            ConnDatabase.Params.Values['Server'] := Istanza;
-            ConnDatabase.Params.Values['User_Name'] := Username;
-            ConnDatabase.Params.Values['Password'] := Password;
-            ConnDatabase.Connected := True;
-            With qDatabase do
-            begin
-                if Active then
-                    Close;
-                SQL.Text := TestoQuery;
-                Open;
-
-                while not Eof do
-                begin
-                    NomiDatabase.Add(FieldByName('DatabaseName').AsString);
-                    Next;
-                end;
-            end;
-            cbDatabase.Items.Assign(NomiDatabase);
-        end;
+        RecuperaDatabase(NomiDatabase);
+        cbDatabase.Items.Assign(NomiDatabase);
     finally
         NomiDatabase.Free;
     end;
@@ -238,6 +237,13 @@ begin
             lbDb.Items.EndUpdate;
         end;
     end;
+    if cbDb.Text = '4. Va copiato il db su SRVDB01\ASSISTENZA' then
+    begin
+        cbDatabase.Visible := True;
+        lbDb.Visible    := False;
+        cbIstanze.Visible := True;
+    end;
+
 end;
 
 procedure TfCreaTest.cbIstanzeEnter(Sender: TObject);
@@ -399,8 +405,23 @@ begin
     begin
         Result := 'Grsys' + Numero + '*';
     end;
+end;
 
+procedure TfCreaTest.EseguiBackup;
+var
+    TestoQuery : String;
+begin
+    TestoQuery := 'BACKUP DATABASE [' + cbDatabase.Text + '] ' +
+            'TO DISK = N' + QuotedStr('C:\TEMP\Data\' + 'Backup_' + cbDatabase.Text + '.bck') + ' WITH NOFORMAT, INIT, ' +
+            'NAME = N' + QuotedStr(cbDatabase.Text + '-Completo Database Backup') + ', SKIP, NOREWIND, NOUNLOAD, STATS = 10';
 
+    with qBackupRestore do
+    begin
+        if Active then
+            Close;
+        SQL.Text := TestoQuery;
+        ExecSQL;
+    end;
 end;
 
 function TfCreaTest.GetServer: TStringList;
@@ -483,8 +504,13 @@ end;
 
 procedure TfCreaTest.ModificaConfig(SceltaDb: String);
 var
-    Versione, Percorso, VersioneSeparata, DbDemo, Database, NomeProgetto, Username, Password, Server : String;
-    i: Integer;
+    Versione, Percorso, VersioneSeparata,
+    DbDemo, Database, NomeProgetto,
+    Username, Password, Server,
+    PercorsoConfig, Riga, RigaTrimmata,
+    ContenutoParentesi, ContenutoSlash, Contenuto,
+    DatabaseOsiLogon, s: String;
+    i,j, CountSlash: Integer;
     ContenutoConfig : TStringList;
 begin
     Percorso := edCartella.Text;
@@ -493,6 +519,7 @@ begin
         Percorso := ExtractFileDir(Percorso);
     end;
     NomeProgetto := ExtractFileName(Percorso);
+    PercorsoConfig := 'C:\OS1\OS1 LAUNCHER\Custom.Config\' + NomeProgetto + '.config';
     Versione := Percorso;
     for i := 1 to 2 do
     begin
@@ -523,7 +550,7 @@ begin
         Username := 'sa';
         Password := 'Grsys01*';
     end;
-    if not FileExists('C:\OS1\OS1 LAUNCHER\Custom.Config\' + NomeProgetto + '.config') then
+    if not FileExists(PercorsoConfig) then
     begin
         ContenutoConfig := TStringList.Create;
         try
@@ -555,20 +582,180 @@ begin
             ContenutoConfig.Add('Username=' + Username);
             ContenutoConfig.Add('Password=' + Password);
 
-            ContenutoConfig.SaveToFile('C:\OS1\OS1 LAUNCHER\Custom.Config\' + NomeProgetto + '.config');
+            ContenutoConfig.SaveToFile(PercorsoConfig);
+        finally
+            ContenutoConfig.Free;
+        end;
+    end
+    else
+    begin
+        ContenutoConfig := TStringList.Create;
+        try
+            ContenutoConfig.LoadFromFile(PercorsoConfig);
+            for i := 0 to ContenutoConfig.Count - 1 do
+            begin
+                Riga := ContenutoConfig[i];
+                RigaTrimmata := Trim(LowerCase(Riga));
+                CountSlash := 0;
+                ContenutoParentesi := '';
+                ContenutoSlash := '';
+                Contenuto := '';
+                if RigaTrimmata.Contains(' su (') then
+                begin
+                    ContenutoParentesi := Copy(Riga, Pos('(', Riga) + 1, Pos(')', Riga) - Pos('(', Riga) - 1 );
+                    ContenutoConfig[i] := StringReplace(ContenutoConfig[i], ContenutoParentesi, Server, [rfIgnoreCase, rfReplaceAll]);
+                end;
+                if RigaTrimmata.EndsWith('\bin') and RigaTrimmata.StartsWith('pathbase=') then
+                begin
+                    for j := Length(RigaTrimmata) downto 1 do
+                    begin
+                        if RigaTrimmata[j] = '\' then
+                        begin
+                            CountSlash := CountSlash + 1;
+                            Continue;
+                        end;
+                        if CountSlash = 1 then
+                            ContenutoSlash := RigaTrimmata[j] + ContenutoSlash;
+                        if CountSlash > 1 then
+                            Break;
+                    end;
+                    ContenutoConfig[i] := StringReplace(ContenutoConfig[i], ContenutoSlash, Versione, [rfIgnoreCase, rfReplaceAll]);
+
+                end;
+                if RigaTrimmata.StartsWith('custom=') and RigaTrimmata.EndsWith('\custom') then
+                begin
+                    for j := Length(RigaTrimmata) downto 1 do
+                    begin
+                        if RigaTrimmata[j] = '\' then
+                        begin
+                            CountSlash := CountSlash + 1;
+                            Continue;
+                        end;
+                        if CountSlash = 1 then
+                            ContenutoSlash := RigaTrimmata[j] + ContenutoSlash;
+                        if CountSlash > 1 then
+                            Break;
+                    end;
+                    ContenutoConfig[i] := StringReplace(ContenutoConfig[i], ContenutoSlash, NomeProgetto, [rfIgnoreCase, rfReplaceAll]);
+                end;
+                if RigaTrimmata.StartsWith('temporanea=') and RigaTrimmata.EndsWith('\temp') then
+                begin
+                    for j := Length(RigaTrimmata) downto 1 do
+                    begin
+                        if RigaTrimmata[j] = '\' then
+                        begin
+                            CountSlash := CountSlash + 1;
+                            Continue;
+                        end;
+                        if CountSlash = 1 then
+                            ContenutoSlash := RigaTrimmata[j] + ContenutoSlash;
+                        if CountSlash > 1 then
+                            Break;
+                    end;
+                    ContenutoConfig[i] := StringReplace(ContenutoConfig[i], ContenutoSlash, Versione, [rfIgnoreCase, rfReplaceAll]);
+                end;
+                if RigaTrimmata.StartsWith('server=') then
+                begin
+                    Contenuto := Copy(RigaTrimmata, Pos('=', RigaTrimmata) + 1, Length(RigaTrimmata));
+                    ContenutoConfig[i] := StringReplace(ContenutoConfig[i], Contenuto, Server, [rfReplaceAll]);
+                end;
+                if RigaTrimmata.StartsWith('database=osilogon') then
+                begin
+                    Contenuto := Copy(RigaTrimmata, Pos('=', RigaTrimmata) + 1, Length(RigaTrimmata));
+                    DatabaseOsiLogon := 'OSILogon'+ Copy(VersioneSeparata, Pos(';', VersioneSeparata) + 1, Length(VersioneSeparata));
+                    ContenutoConfig[i] := StringReplace(ContenutoConfig[i], Contenuto, DatabaseOsiLogon, [rfIgnoreCase, rfReplaceAll]);
+                end;
+                if RigaTrimmata.StartsWith('username=') then
+                begin
+                    Contenuto := Copy(RigaTrimmata, Pos('=', RigaTrimmata) + 1, Length(RigaTrimmata));
+                    ContenutoConfig[i] := StringReplace(ContenutoConfig[i], Contenuto, Username, [rfIgnoreCase, rfReplaceAll]);
+                end;
+                if RigaTrimmata.StartsWith('password=') then
+                begin
+                    Contenuto := Copy(RigaTrimmata, Pos('=', RigaTrimmata) + 1, Length(RigaTrimmata));
+                    ContenutoConfig[i] := StringReplace(ContenutoConfig[i], Contenuto, Password, [rfIgnoreCase, rfReplaceAll]);
+                end;
+            end;
+            ContenutoConfig.SaveToFile(PercorsoConfig);
         finally
             ContenutoConfig.Free;
         end;
     end;
+end;
 
+procedure TfCreaTest.RecuperaDatabase(ListaDb: TStringList);
+var
+    Istanza, Username, Password, TestoQuery : String;
+begin
+    if not cbIstanze.Visible then
+    begin
+        Istanza := ConnScripts.Params.Values['Server'];
+        Username := ConnScripts.Params.Values['User_Name'];
+        Password := ConnScripts.Params.Values['Password'];
+    end
+    else
+    begin
+        Istanza := cbIstanze.Text;
+        Username := 'sa';
+        Password := ElaboraPassword(Istanza);
+    end;
+    if Istanza <> '' then
+    begin
+        TestoQuery := 'SELECT name AS DatabaseName' + #13#10 +
+                      'FROM sys.databases' + #13#10 +
+                      'WHERE name NOT IN (' + QuotedStr('master') + ',' + QuotedStr('tempdb') + ',' +QuotedStr('model') + ',' +QuotedStr('msdb') + ')' +
+                      'ORDER BY name';
+        ConnDatabase.Params.Values['Server'] := Istanza;
+        ConnDatabase.Params.Values['User_Name'] := Username;
+        ConnDatabase.Params.Values['Password'] := Password;
+        ConnDatabase.Connected := True;
+        With qDatabase do
+        begin
+            if Active then
+                Close;
+            SQL.Text := TestoQuery;
+            Open;
 
+            while not Eof do
+            begin
+                ListaDb.Add(FieldByName('DatabaseName').AsString);
+                Next;
+            end;
+        end;
+    end;
+end;
 
+procedure TfCreaTest.RecuperaDatabaseAssistenza(ListaDb: TStringList);
+var
+    Istanza, Username, Password, TestoQuery : String;
+begin
+    Istanza := 'srvdb01\assistenza';
+    Username := 'sa';
+    Password := 'Grsys01*';
+    if Istanza <> '' then
+    begin
+        TestoQuery := 'SELECT name AS DatabaseName' + #13#10 +
+                      'FROM sys.databases' + #13#10 +
+                      'WHERE name NOT IN (' + QuotedStr('master') + ',' + QuotedStr('tempdb') + ',' +QuotedStr('model') + ',' +QuotedStr('msdb') + ')' +
+                      'ORDER BY name';
+        ConnDatabase.Params.Values['Server'] := Istanza;
+        ConnDatabase.Params.Values['User_Name'] := Username;
+        ConnDatabase.Params.Values['Password'] := Password;
+        ConnDatabase.Connected := True;
+        With qDatabase do
+        begin
+            if Active then
+                Close;
+            SQL.Text := TestoQuery;
+            Open;
 
-
-
-
-
-
+            while not Eof do
+            begin
+                ListaDb.Add(FieldByName('DatabaseName').AsString);
+                Next;
+            end;
+        end;
+    end;
 end;
 
 procedure TfCreaTest.RiempiTreeView(PercorsoCustom: String; ParentNode: TTreeNode = nil);
