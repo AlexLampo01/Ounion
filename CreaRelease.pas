@@ -123,7 +123,7 @@ var
 implementation
 
 uses
-    System.IOUtils, System.Generics.Defaults, Math, System.RegularExpressions, IniFiles, CreaRelease_Istanza, SettingsIstanza;
+    System.IOUtils, System.Generics.Defaults, Math, System.RegularExpressions, IniFiles, CreaRelease_Istanza, SettingsIstanza, System.UITypes;
 
 {$R *.dfm}
 

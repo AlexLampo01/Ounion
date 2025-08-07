@@ -13,6 +13,11 @@ uses
   FireDAC.Comp.DataSet;
 
 type
+    TVersione = record
+        Versione, PercorsoConfig, NomeProgetto : String;
+    end;
+
+
   TfCreaTest = class(TForm)
     cbDb: TComboBox;
     pnlTop: TPanel;
@@ -42,6 +47,10 @@ type
     cbIstanze: TComboBox;
     qBackupRestore: TFDQuery;
     ConnBackupRestore: TFDConnection;
+    lblScripts: TLabel;
+    Label4: TLabel;
+    lblIstanza: TLabel;
+    lblDb: TLabel;
     procedure edCartellaDblClick(Sender: TObject);
     procedure TVCartelleChange(Sender: TObject; Node: TTreeNode);
     procedure btnContinuaClick(Sender: TObject);
@@ -68,6 +77,7 @@ type
     function GetServer : TStringList;
     function GetMachineName : String;
     function ElaboraPassword(Istanza: String) : String;
+    function CalcolaVersione : TVersione;
   public
     CartellaSelezionata, CartellaFiltrata : String;
   end;
@@ -78,7 +88,7 @@ var
 implementation
 
 uses
-    System.IOUtils, Registry, System.RegularExpressions, System.Character;
+    System.IOUtils, Registry, System.RegularExpressions, System.Character, System.Types, System.UITypes;
 
 {$R *.dfm}
 
@@ -191,9 +201,28 @@ begin
     CopiaCartelle;
 end;
 
+function TfCreaTest.CalcolaVersione: TVersione;
+var
+    Percorso: String;
+    i : Integer;
+begin
+    Percorso := edCartella.Text;
+    if ExtractFileName(Percorso) = 'Custom' then
+    begin
+        Percorso := ExtractFileDir(Percorso);
+    end;
+    Result.NomeProgetto := ExtractFileName(Percorso);
+    Result.PercorsoConfig := '\\srvxapp\OS1Launcher\CUSTOM.Config\' + Result.NomeProgetto + '.config';
+    Result.Versione := Percorso;
+    for i := 1 to 2 do
+    begin
+        Result.Versione := ExtractFileDir(Result.Versione);
+    end;
+    Result.Versione := ExtractFileName(Result.Versione);
+end;
+
 procedure TfCreaTest.cbDatabaseEnter(Sender: TObject);
 var
-    Istanza, TestoQuery, Username, Password : String;
     NomiDatabase : TStringList;
 begin
     cbDatabase.Items.Clear;
@@ -212,22 +241,45 @@ var
 begin
     if (cbDb.Text = '1. Non serve un database particolare, usano la demo') then
     begin
+        cbDatabase.Top := 101;
         cbDatabase.Visible := False;
         lbDb.Visible    := False;
         cbIstanze.Visible := False;
+        pnlSceltadb.Height := 52;
+        btnConfermaDb.Left := 336;
+        btnConfermaDb.Top  := 18;
+        lblDb.Top          := 86;
+        lblIstanza.Visible := False;
+        lblDb.Visible      := False;
+        lblScripts.Visible := False;
     end;
     if (cbDb.Text = '2. Usano il db sul pc dello sviluppatore') then
     begin
+        cbDatabase.Top := 101;
         cbDatabase.Visible := True;
         lbDb.Visible    := False;
         cbIstanze.Visible := True;
+        pnlSceltadb.Height := 164;
+        btnConfermaDb.Left := 255;
+        btnConfermaDb.Top  := 134;
+        lblDb.Top          := 86;
+        lblIstanza.Visible := True;
+        lblDb.Visible      := True;
+        lblScripts.Visible := False;
     end;
     if cbDb.Text = '3. Hanno già il db su SRVDB01\ASSISTENZA' then
     begin
+        cbDatabase.Top := 59;
+        lblDb.Top := 45;
         cbDatabase.Visible := True;
-        pnlSceltadb.Height := 116;
         lbDb.Visible    := True;
         cbIstanze.Visible := False;
+        pnlSceltadb.Height := 164;
+        btnConfermaDb.Left := 255;
+        btnConfermaDb.Top  := 86;
+        lblIstanza.Visible := False;
+        lblDb.Visible      := True;
+        lblScripts.Visible := True;
         lbDb.Items.BeginUpdate;
         try
             lbDb.Items.Clear;
@@ -246,9 +298,17 @@ begin
     end;
     if cbDb.Text = '4. Va copiato il db su SRVDB01\ASSISTENZA' then
     begin
+        cbDatabase.Top := 101;
         cbDatabase.Visible := True;
         lbDb.Visible    := False;
         cbIstanze.Visible := True;
+        pnlSceltadb.Height := 164;
+        btnConfermaDb.Left := 255;
+        btnConfermaDb.Top  := 134;
+        lblDb.Top          := 86;
+        lblIstanza.Visible := True;
+        lblDb.Visible      := True;
+        lblScripts.Visible := False;
     end;
 
 end;
@@ -331,7 +391,7 @@ begin
     begin
         NomeCartellaServer := ExtractFileDir(CartellaSelezionata);
         NomeCartellaServer := ExtractFileName(NomeCartellaServer);
-        PercorsoDestinazione := 'C:\TEMP\' + NomeCartellaServer + '\Custom';
+        PercorsoDestinazione := '\\srvxapp\CustomClienti\' + NomeCartellaServer + '\Custom';
         ForceDirectories(PercorsoDestinazione);
         TDirectory.Copy(CartellaSelezionata, PercorsoDestinazione, True);
     end
@@ -339,7 +399,7 @@ begin
     begin
         NomeCartellaServer := ExtractFileName(CartellaSelezionata);
         CartellaSelezionata := CartellaSelezionata + '\Custom';
-        PercorsoDestinazione := 'C:\TEMP\' + NomeCartellaServer + '\Custom';
+        PercorsoDestinazione := '\\srvxapp\CustomClienti\' + NomeCartellaServer + '\Custom';
         ForceDirectories(PercorsoDestinazione);
         TDirectory.Copy(CartellaSelezionata, PercorsoDestinazione, True);
     end;
@@ -356,8 +416,6 @@ begin
 end;
 
 procedure TfCreaTest.edCartellaDblClick(Sender: TObject);
-var
-    i : Integer;
 begin
     opCartelle.DefaultFolder := 'C:\OSItalia\';
     if opCartelle.Execute then
@@ -418,8 +476,13 @@ function TfCreaTest.EseguiBackup: String;
 var
     TestoQuery : String;
 begin
+    if not DirectoryExists('C:\Temp\BackupXAssistenza') then
+    begin
+        ForceDirectories('C:\Temp\BackupXAssistenza');
+    end;
+
     TestoQuery := 'BACKUP DATABASE [' + cbDatabase.Text + '] ' +
-            'TO DISK = N' + QuotedStr('C:\TEMP\Data\' + 'Backup_' + cbDatabase.Text + '.bck') + ' WITH NOFORMAT, INIT, ' +
+            'TO DISK = N' + QuotedStr('C:\BackupXAssistenza\' + 'Backup_' + cbDatabase.Text + '.bck') + ' WITH NOFORMAT, INIT, ' +
             'NAME = N' + QuotedStr(cbDatabase.Text + '-Completo Database Backup') + ', SKIP, NOREWIND, NOUNLOAD, STATS = 10';
 
     with qBackupRestore do
@@ -429,7 +492,6 @@ begin
         SQL.Text := TestoQuery;
         ExecSQL;
     end;
-
     TestoQuery :=
             'declare @DBName  sysname' + #13#10 +
             ' ,@LogicalDataFile  sysname' + #13#10 +
@@ -460,25 +522,30 @@ begin
         Open;
     end;
     Result := qBackupRestore.FieldByName('LogicalDataFile').AsString + ';' + qBackupRestore.FieldByName('LogicalLogFile').AsString;
+    qBackupRestore.Close;
 end;
 
 procedure TfCreaTest.EseguiRestore(NomeLogicalDataLogFile : String);
 var
     TestoQuery, PercorsoData, LogicalDataFile, LogicalLogFile : String;
+    ResultVersione : TVersione;
 begin
-    PercorsoData := 'C:\TEMP\Data\Data\';
+    ResultVersione := CalcolaVersione;
+    //\\srvdb01\E\BackupTemp\Backup_
+    TFile.Copy('C:\BackupXAssistenza\' + 'Backup_' + cbDatabase.Text + '.bck','\\srvdb01\DbBackup\Backup_' + cbDatabase.Text + '.bck', True);
+    PercorsoData := 'E:\OS1_DB_Assistenza\' + ResultVersione.Versione + '\';
     ConnBackupRestore.Close;
     ConnBackupRestore.Params.Clear;
-    ConnBackupRestore.Params.Values['Server'] := 'NB-ALESSANDRO\SQLEXPRESS2022';
+    ConnBackupRestore.Params.Values['Server'] := 'srvdb01\assistenza';
     ConnBackupRestore.Params.Values['User_Name'] := 'sa';
-    ConnBackupRestore.Params.Values['Password'] := 'Grsys2022*';
+    ConnBackupRestore.Params.Values['Password'] := 'Grsys01*';
     ConnBackupRestore.Params.Add('DriverID=MSSQL');
     LogicalDataFile := Copy(NomeLogicalDataLogFile, 1, Pos(';', NomeLogicalDataLogFile) - 1);
     LogicalLogFile  := Copy(NomeLogicalDataLogFile, Pos(';', NomeLogicalDataLogFile) + 1, Length(NomeLogicalDataLogFile));
     TestoQuery :=
-        'USE [master]' +
+        ' USE [master]' +
         ' RESTORE DATABASE ['+ cbDatabase.Text + ']' +
-        ' FROM DISK = N' + QuotedStr('C:\TEMP\Data\' + 'Backup_' + cbDatabase.Text + '.bck') +
+        ' FROM DISK = N' + QuotedStr('E:\DbBackup\Backup_' + cbDatabase.Text + '.bck') +
         ' WITH FILE = 1,' +
         ' MOVE N' + QuotedStr(LogicalDataFile) + 'TO N' + QuotedStr(PercorsoData + LogicalDataFile + '.mdf') + ',' +
         ' MOVE N' + QuotedStr(LogicalLogFile) + 'TO N' + QuotedStr(PercorsoData + LogicalLogFile + '.ldf') + ',' +
@@ -492,6 +559,8 @@ begin
             SQL.Text := TestoQuery;
             ExecSQL;
         end;
+    MessageDlg('Ricordati di modificare xconfig del server', mtWarning, [mbOk], 0);
+    MessageDlg('Completato!', mtInformation, [mbOk], 0);
 end;
 
 function TfCreaTest.GetServer: TStringList;
@@ -582,20 +651,12 @@ var
     DatabaseOsiLogon, s: String;
     i,j, CountSlash: Integer;
     ContenutoConfig : TStringList;
+    ResultVersione : TVersione;
 begin
-    Percorso := edCartella.Text;
-    if ExtractFileName(Percorso) = 'Custom' then
-    begin
-        Percorso := ExtractFileDir(Percorso);
-    end;
-    NomeProgetto := ExtractFileName(Percorso);
-    PercorsoConfig := 'C:\OS1\OS1 LAUNCHER\Custom.Config\' + NomeProgetto + '.config';
-    Versione := Percorso;
-    for i := 1 to 2 do
-    begin
-        Versione := ExtractFileDir(Versione);
-    end;
-    Versione := ExtractFileName(Versione);
+    ResultVersione := CalcolaVersione;
+    Versione := ResultVersione.Versione;
+    PercorsoConfig := ResultVersione.PercorsoConfig;
+    NomeProgetto := ResultVersione.NomeProgetto;
     VersioneSeparata := AnalizzaStringPerDemo(Versione);
     if SceltaDb.StartsWith('1') then
     begin
@@ -613,7 +674,7 @@ begin
         Username := ConnDatabase.Params.Values['User_Name'];
         Password := ConnDatabase.Params.Values['Password'];
     end;
-    if SceltaDb.StartsWith('3') then
+    if SceltaDb.StartsWith('3') or SceltaDb.StartsWith('4')  then
     begin
         Server := 'srvdb01\assistenza';
         Database := cbDatabase.Text;

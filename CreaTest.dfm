@@ -1111,7 +1111,7 @@ object fCreaTest: TfCreaTest
       Visible = False
     end
     object TVCartelle: TTreeView
-      Left = 8
+      Left = 17
       Top = 80
       Width = 285
       Height = 133
@@ -1145,11 +1145,47 @@ object fCreaTest: TfCreaTest
     Left = 0
     Top = 145
     Width = 602
-    Height = 80
+    Height = 164
     Align = alTop
     TabOrder = 2
     Visible = False
-    ExplicitWidth = 598
+    object lblScripts: TLabel
+      Left = 336
+      Top = 0
+      Width = 250
+      Height = 20
+      Caption = 'Scripts trovati all'#39'interno della custom'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+      Visible = False
+    end
+    object Label4: TLabel
+      Left = 8
+      Top = 4
+      Width = 139
+      Height = 15
+      Caption = 'Scelta operazioni database'
+    end
+    object lblIstanza: TLabel
+      Left = 8
+      Top = 45
+      Width = 125
+      Height = 15
+      Caption = 'Seleziona Istanza del DB'
+      Visible = False
+    end
+    object lblDb: TLabel
+      Left = 8
+      Top = 86
+      Width = 100
+      Height = 15
+      Caption = 'Seleziona Database'
+      Visible = False
+    end
     object cbDb: TComboBox
       Left = 8
       Top = 18
@@ -1164,8 +1200,8 @@ object fCreaTest: TfCreaTest
         '4. Va copiato il db su SRVDB01\ASSISTENZA')
     end
     object btnConfermaDb: TBitBtn
-      Left = 255
-      Top = 47
+      Left = 336
+      Top = 18
       Width = 70
       Height = 25
       Caption = 'Conferma'
@@ -1174,9 +1210,9 @@ object fCreaTest: TfCreaTest
     end
     object lbDb: TListBox
       Left = 336
-      Top = 10
+      Top = 18
       Width = 257
-      Height = 97
+      Height = 141
       ItemHeight = 15
       MultiSelect = True
       TabOrder = 2
@@ -1185,17 +1221,17 @@ object fCreaTest: TfCreaTest
     end
     object cbDatabase: TComboBox
       Left = 8
-      Top = 47
-      Width = 229
+      Top = 101
+      Width = 317
       Height = 23
       TabOrder = 3
       Visible = False
       OnEnter = cbDatabaseEnter
     end
     object cbIstanze: TComboBox
-      Left = 336
-      Top = 18
-      Width = 257
+      Left = 8
+      Top = 59
+      Width = 317
       Height = 23
       TabOrder = 4
       Visible = False
