@@ -2,8 +2,8 @@ object fCreaRelease: TfCreaRelease
   Left = 0
   Top = 0
   Caption = 'fCreaRelease'
-  ClientHeight = 503
-  ClientWidth = 622
+  ClientHeight = 501
+  ClientWidth = 614
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,18 +14,18 @@ object fCreaRelease: TfCreaRelease
   TextHeight = 15
   object pnlBottom: TPanel
     Left = 0
-    Top = 471
-    Width = 622
+    Top = 469
+    Width = 614
     Height = 32
     Align = alBottom
     TabOrder = 0
-    ExplicitTop = 470
-    ExplicitWidth = 618
+    ExplicitTop = 468
+    ExplicitWidth = 610
     DesignSize = (
-      622
+      614
       32)
     object btnConferma: TBitBtn
-      Left = 484
+      Left = 468
       Top = 6
       Width = 75
       Height = 25
@@ -33,21 +33,21 @@ object fCreaRelease: TfCreaRelease
       Caption = 'Conferma'
       TabOrder = 0
       OnClick = btnConfermaClick
-      ExplicitLeft = 480
+      ExplicitLeft = 464
     end
     object pbLoading: TProgressBar
       Left = 8
       Top = 4
-      Width = 161
+      Width = 145
       Height = 25
       Anchors = [akLeft, akTop, akRight, akBottom]
       Max = 0
       Step = 1
       TabOrder = 1
-      ExplicitWidth = 157
+      ExplicitWidth = 141
     end
     object cbIstanza: TComboBox
-      Left = 191
+      Left = 175
       Top = 6
       Width = 213
       Height = 23
@@ -55,10 +55,10 @@ object fCreaRelease: TfCreaRelease
       TabOrder = 2
       OnChange = cbIstanzaChange
       OnEnter = cbIstanzaEnter
-      ExplicitLeft = 187
+      ExplicitLeft = 171
     end
     object btnSettings: TBitBtn
-      Left = 423
+      Left = 407
       Top = 6
       Width = 45
       Height = 23
@@ -238,31 +238,31 @@ object fCreaRelease: TfCreaRelease
       NumGlyphs = 2
       TabOrder = 3
       OnClick = btnSettingsClick
-      ExplicitLeft = 419
+      ExplicitLeft = 403
     end
   end
   object pnlCenter: TFlowPanel
     Left = 0
     Top = 0
-    Width = 622
-    Height = 279
+    Width = 614
+    Height = 277
     Align = alClient
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 1
-    ExplicitWidth = 618
-    ExplicitHeight = 278
+    ExplicitWidth = 610
+    ExplicitHeight = 276
   end
   object pnlSettings: TPanel
     Left = 0
-    Top = 279
-    Width = 622
+    Top = 277
+    Width = 614
     Height = 192
     Align = alBottom
     TabOrder = 2
     Visible = False
-    ExplicitTop = 278
-    ExplicitWidth = 618
+    ExplicitTop = 276
+    ExplicitWidth = 610
   end
   object ConnServer: TFDConnection
     Params.Strings = (
