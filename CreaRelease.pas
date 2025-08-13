@@ -768,10 +768,12 @@ var
     i, j: Integer;
     Contenitore: TPanel;
     CheckBox1, CheckBox2: TCheckBox;
-    Versione, VersionePerFiltraggio : String;
-    CountUnderscore, NumVersion: Integer;
+    Versione, VersionePerFiltraggio, NumVersionString : String;
+    CountUnderscore, NumVersion, NumVersionControllo: Integer;
 begin
     RiordinaStringList(ListDa);
+    NumVersionString := '';
+    NumVersionControllo := 0;
     for i := 0 to ListDa.Count - 1 do
     begin
         if ListDa[i].Contains(';') then
@@ -779,6 +781,7 @@ begin
         else
             Versione := ListDa[i];
         VersionePerFiltraggio := '';
+
         CountUnderScore := 0;
         for j := 1 to Length(Versione) do
         begin
@@ -793,8 +796,22 @@ begin
                  Break;
         end;
         NumVersion := VersionePerFiltraggio.ToInteger;
-
-        if NumVersion >= 305 then
+        if NumVersionString = '' then
+        begin
+            VersionePerFiltraggio := (NumVersion - 200).ToString;
+            for j := 1 to Length(VersionePerFiltraggio) do
+            begin
+                if j <= 2 then
+                    NumVersionString := NumVersionString + VersionePerFiltraggio[j]
+                else
+                begin
+                    NumVersionString := NumVersionString + '0';
+                    Break;
+                end;
+            end;
+            NumVersionControllo := NumVersionString.ToInteger;
+        end;
+        if NumVersion >= NumVersionControllo then
         begin
             // Pannello contenitore per la coppia
             Contenitore := TPanel.Create(APanel);

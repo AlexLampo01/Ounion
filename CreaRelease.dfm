@@ -2,8 +2,8 @@ object fCreaRelease: TfCreaRelease
   Left = 0
   Top = 0
   Caption = 'fCreaRelease'
-  ClientHeight = 502
-  ClientWidth = 618
+  ClientHeight = 501
+  ClientWidth = 614
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,16 +14,18 @@ object fCreaRelease: TfCreaRelease
   TextHeight = 15
   object pnlBottom: TPanel
     Left = 0
-    Top = 470
-    Width = 618
+    Top = 469
+    Width = 614
     Height = 32
     Align = alBottom
     TabOrder = 0
+    ExplicitTop = 470
+    ExplicitWidth = 618
     DesignSize = (
-      618
+      614
       32)
     object btnConferma: TBitBtn
-      Left = 480
+      Left = 472
       Top = 6
       Width = 75
       Height = 25
@@ -36,7 +38,7 @@ object fCreaRelease: TfCreaRelease
     object pbLoading: TProgressBar
       Left = 8
       Top = 4
-      Width = 157
+      Width = 149
       Height = 25
       Anchors = [akLeft, akTop, akRight, akBottom]
       Max = 0
@@ -45,7 +47,7 @@ object fCreaRelease: TfCreaRelease
       ExplicitWidth = 161
     end
     object cbIstanza: TComboBox
-      Left = 187
+      Left = 179
       Top = 6
       Width = 213
       Height = 23
@@ -55,7 +57,7 @@ object fCreaRelease: TfCreaRelease
       OnEnter = cbIstanzaEnter
     end
     object btnSettings: TBitBtn
-      Left = 419
+      Left = 411
       Top = 6
       Width = 45
       Height = 23
@@ -241,21 +243,25 @@ object fCreaRelease: TfCreaRelease
   object pnlCenter: TFlowPanel
     Left = 0
     Top = 0
-    Width = 618
-    Height = 278
+    Width = 614
+    Height = 277
     Align = alClient
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 1
+    ExplicitWidth = 618
+    ExplicitHeight = 278
   end
   object pnlSettings: TPanel
     Left = 0
-    Top = 278
-    Width = 618
+    Top = 277
+    Width = 614
     Height = 192
     Align = alBottom
     TabOrder = 2
     Visible = False
+    ExplicitTop = 278
+    ExplicitWidth = 618
   end
   object ConnServer: TFDConnection
     Params.Strings = (
