@@ -765,10 +765,11 @@ const
     RientroFiglia     = 20;
     PannelloAltezza   = (CheckBoxHeight * 2) + MargineInferiore;
 var
-     i: Integer;
+    i, j: Integer;
     Contenitore: TPanel;
     CheckBox1, CheckBox2: TCheckBox;
-    Versione : String;
+    Versione, VersionePerFiltraggio : String;
+    CountUnderscore, NumVersion: Integer;
 begin
     RiordinaStringList(ListDa);
     for i := 0 to ListDa.Count - 1 do
@@ -777,38 +778,57 @@ begin
             Versione := 'OS1_' + Copy(ListDa[i], Pos(';', ListDa[i]) + 1, Length(ListDa[i]))
         else
             Versione := ListDa[i];
-        // Pannello contenitore per la coppia
-        Contenitore := TPanel.Create(APanel);
-        Contenitore.Parent := APanel;
-        Contenitore.Width := CheckBoxWidth + RientroFiglia;
-        Contenitore.Height := PannelloAltezza;
-        Contenitore.BevelOuter := bvNone;
-        Contenitore.BorderStyle := bsSingle;
-        Contenitore.AlignWithMargins := True;
-        Contenitore.Margins.Bottom := MargineInferiore;
-        Contenitore.Caption := ''; // no testo visivo
-        Contenitore.Name := 'pnl' + Versione;
+        VersionePerFiltraggio := '';
+        CountUnderScore := 0;
+        for j := 1 to Length(Versione) do
+        begin
+            if Versione[j] = '_' then
+            begin
+                CountUnderScore := CountUnderScore + 1;
+                Continue;
+            end;
+            if CountUnderScore = 1 then
+                VersionePerFiltraggio := VersionePerFiltraggio + Versione[j]
+            else if CountUnderScore > 1 then
+                 Break;
+        end;
+        NumVersion := VersionePerFiltraggio.ToInteger;
 
-        // CheckBox principale
-        CheckBox1 := TCheckBox.Create(Contenitore);
-        CheckBox1.Parent := Contenitore;
-        CheckBox1.Caption := Versione;
-        CheckBox1.Left := 5;
-        CheckBox1.Top := 0;
-        CheckBox1.Width := CheckBoxWidth;
-        CheckBox1.Height := CheckBoxHeight;
-        CheckBox1.Name := 'cbVersione_' + Versione;
-        CheckBox1.OnClick := CheckBoxClick;
+        if NumVersion >= 305 then
+        begin
+            // Pannello contenitore per la coppia
+            Contenitore := TPanel.Create(APanel);
+            Contenitore.Parent := APanel;
+            Contenitore.Width := CheckBoxWidth + RientroFiglia;
+            Contenitore.Height := PannelloAltezza;
+            Contenitore.BevelOuter := bvNone;
+            Contenitore.BorderStyle := bsSingle;
+            Contenitore.AlignWithMargins := True;
+            Contenitore.Margins.Bottom := MargineInferiore;
+            Contenitore.Caption := ''; // no testo visivo
+            Contenitore.Name := 'pnl' + Versione;
 
-        // CheckBox secondaria, rientrata
-        CheckBox2 := TCheckBox.Create(Contenitore);
-        CheckBox2.Parent := Contenitore;
-        CheckBox2.Caption := 'Modifica Cliente';
-        CheckBox2.Left := RientroFiglia;
-        CheckBox2.Top := CheckBoxHeight;
-        CheckBox2.Width := CheckBoxWidth;
-        CheckBox2.Height := CheckBoxHeight;
-        CheckBox2.Name := 'cbCliente_' + Versione;
+            // CheckBox principale
+            CheckBox1 := TCheckBox.Create(Contenitore);
+            CheckBox1.Parent := Contenitore;
+            CheckBox1.Caption := Versione;
+            CheckBox1.Left := 5;
+            CheckBox1.Top := 0;
+            CheckBox1.Width := CheckBoxWidth;
+            CheckBox1.Height := CheckBoxHeight;
+            CheckBox1.Name := 'cbVersione_' + Versione;
+            CheckBox1.OnClick := CheckBoxClick;
+
+            // CheckBox secondaria, rientrata
+            CheckBox2 := TCheckBox.Create(Contenitore);
+            CheckBox2.Parent := Contenitore;
+            CheckBox2.Caption := 'Modifica Cliente';
+            CheckBox2.Left := RientroFiglia;
+            CheckBox2.Top := CheckBoxHeight;
+            CheckBox2.Width := CheckBoxWidth;
+            CheckBox2.Height := CheckBoxHeight;
+            CheckBox2.Name := 'cbCliente_' + Versione;
+        end;
     end;
 
 end;
