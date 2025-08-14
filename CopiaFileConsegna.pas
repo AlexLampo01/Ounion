@@ -73,6 +73,7 @@ type
     procedure lbFileConfermatiKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure lbFileKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure cbBranchChange(Sender: TObject);
   private
     function RecuperaRemote(Percorso: String): TStringList;
     function RecuperaBranch(Percorso: String): TStringList;
@@ -275,7 +276,7 @@ begin
     pnlSelezionaTutto.Visible := False;
     btnSelezionaTutto.Enabled := False;
     cbbranch.Text := '';
-    btnAnalizzatore.Enabled := True;
+    btnAnalizzatore.Enabled := False;
     btnAnalizzatore.Visible := False;
     btnEsploraRisorse.Visible := True;
     lbFile.Clear;
@@ -314,6 +315,7 @@ begin
             and not SameText(ExtractFileExt(Trim(Estensione)), '.stat')
             and not Trim(LowerCase(Estensione)).StartsWith('os1test')
             and not SameText(Estensione, '')
+            and not SameText(ExtractFileName(Trim(LowerCase(Estensione))), 'dbtemp.svi')
             then
                 FileConEliminazione.Add( lbFile.Items[i])
             else
@@ -325,6 +327,14 @@ begin
     finally
      FileConEliminazione.Free;
     end;
+end;
+
+procedure TfCopiaFileConsegna.cbBranchChange(Sender: TObject);
+begin
+    if cbBranch.Text <> '' then
+        btnAnalizzatore.Enabled := True
+    else
+        btnAnalizzatore.Enabled := False;
 end;
 
 procedure TfCopiaFileConsegna.cbBranchEnter(Sender: TObject);
