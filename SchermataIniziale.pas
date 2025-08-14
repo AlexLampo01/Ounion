@@ -30,6 +30,7 @@ type
     procedure btnCreaTestClick(Sender: TObject);
   private
     procedure SistemaGrafica(ElementoSelezionato : String);
+    procedure btnModalitaAttualeClick(Sender: TObject);
   public
     LabelInizialize, LabelConsegna, LabelCreaRelease, LabelCreaTest : TLabel;
     btnModalitaAttuale : TBitBtn;
@@ -380,6 +381,7 @@ begin
     btnModalitaAttuale.Width        := 45;
     btnModalitaAttuale.Top          := 3;
     btnModalitaAttuale.Images       := VirtualImageList1;
+    btnModalitaAttuale.OnClick      := btnModalitaAttualeClick;
 
     btnInizializzaProgetto.Visible  := False;
     btnSpostaCartella.Visible       := False;
@@ -406,6 +408,11 @@ begin
         btnModalitaAttuale.ImageIndex := 7;
         btnModalitaAttuale.Hint := 'Crea Test';
     end
+end;
+
+procedure TfScegliCosaFare.btnModalitaAttualeClick(Sender: TObject);
+begin
+
 end;
 
 end.
