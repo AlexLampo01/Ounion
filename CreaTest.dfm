@@ -1149,6 +1149,7 @@ object fCreaTest: TfCreaTest
     Align = alTop
     TabOrder = 2
     Visible = False
+    ExplicitWidth = 598
     object lblScripts: TLabel
       Left = 336
       Top = 0
@@ -1188,7 +1189,7 @@ object fCreaTest: TfCreaTest
     end
     object cbDb: TComboBox
       Left = 8
-      Top = 18
+      Top = 16
       Width = 317
       Height = 23
       TabOrder = 0

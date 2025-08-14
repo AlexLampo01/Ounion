@@ -288,9 +288,12 @@ begin
                 Percorso := Percorso + '\Scripts'
             else
                 Percorso := Percorso + '\Custom\Scripts';
-            for FileName in TDirectory.GetFiles(Percorso) do
+            if TDirectory.Exists(Percorso) then
             begin
-                lbDb.Items.Add(TPath.GetFileName(FileName));
+                for FileName in TDirectory.GetFiles(Percorso) do
+                begin
+                    lbDb.Items.Add(TPath.GetFileName(FileName));
+                end;
             end;
         finally
             lbDb.Items.EndUpdate;
@@ -366,15 +369,19 @@ begin
                 Percorso := Percorso + '\Scripts'
             else
                 Percorso := Percorso + '\Custom\Scripts';
-            Percorso := Percorso + '\' + ListScript[i];
-            SQLScript.LoadFromFile(Percorso);
-            for j := 0 to SQLScript.Count - 1 do
+            if TDirectory.Exists(Percorso) then
             begin
-                if SQLScript[j] = 'GO' then
-                    SQLScript[j] := '';
+                Percorso := Percorso + '\' + ListScript[i];
+
+                SQLScript.LoadFromFile(Percorso);
+                for j := 0 to SQLScript.Count - 1 do
+                begin
+                    if SQLScript[j] = 'GO' then
+                        SQLScript[j] := '';
+                end;
+                qScripts.SQL.Text := SQLScript.Text;
+                qScripts.ExecSQL;
             end;
-            qScripts.SQL.Text := SQLScript.Text;
-            qScripts.ExecSQL;
         end;
     finally
         SQLScript.Free;
