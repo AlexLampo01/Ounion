@@ -109,7 +109,6 @@ type
     procedure LeggiIni;
     procedure CancellaCustom;
     procedure FiltraReleases(Releases : TStringList);
-    procedure SortByNumbersDesc(List : TStringList);
   public
     UserName, Password, GlobalPercorso, Server, PercorsoVersione : String;
     function GetServer: TStringList;
@@ -1365,71 +1364,6 @@ begin
     end;
 
 end;
-
-procedure TfCreaRelease.SortByNumbersDesc(List: TStringList);
-    function ExtractNumbers(const S: string; out NumCentral, NumFinal: Integer): Boolean;
-    var
-        P1, P2, Code: Integer;
-        CentralStr: string;
-    begin
-        Result := False;
-        NumCentral := 0;
-        NumFinal := -1; // -1 significa "nessun Axx"
-
-        // Primo underscore
-        P1 := Pos('_', S);
-        if P1 = 0 then Exit;
-
-        // Secondo underscore (se presente)
-        P2 := PosEx('_', S, P1 + 1);
-
-        // Numero centrale
-        if P2 = 0 then
-          CentralStr := Copy(S, P1 + 1, MaxInt)
-        else
-          CentralStr := Copy(S, P1 + 1, P2 - P1 - 1);
-
-        Val(CentralStr, NumCentral, Code);
-        if Code <> 0 then Exit;
-
-        // Numero finale opzionale
-        if (P2 > 0) and (P2 + 1 <= Length(S)) and (UpCase(S[P2 + 1]) = 'A') then
-        begin
-          Val(Copy(S, P2 + 2, MaxInt), NumFinal, Code);
-          if Code <> 0 then NumFinal := 0;
-        end;
-
-        Result := True;
-    end;
-
-      function CompareItems(List: TStringList; Index1, Index2: Integer): Integer;
-      var
-        C1, F1, C2, F2: Integer;
-      begin
-        ExtractNumbers(List[Index1], C1, F1);
-        ExtractNumbers(List[Index2], C2, F2);
-
-        // 1. Centrale decrescente
-        if C1 > C2 then Exit(-1);
-        if C1 < C2 then Exit(1);
-
-        // 2. Finale decrescente (con -1 dopo tutti i valori validi)
-        if (F1 >= 0) and (F2 >= 0) then
-        begin
-          if F1 > F2 then Exit(-1);
-          if F1 < F2 then Exit(1);
-        end
-        else if (F1 >= 0) and (F2 < 0) then
-          Exit(-1) // con A prima di senza A
-        else if (F1 < 0) and (F2 >= 0) then
-          Exit(1); // senza A dopo con A
-
-        Result := 0;
-      end;
-    begin
-      List.CustomSort(@CompareItems);
-    end;
-
 
 procedure TfCreaRelease.TControlloTimer(Sender: TObject);
 var

@@ -2,8 +2,8 @@ object fCreaRelease: TfCreaRelease
   Left = 0
   Top = 0
   Caption = 'fCreaRelease'
-  ClientHeight = 501
-  ClientWidth = 614
+  ClientHeight = 500
+  ClientWidth = 610
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,18 +14,16 @@ object fCreaRelease: TfCreaRelease
   TextHeight = 15
   object pnlBottom: TPanel
     Left = 0
-    Top = 469
-    Width = 614
+    Top = 468
+    Width = 610
     Height = 32
     Align = alBottom
     TabOrder = 0
-    ExplicitTop = 468
-    ExplicitWidth = 610
     DesignSize = (
-      614
+      610
       32)
     object btnConferma: TBitBtn
-      Left = 468
+      Left = 460
       Top = 6
       Width = 75
       Height = 25
@@ -38,7 +36,7 @@ object fCreaRelease: TfCreaRelease
     object pbLoading: TProgressBar
       Left = 8
       Top = 4
-      Width = 145
+      Width = 137
       Height = 25
       Anchors = [akLeft, akTop, akRight, akBottom]
       Max = 0
@@ -47,7 +45,7 @@ object fCreaRelease: TfCreaRelease
       ExplicitWidth = 141
     end
     object cbIstanza: TComboBox
-      Left = 175
+      Left = 167
       Top = 6
       Width = 213
       Height = 23
@@ -55,10 +53,9 @@ object fCreaRelease: TfCreaRelease
       TabOrder = 2
       OnChange = cbIstanzaChange
       OnEnter = cbIstanzaEnter
-      ExplicitLeft = 171
     end
     object btnSettings: TBitBtn
-      Left = 407
+      Left = 399
       Top = 6
       Width = 45
       Height = 23
@@ -244,25 +241,21 @@ object fCreaRelease: TfCreaRelease
   object pnlCenter: TFlowPanel
     Left = 0
     Top = 0
-    Width = 614
-    Height = 277
+    Width = 610
+    Height = 276
     Align = alClient
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 1
-    ExplicitWidth = 610
-    ExplicitHeight = 276
   end
   object pnlSettings: TPanel
     Left = 0
-    Top = 277
-    Width = 614
+    Top = 276
+    Width = 610
     Height = 192
     Align = alBottom
     TabOrder = 2
     Visible = False
-    ExplicitTop = 276
-    ExplicitWidth = 610
   end
   object ConnServer: TFDConnection
     Params.Strings = (
