@@ -654,7 +654,8 @@ begin
         or (ExtractFileExt(FileDaSpostare[i]) = '.gitignore')
         or (ExtractFileExt(FileDaSpostare[i]) = '.dproj')
         or (ExtractFileExt(FileDaSpostare[i]) = '.stat')
-        or (Copy(Trim(LowerCase(FileDaSpostare[i])), 3, Length(Trim(LowerCase(FileDaSpostare[i]))))).StartsWith('os1test') then
+        or (Copy(Trim(LowerCase(FileDaSpostare[i])), 3, Length(Trim(LowerCase(FileDaSpostare[i]))))).StartsWith('os1test')
+        or (Copy(Trim(LowerCase(FileDaSpostare[i])), 3, Length(Trim(LowerCase(FileDaSpostare[i]))))).StartsWith('dbtemp.svi')then
         begin
            Immagini^.RightIconIndex := 0;
         end
