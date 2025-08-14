@@ -3150,7 +3150,7 @@ object fScegliCosaFare: TfScegliCosaFare
     ImageCollection = ImageCollection1
     Width = 128
     Height = 128
-    Left = 12
+    Left = 140
     Top = 12
   end
 end
