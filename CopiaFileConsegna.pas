@@ -315,7 +315,7 @@ begin
             and not SameText(ExtractFileExt(Trim(Estensione)), '.stat')
             and not Trim(LowerCase(Estensione)).StartsWith('os1test')
             and not SameText(Estensione, '')
-            and not SameText(ExtractFileName(Trim(LowerCase(Estensione))), 'dbtemp.svi')
+            and not (ExtractFileName(Trim(LowerCase(Estensione)))).EndsWith('dbtemp.svi')
             then
                 FileConEliminazione.Add( lbFile.Items[i])
             else
@@ -655,7 +655,7 @@ begin
         or (ExtractFileExt(FileDaSpostare[i]) = '.dproj')
         or (ExtractFileExt(FileDaSpostare[i]) = '.stat')
         or (Copy(Trim(LowerCase(FileDaSpostare[i])), 3, Length(Trim(LowerCase(FileDaSpostare[i]))))).StartsWith('os1test')
-        or (Copy(Trim(LowerCase(FileDaSpostare[i])), 3, Length(Trim(LowerCase(FileDaSpostare[i]))))).StartsWith('dbtemp.svi')then
+        or (Copy(Trim(LowerCase(FileDaSpostare[i])), 3, Length(Trim(LowerCase(FileDaSpostare[i]))))).EndsWith('dbtemp.svi')then
         begin
            Immagini^.RightIconIndex := 0;
         end
