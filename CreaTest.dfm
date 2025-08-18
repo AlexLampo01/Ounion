@@ -1145,11 +1145,10 @@ object fCreaTest: TfCreaTest
     Left = 0
     Top = 145
     Width = 602
-    Height = 164
+    Height = 169
     Align = alTop
     TabOrder = 2
     Visible = False
-    ExplicitWidth = 598
     object lblScripts: TLabel
       Left = 336
       Top = 0
@@ -1267,9 +1266,9 @@ object fCreaTest: TfCreaTest
   object ConnScripts: TFDConnection
     Params.Strings = (
       'DriverID=MSSQL'
-      'Server=NB-ALESSANDRO\SQLEXPRESS2022'
+      'Server=srvdb01\assistenza'
       'User_Name=sa'
-      'Password=Grsys2022*'
+      'Password=Grsys01*'
       '')
     Left = 460
     Top = 312

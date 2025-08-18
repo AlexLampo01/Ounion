@@ -823,9 +823,15 @@ end;
 
 procedure TfCreaTest.RecuperaDatabase(ListaDb: TStringList);
 var
-    Istanza, Username, Password, TestoQuery : String;
+    Istanza, Username, Password, TestoQuery, Prova : String;
 begin
-    if not cbIstanze.Visible then
+    if (not cbIstanze.Visible) and (cbDb.Text = '3. Hanno già il db su SRVDB01\ASSISTENZA') then
+    begin
+        Istanza := 'srvdb01\assistenza';
+        Username := 'sa';
+        Password := 'Grsys01*';
+    end
+    else if (not cbIstanze.Visible) and (cbDb.Text = '1. Non serve un database particolare, usano la demo') then
     begin
         Istanza := ConnScripts.Params.Values['Server'];
         Username := ConnScripts.Params.Values['User_Name'];
@@ -859,6 +865,7 @@ begin
                 ListaDb.Add(FieldByName('DatabaseName').AsString);
                 Next;
             end;
+           Prova := '';
         end;
     end;
 end;
