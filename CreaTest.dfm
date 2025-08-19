@@ -1149,6 +1149,7 @@ object fCreaTest: TfCreaTest
     Align = alTop
     TabOrder = 2
     Visible = False
+    ExplicitWidth = 598
     object lblScripts: TLabel
       Left = 336
       Top = 0

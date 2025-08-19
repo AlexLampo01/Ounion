@@ -348,12 +348,13 @@ end;
 procedure TfCreaTest.ControllaSelezione;
 var
     i,j : Integer;
-    ListScript, SQLScript : TStringList;
+    ListScript, SQLScript, PezzoSingolo : TStringList;
     Percorso : String;
 begin
     ConnScripts.Params.Values['Database'] := cbDatabase.Text;
     ListScript := TStringList.Create;
     SQLScript  := TStringList.Create;
+    PezzoSingolo := TStringList.Create;
     try
         for i := 0 to lbDb.Items.Count - 1 do
         begin
@@ -377,13 +378,21 @@ begin
                 for j := 0 to SQLScript.Count - 1 do
                 begin
                     if SQLScript[j] = 'GO' then
-                        SQLScript[j] := '';
+                    begin
+                        PezzoSingolo.Add(';');
+                        qScripts.SQL.Text := PezzoSingolo.Text;
+                        qScripts.ExecSQL;
+                        PezzoSingolo.Clear;
+                    end
+                    else
+                    begin
+                        PezzoSingolo.Add(SQLScript[j]);
+                    end;
                 end;
-                qScripts.SQL.Text := SQLScript.Text;
-                qScripts.ExecSQL;
             end;
         end;
     finally
+        PezzoSingolo.Free;
         SQLScript.Free;
         ListScript.Free;
     end;
