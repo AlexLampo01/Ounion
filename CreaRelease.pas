@@ -109,6 +109,7 @@ type
     procedure LeggiIni;
     procedure CancellaCustom;
     procedure FiltraReleases(Releases : TStringList);
+    procedure CreaLauncherStandard(Cartella : String);
   public
     UserName, Password, GlobalPercorso, Server, PercorsoVersione : String;
     function GetServer: TStringList;
@@ -176,6 +177,7 @@ begin
                     ForceDirectories('C:\OS1\' + Cartella + '\TEMP');
                     if cbIstanza.Text <> '' then
                         CopiaDatabase(CartelleComplete);
+                    CreaLauncherStandard(CartellaScelta);
                 end;
             end;
         end;
@@ -874,6 +876,80 @@ begin
             Ini.Free;
             ReadFileIni;
         end;
+end;
+
+procedure TfCreaRelease.CreaLauncherStandard(Cartella : String);
+var
+    i, CountSlash, CountUnderscore : Integer;
+    Os1ConVersione, Versione : String;
+    TStringConfig : TStringList;
+begin
+    CountSlash := 0;
+    CountUnderscore := 0;
+    Versione := '';
+    Os1ConVersione := '';
+    for i := Length(Cartella) downto 1 do
+    begin
+        if Cartella[i] = '\' then
+        begin
+            CountSlash := CountSlash + 1;
+            Continue;
+        end;
+        if CountSlash = 1 then
+        begin
+            Os1ConVersione := Cartella[i] + OS1ConVersione;
+        end;
+        if CountSlash > 1 then
+            Break;
+    end;
+    for i := 1 to Length(Os1ConVersione) do
+    begin
+        if Os1ConVersione[i] = '_' then
+        begin
+            CountUnderscore := CountUnderscore + 1;
+            Continue;
+        end;
+        if CountUnderscore >= 1 then
+        begin
+            Versione := Versione + Os1ConVersione[i];
+        end;
+    end;
+
+    TStringConfig := TStringList.Create;
+    try
+        TStringConfig.Add('[Generale]');
+        TStringConfig.Add('Titolo='+ Versione + ' (srvdb01\assistenza)');
+        TStringConfig.Add('PathBase=' + Cartella);
+        TStringConfig.Add('');
+        TStringConfig.Add('[Programmi]');
+        TStringConfig.Add('OS1=OS1.exe');
+        TStringConfig.Add('OS1Config=OS1Config.exe');
+        TStringConfig.Add('XConfig=XConfig\XConfig.exe');
+        TStringConfig.Add('XSQLWin=Servizi\XSQLWin.exe');
+        TStringConfig.Add('');
+        TStringConfig.Add('[Path]');
+        TStringConfig.Add(';-- Se non specificate, le cartelle vengono impostate in modo relativo a PathBase --');
+        TStringConfig.Add(';Dizionario=');
+        TStringConfig.Add(';Modelli=');
+        TStringConfig.Add(';Custom=');
+        TStringConfig.Add(';-- Se non specificata, la temporanea viene creata nella cartella del profilo dell''utente --');
+        TStringConfig.Add(';Temporanea=C:\OS1\'+ Os1ConVersione + '\Temp');
+        TStringConfig.Add('');
+        TStringConfig.Add('[AltriParametri]');
+        TStringConfig.Add('Utente=2');
+        TStringConfig.Add('Ditta=BASE');
+        TStringConfig.Add('');
+        TStringConfig.Add('[Database]');
+        TStringConfig.Add('Server=srvdb01\assistenza');
+        TStringConfig.Add('Database=OSILogon_'+Versione);
+        TStringConfig.Add('Username=sa');
+        TStringConfig.Add('Password=Grsys01*');
+        TStringConfig.Add('');
+
+        TStringConfig.SaveToFile('C:\OS1\OS1 LAUNCHER\Config\'+ Os1ConVersione + '.config');
+    finally
+        TStringConfig.Free;
+    end;
 end;
 
 procedure TfCreaRelease.DisattivaAppenafatti;

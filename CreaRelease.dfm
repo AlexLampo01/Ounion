@@ -19,11 +19,13 @@ object fCreaRelease: TfCreaRelease
     Height = 32
     Align = alBottom
     TabOrder = 0
+    ExplicitTop = 467
+    ExplicitWidth = 606
     DesignSize = (
       610
       32)
     object btnConferma: TBitBtn
-      Left = 460
+      Left = 456
       Top = 6
       Width = 75
       Height = 25
@@ -31,21 +33,21 @@ object fCreaRelease: TfCreaRelease
       Caption = 'Conferma'
       TabOrder = 0
       OnClick = btnConfermaClick
-      ExplicitLeft = 464
+      ExplicitLeft = 452
     end
     object pbLoading: TProgressBar
       Left = 8
       Top = 4
-      Width = 137
+      Width = 133
       Height = 25
       Anchors = [akLeft, akTop, akRight, akBottom]
       Max = 0
       Step = 1
       TabOrder = 1
-      ExplicitWidth = 141
+      ExplicitWidth = 129
     end
     object cbIstanza: TComboBox
-      Left = 167
+      Left = 163
       Top = 6
       Width = 213
       Height = 23
@@ -53,9 +55,10 @@ object fCreaRelease: TfCreaRelease
       TabOrder = 2
       OnChange = cbIstanzaChange
       OnEnter = cbIstanzaEnter
+      ExplicitLeft = 159
     end
     object btnSettings: TBitBtn
-      Left = 399
+      Left = 395
       Top = 6
       Width = 45
       Height = 23
@@ -235,7 +238,7 @@ object fCreaRelease: TfCreaRelease
       NumGlyphs = 2
       TabOrder = 3
       OnClick = btnSettingsClick
-      ExplicitLeft = 403
+      ExplicitLeft = 391
     end
   end
   object pnlCenter: TFlowPanel
@@ -247,6 +250,8 @@ object fCreaRelease: TfCreaRelease
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 1
+    ExplicitWidth = 606
+    ExplicitHeight = 275
   end
   object pnlSettings: TPanel
     Left = 0
@@ -256,6 +261,8 @@ object fCreaRelease: TfCreaRelease
     Align = alBottom
     TabOrder = 2
     Visible = False
+    ExplicitTop = 275
+    ExplicitWidth = 606
   end
   object ConnServer: TFDConnection
     Params.Strings = (
