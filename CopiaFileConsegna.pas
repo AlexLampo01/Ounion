@@ -75,7 +75,7 @@ type
     procedure lbFileKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure cbBranchChange(Sender: TObject);
   private
-    function RecuperaRemote(Percorso: String): TStringList;
+    //function RecuperaRemote(Percorso: String): TStringList;
     function RecuperaBranch(Percorso: String): TStringList;
     function AnalizzaBranch: TStringList;
     procedure RiempiDatiInsgFile(FileDaSpostare: TStringList);
@@ -84,6 +84,7 @@ type
     procedure SpostaElementiListBox(ListBoxOrigine, ListBoxDestinazione : TListBox; FileDaSpostare, FileDaNonSpostare : TStringList);
     procedure ControllaSelezionati(ListBox: TListBox);
     function MaxValuePixel(AListBox : TListBox) : Integer;
+    function RunGitCommand(const GitArgs: string; SA: TSecurityAttributes): string;
 
   public
     Completato : Boolean;
@@ -239,7 +240,15 @@ procedure TfCopiaFileConsegna.btnEsploraRisorseClick(Sender: TObject);
 var
     CartellaConGit : String;
     PresenteGit : Boolean;
+    BranchDisponibili : TStringList;
+    SA: TSecurityAttributes;
+    i: Integer;
 begin
+     // Setup sicurezza pipe
+    SA.nLength := SizeOf(SA);
+    SA.bInheritHandle := True;
+    SA.lpSecurityDescriptor := nil;
+
     Completato := False;
     CartellaScelta := '';
     if fodEsploraRisorse.Execute then
@@ -262,6 +271,21 @@ begin
                     pbLoading.Visible       := False;
                     btnAnalizzatore.Visible := True;
                     cbBranch.Visible        := True;
+                end;
+                BranchDisponibili := TStringList.Create;
+                try
+                    BranchDisponibili.Text := RunGitCommand('branch', SA);
+                    for i := 0 to BranchDisponibili.Count - 1 do
+                    begin
+                        if BranchDisponibili[i].StartsWith('*') then
+                        begin
+                            cbBranch.Text := Trim(Copy(BranchDisponibili[i], Pos('*', BranchDisponibili[i]) + 1, Length(BranchDisponibili[i]) - Pos('*', BranchDisponibili[i])));
+                            Break;
+                        end;
+
+                    end;
+                finally
+                    BranchDisponibili.Free;
                 end;
             end
             else
@@ -346,21 +370,21 @@ end;
 
 procedure TfCopiaFileConsegna.cbBranchEnter(Sender: TObject);
 var
-    TStringRemote, TStringBranch, TStringDef : TStringList;
+    {TStringRemote,} TStringBranch, TStringDef : TStringList;
 begin
-    TStringRemote := TStringList.Create;
+    //TStringRemote := TStringList.Create;
     TStringBranch := TStringList.Create;
     TStringDef    := TStringList.Create;
     try
-        TStringRemote := RecuperaRemote(CartellaScelta);
+        //TStringRemote := RecuperaRemote(CartellaScelta);
         TStringBranch := RecuperaBranch(CartellaScelta);
         TStringDef.AddStrings(TStringBranch);
-        TStringDef.AddStrings(TStringRemote);
+        //TStringDef.AddStrings(TStringRemote);
         cbBranch.Items := TStringDef;
     finally
         TStringDef.Free;
         TStringBranch.Free;
-        TStringRemote.Free;
+        //TStringRemote.Free;
     end;
 
 end;
@@ -387,7 +411,7 @@ begin
     end;
 end;
 
-function TfCopiaFileConsegna.RecuperaRemote(Percorso: String): TStringList;
+{function TfCopiaFileConsegna.RecuperaRemote(Percorso: String): TStringList;
 var
     SA: TSecurityAttributes;
     ReadPipe, WritePipe: THandle;
@@ -454,7 +478,7 @@ begin
     finally
         Output.Free;
     end;
-end;
+end; }
 
 function TfCopiaFileConsegna.RecuperaBranch(Percorso: String): TStringList;
 var
@@ -529,18 +553,92 @@ function TfCopiaFileConsegna.AnalizzaBranch : TStringList;
 var
   CommitList, FileList, CheckLocalChanges: TStringList;
   SA: TSecurityAttributes;
-  ReadPipe, WritePipe: THandle;
-  SI: TStartupInfo;
-  PI: TProcessInformation;
-  Buffer: array[0..2047] of AnsiChar;
-  BytesRead: DWORD;
   Stream: TStringStream;
   I: Integer;
-  Command, Percorso: string;
+  Command: string;
+begin
+  CommitList := TStringList.Create;
+  FileList := TStringList.Create;
+  CheckLocalChanges := TStringList.Create;
+  Stream := TStringStream.Create('');
+  try
+    // Setup sicurezza pipe
+    SA.nLength := SizeOf(SA);
+    SA.bInheritHandle := True;
+    SA.lpSecurityDescriptor := nil;
 
-  function RunGitCommand(const GitArgs: string): string;
+    //Effettua Checkout sul branch selezionato
+    if MessageDlg('Vuoi effettuare il Checkout sul branch "' + cbBranch.Text + '" ?', mtConfirmation, [mbYes, mbNo], 0) = mrYes  then
+    begin
+        CheckLocalChanges.Text := RunGitCommand('status --porcelain', SA);  //Controlla se ci sono localchanges
+        for i := 0 to CheckLocalChanges.Count - 1 do
+        begin
+            CheckLocalChanges[i] := Copy(CheckLocalChanges[i], 4, Length(CheckLocalChanges[i]) - 3);
+        end;
+        if CheckLocalChanges.Text <> '' then
+            if MessageDlg('Sono state trovate delle localchanges: '+ sLineBreak + CheckLocalChanges.Text + 'Apri fork e sistema', mtConfirmation, [mbOk], 0) = mrOk then
+            begin
+                Result := nil;
+                pbLoading.Visible := False;
+                Exit;
+            end;
+        RunGitCommand('checkout ' + cbBranch.Text, SA);
+    end
+    else
+    begin
+        Result := nil;
+        pbLoading.Visible := False;
+        Exit;
+    end;
+    // Ottieni lista commit del branch
+    CommitList.Text   := RunGitCommand('log ' + cbBranch.Text + ' ^^master --pretty=format:"%H"', SA);
+    pbLoading.Max := CommitList.Count;
+    // Per ogni commit, estrai i file modificati
+    for I := 0 to CommitList.Count - 1 do
+    begin
+      Sleep(25);
+
+      Command := Format('diff-tree --no-commit-id --name-status --diff-filter=AM -r %s', [CommitList[I]]);
+      FileList.Text := FileList.Text + RunGitCommand(Command, SA);
+      Application.ProcessMessages;
+      pbLoading.Position := pbLoading.Position + i;
+    end;
+
+    // Rimuove righe vuote e normalizza
+    for I := FileList.Count - 1 downto 0 do
+      if Trim(FileList[I]) = '' then
+        FileList.Delete(I)
+      else
+        FileList[I] := Trim(FileList[I]);
+    pbLoading.Visible := False;
+    pnlButtons.Visible := True;
+    pnlConferma.Visible := True;
+    pnlSelezionaTutto.Visible := True;
+    pnlDeselezionaTutto.Visible := True;
+    btnConferma.Visible := True;
+    btnAnalizzatore.Enabled := False;
+    cbBranch.Enabled := False;
+    btnEsploraRisorse.Enabled := False;
+    btnDeselezionaTutto.Enabled := False;
+    btnRestart.Visible := True;
+    Result := FileList;
+  finally
+    Stream.Free;
+    CommitList.Free;
+    CheckLocalChanges.Free;
+    // non liberare FileList, viene restituita come Result
+  end;
+end;
+
+function TfCopiaFileConsegna.RunGitCommand(const GitArgs: string; SA: TSecurityAttributes): string;
   var
     LocalStream: TStringStream;
+    ReadPipe, WritePipe: THandle;
+    SI: TStartupInfo;
+    PI: TProcessInformation;
+    Buffer: array[0..2047] of AnsiChar;
+    BytesRead: DWORD;
+    Percorso : String;
   begin
     LocalStream := TStringStream.Create('');
     Percorso := CartellaScelta;
@@ -582,78 +680,6 @@ var
       LocalStream.Free;
     end;
   end;
-
-begin
-  CommitList := TStringList.Create;
-  FileList := TStringList.Create;
-  CheckLocalChanges := TStringList.Create;
-  Stream := TStringStream.Create('');
-  try
-    // Setup sicurezza pipe
-    SA.nLength := SizeOf(SA);
-    SA.bInheritHandle := True;
-    SA.lpSecurityDescriptor := nil;
-
-    //Effettua Checkout sul branch selezionato
-    if MessageDlg('Vuoi effettuare il Checkout sul branch "' + cbBranch.Text + '" ?', mtConfirmation, [mbYes, mbNo], 0) = mrYes  then
-    begin
-        CheckLocalChanges.Text := RunGitCommand('status --porcelain');  //Controlla se ci sono localchanges
-        for i := 0 to CheckLocalChanges.Count - 1 do
-        begin
-            CheckLocalChanges[i] := Copy(CheckLocalChanges[i], 4, Length(CheckLocalChanges[i]) - 3);
-        end;
-        if CheckLocalChanges.Text <> '' then
-            if MessageDlg('Sono state trovate delle localchanges: '+ sLineBreak + CheckLocalChanges.Text + ' Apri fork e sistema', mtConfirmation, [mbOk], 0) = mrOk then
-            begin
-                Result := nil;
-                Exit;
-            end;
-        RunGitCommand('checkout ' + cbBranch.Text);
-    end
-    else
-    begin
-        Result := nil;
-        Exit;
-    end;
-    // Ottieni lista commit del branch
-    CommitList.Text   := RunGitCommand('log ' + cbBranch.Text + ' ^^master --pretty=format:"%H"');
-    pbLoading.Max := CommitList.Count;
-    // Per ogni commit, estrai i file modificati
-    for I := 0 to CommitList.Count - 1 do
-    begin
-      Sleep(25);
-
-      Command := Format('diff-tree --no-commit-id --name-status --diff-filter=AM -r %s', [CommitList[I]]);
-      FileList.Text := FileList.Text + RunGitCommand(Command);
-      Application.ProcessMessages;
-      pbLoading.Position := pbLoading.Position + i;
-    end;
-
-    // Rimuove righe vuote e normalizza
-    for I := FileList.Count - 1 downto 0 do
-      if Trim(FileList[I]) = '' then
-        FileList.Delete(I)
-      else
-        FileList[I] := Trim(FileList[I]);
-    pbLoading.Visible := False;
-    pnlButtons.Visible := True;
-    pnlConferma.Visible := True;
-    pnlSelezionaTutto.Visible := True;
-    pnlDeselezionaTutto.Visible := True;
-    btnConferma.Visible := True;
-    btnAnalizzatore.Enabled := False;
-    cbBranch.Enabled := False;
-    btnEsploraRisorse.Enabled := False;
-    btnDeselezionaTutto.Enabled := False;
-    btnRestart.Visible := True;
-    Result := FileList;
-  finally
-    Stream.Free;
-    CommitList.Free;
-    CheckLocalChanges.Free;
-    // non liberare FileList, viene restituita come Result
-  end;
-end;
 
 procedure TfCopiaFileConsegna.RiempiDatiInsgFile(FileDaSpostare: TStringList);
 var
