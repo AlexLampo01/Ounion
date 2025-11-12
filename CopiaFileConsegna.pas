@@ -96,6 +96,10 @@ var
 
 implementation
 
+uses
+ System.UITypes
+ ;
+
 {$R *.dfm}
 
 procedure TfCopiaFileConsegna.btnAnalizzatoreClick(Sender: TObject);
@@ -109,11 +113,14 @@ begin
    FileList := TStringList.Create;
    try
     FileListTemp := AnalizzaBranch;
+    if FileListTemp = nil then
+        Exit;
     for i := 0 to FileListTemp.Count - 1 do
     begin
         if FileList.IndexOf(FileListTemp[i]) = - 1 then
             FileList.Add(FileListTemp[i]);
     end;
+
     RiempiDatiInsgFile(FileList);
    finally
     FileList.Free;
@@ -520,7 +527,7 @@ end;
 
 function TfCopiaFileConsegna.AnalizzaBranch : TStringList;
 var
-  CommitList, FileList: TStringList;
+  CommitList, FileList, CheckLocalChanges: TStringList;
   SA: TSecurityAttributes;
   ReadPipe, WritePipe: THandle;
   SI: TStartupInfo;
@@ -579,6 +586,7 @@ var
 begin
   CommitList := TStringList.Create;
   FileList := TStringList.Create;
+  CheckLocalChanges := TStringList.Create;
   Stream := TStringStream.Create('');
   try
     // Setup sicurezza pipe
@@ -586,8 +594,28 @@ begin
     SA.bInheritHandle := True;
     SA.lpSecurityDescriptor := nil;
 
+    //Effettua Checkout sul branch selezionato
+    if MessageDlg('Vuoi effettuare il Checkout sul branch "' + cbBranch.Text + '" ?', mtConfirmation, [mbYes, mbNo], 0) = mrYes  then
+    begin
+        CheckLocalChanges.Text := RunGitCommand('status --porcelain');  //Controlla se ci sono localchanges
+        for i := 0 to CheckLocalChanges.Count - 1 do
+        begin
+            CheckLocalChanges[i] := Copy(CheckLocalChanges[i], 4, Length(CheckLocalChanges[i]) - 3);
+        end;
+        if CheckLocalChanges.Text <> '' then
+            if MessageDlg('Sono state trovate delle localchanges: '+ sLineBreak + CheckLocalChanges.Text + ' Apri fork e sistema', mtConfirmation, [mbOk], 0) = mrOk then
+            begin
+                Result := nil;
+                Exit;
+            end;
+        RunGitCommand('checkout ' + cbBranch.Text);
+    end
+    else
+    begin
+        Result := nil;
+        Exit;
+    end;
     // Ottieni lista commit del branch
-
     CommitList.Text   := RunGitCommand('log ' + cbBranch.Text + ' ^^master --pretty=format:"%H"');
     pbLoading.Max := CommitList.Count;
     // Per ogni commit, estrai i file modificati
@@ -622,6 +650,7 @@ begin
   finally
     Stream.Free;
     CommitList.Free;
+    CheckLocalChanges.Free;
     // non liberare FileList, viene restituita come Result
   end;
 end;
