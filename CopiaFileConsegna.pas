@@ -615,6 +615,10 @@ begin
         FileList.Delete(I)
       else
         FileList[I] := Trim(FileList[I]);
+    // Elimina i duplicati (stesso file modificato in piu' commit)
+    for I := FileList.Count - 1 downto 1 do
+      if FileList.IndexOf(FileList[I]) < I then
+        FileList.Delete(I);
     pbLoading.Visible := False;
     pnlButtons.Visible := True;
     pnlConferma.Visible := True;
@@ -770,17 +774,12 @@ begin
                 begin
                     ImmaginiSrc := PListBoxItemData(ListBoxOrigine.Items.Objects[Indice]);
 
-                    New(ImmaginiDst);
-                    ImmaginiDst^.LeftIconIndex := ImmaginiSrc^.LeftIconIndex;
-                    ImmaginiDst^.RightIconIndex := ImmaginiSrc^.RightIconIndex;
-                    if ListBoxDestinazione.Count = 0 then
+                    if ListBoxDestinazione.Items.IndexOf(NomeFile) = -1 then
                     begin
+                        New(ImmaginiDst);
+                        ImmaginiDst^.LeftIconIndex := ImmaginiSrc^.LeftIconIndex;
+                        ImmaginiDst^.RightIconIndex := ImmaginiSrc^.RightIconIndex;
                         ListBoxDestinazione.Items.InsertObject(0, NomeFile, TObject(ImmaginiDst));
-                    end
-                    else
-                    begin
-                        if not (ListBoxDestinazione.Items[0] = NomeFile) then
-                                ListBoxDestinazione.Items.InsertObject(0, NomeFile, TObject(ImmaginiDst))
                     end;
 
                     ListBoxOrigine.Items.Objects[Indice] := nil;
