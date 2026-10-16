@@ -344,6 +344,11 @@ begin
             and not SameText(ExtractFileExt(Trim(Estensione)), '.dproj')
             and not SameText(ExtractFileExt(Trim(Estensione)), '.gitignore')
             and not SameText(ExtractFileExt(Trim(Estensione)), '.stat')
+            and not SameText(ExtractFileExt(Trim(Estensione)), '.md')
+            and not SameText(ExtractFileExt(Trim(Estensione)), '.mdModel')
+            and not SameText(ExtractFileExt(Trim(Estensione)), '.groupproj')
+            and not SameText(ExtractFileExt(Trim(Estensione)), '.TempDB')
+            and not SameText(ExtractFileExt(Trim(Estensione)), '.json')
             and not Trim(LowerCase(Estensione)).StartsWith('os1test')
             and not SameText(Estensione, '')
             and not (ExtractFileName(Trim(LowerCase(Estensione)))).EndsWith('dbtemp.svi')
@@ -709,6 +714,11 @@ begin
         or (ExtractFileExt(FileDaSpostare[i]) = '.gitignore')
         or (ExtractFileExt(FileDaSpostare[i]) = '.dproj')
         or (ExtractFileExt(FileDaSpostare[i]) = '.stat')
+        or (ExtractFileExt(FileDaSpostare[i]) = '.md')
+        or (ExtractFileExt(FileDaSpostare[i]) = '.mdModel')
+        or (ExtractFileExt(FileDaSpostare[i]) = '.groupproj')
+        or (ExtractFileExt(FileDaSpostare[i]) = '.TempDB')
+        or (ExtractFileExt(FileDaSpostare[i]) = '.json')
         or (Copy(Trim(LowerCase(FileDaSpostare[i])), 3, Length(Trim(LowerCase(FileDaSpostare[i]))))).StartsWith('os1test')
         or (Copy(Trim(LowerCase(FileDaSpostare[i])), 3, Length(Trim(LowerCase(FileDaSpostare[i]))))).EndsWith('dbtemp.svi')then
         begin
