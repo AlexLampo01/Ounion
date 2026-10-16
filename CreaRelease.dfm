@@ -2,8 +2,8 @@ object fCreaRelease: TfCreaRelease
   Left = 0
   Top = 0
   Caption = 'fCreaRelease'
-  ClientHeight = 500
-  ClientWidth = 610
+  ClientHeight = 499
+  ClientWidth = 606
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,18 +14,16 @@ object fCreaRelease: TfCreaRelease
   TextHeight = 15
   object pnlBottom: TPanel
     Left = 0
-    Top = 468
-    Width = 610
+    Top = 467
+    Width = 606
     Height = 32
     Align = alBottom
     TabOrder = 0
-    ExplicitTop = 467
-    ExplicitWidth = 606
     DesignSize = (
-      610
+      606
       32)
     object btnConferma: TBitBtn
-      Left = 456
+      Left = 448
       Top = 6
       Width = 75
       Height = 25
@@ -38,7 +36,7 @@ object fCreaRelease: TfCreaRelease
     object pbLoading: TProgressBar
       Left = 8
       Top = 4
-      Width = 133
+      Width = 125
       Height = 25
       Anchors = [akLeft, akTop, akRight, akBottom]
       Max = 0
@@ -47,7 +45,7 @@ object fCreaRelease: TfCreaRelease
       ExplicitWidth = 129
     end
     object cbIstanza: TComboBox
-      Left = 163
+      Left = 155
       Top = 6
       Width = 213
       Height = 23
@@ -55,10 +53,9 @@ object fCreaRelease: TfCreaRelease
       TabOrder = 2
       OnChange = cbIstanzaChange
       OnEnter = cbIstanzaEnter
-      ExplicitLeft = 159
     end
     object btnSettings: TBitBtn
-      Left = 395
+      Left = 387
       Top = 6
       Width = 45
       Height = 23
@@ -244,25 +241,21 @@ object fCreaRelease: TfCreaRelease
   object pnlCenter: TFlowPanel
     Left = 0
     Top = 0
-    Width = 610
-    Height = 276
+    Width = 606
+    Height = 275
     Align = alClient
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 1
-    ExplicitWidth = 606
-    ExplicitHeight = 275
   end
   object pnlSettings: TPanel
     Left = 0
-    Top = 276
-    Width = 610
+    Top = 275
+    Width = 606
     Height = 192
     Align = alBottom
     TabOrder = 2
     Visible = False
-    ExplicitTop = 275
-    ExplicitWidth = 606
   end
   object ConnServer: TFDConnection
     Params.Strings = (
@@ -273,13 +266,6 @@ object fCreaRelease: TfCreaRelease
   object qBackupRestore: TFDQuery
     Connection = ConnServer
     Left = 168
-    Top = 56
-  end
-  object TControllo: TTimer
-    Enabled = False
-    Interval = 2500
-    OnTimer = TControlloTimer
-    Left = 248
     Top = 56
   end
 end

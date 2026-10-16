@@ -1,4 +1,4 @@
-﻿unit CreaRelease;
+unit CreaRelease;
 
 interface
 
@@ -14,55 +14,6 @@ uses
   FireDAC.Phys.MySQLDef;
 
 type
-    ThreadRicercaFile = Class(TThread)
-        Private
-            SorgenteThread, DestinazioneThread, FileEsaminato : String;
-            FileEsaminati : TStringList;
-            FFileCount: Integer;
-        Protected
-            procedure Execute; Override;
-        Public
-            constructor Create(PercorsoSorgente, PercorsoDestinazione : String);
-            destructor  Destroy; Override;
-    End;
-    TCopyFileThread = class(TThread)
-    private
-        FFiles: TArray<string>;
-        FSourceBase: string;     // ← la cartella "Bin"
-        FDestFolder: string;     // ← es. "D:\Backup"
-        procedure StepProgressBar;
-    protected
-        procedure Execute; override;
-    public
-        constructor Create(const Files: TArray<string>; const SourceBase, DestFolder: string);
-  end;
-  ThreadRicercaFileVers = Class(TThread)
-        Private
-            SorgenteThreadVer, DestinazioneThreadVer, FileEsaminatoVer : String;
-            FileEsaminatiVer : TStringList;
-            FFileCountVer: Integer;
-            FPatchPathVers: String;
-        Protected
-            procedure Execute; Override;
-        Public
-            constructor Create(PercorsoSorgenteVer, PercorsoDestinazioneVer, Patch : String);
-            destructor  Destroy; Override;
-    End;
-    TCopyFileThreadVers = class(TThread)
-    private
-        FFiles: TArray<string>;
-        FSourceBase: string;
-        FDestFolder: string;
-        FPatchPath: string;
-        procedure CopyPatchContents;
-        procedure StepProgressBarVers;
-    protected
-        procedure Execute; override;
-    public
-        constructor Create(const Files: TArray<string>; const SourceBase, DestFolder, PatchPath: string);
-    end;
-
-
   TfCreaRelease = class(TForm)
     btnConferma: TBitBtn;
     pnlBottom: TPanel;
@@ -71,18 +22,17 @@ type
     ConnServer: TFDConnection;
     qBackupRestore: TFDQuery;
     cbIstanza: TComboBox;
-    TControllo: TTimer;
     pnlSettings: TPanel;
     btnSettings: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure btnConfermaClick(Sender: TObject);
     procedure cbIstanzaEnter(Sender: TObject);
     procedure cbIstanzaChange(Sender: TObject);
-    procedure TControlloTimer(Sender: TObject);
     procedure btnSettingsClick(Sender: TObject);
   private
     ListeTotaliReleases : TStringList;
-    ValoreProgressBar, GiriTimer : Integer;
+    FCopiaEseguita : Boolean;
+    procedure CopiaCartella(const Sorgente, Destinazione, PatchPath : String);
     procedure CercaVersioniBase(ListReleases : TStringList; Percorso : String);
     procedure CercaVersioniPatch(ListDa, ListA : TStringList);
     procedure TrasferisciInUnaStringList(ListDa, ListA : TStringList);
@@ -173,7 +123,7 @@ begin
                     Files := TDirectory.GetFiles('\\srvxapp\C\OS1\' + Cartella, '*.*', TSearchOption.soAllDirectories);
                     pbLoading.Max := Length(Files) + pbLoading.Max;
                     Files := nil;
-                    ThreadRicercaFile.Create('\\srvxapp\C\OS1\' + Cartella, 'C:\OS1\' + Cartella);
+                    CopiaCartella('\\srvxapp\C\OS1\' + Cartella, 'C:\OS1\' + Cartella, '');
                     ForceDirectories('C:\OS1\' + Cartella + '\TEMP');
                     if cbIstanza.Text <> '' then
                         CopiaDatabase(CartelleComplete);
@@ -300,7 +250,7 @@ begin
             Files := TDirectory.GetFiles(Percorso, '*.*', TSearchOption.soAllDirectories);
             pbLoading.Max := Length(Files) + pbLoading.Max;
             Files := nil;
-            ThreadRicercaFileVers.Create(Percorso, 'C:\OSItalia\' + Cartella, '');
+            CopiaCartella(Percorso, 'C:\OSItalia\' + Cartella, '');
         end
         else if CountUnderscore > 1 then
         begin
@@ -312,7 +262,7 @@ begin
             Files := TDirectory.GetFiles('\\srvdb\e\OS1\OS1Svi\OS1_' + PrimaParteCartella + '\OS1_' + PrimaParteCartella  + '_Patch\' + Cartella, '*.*', TSearchOption.soAllDirectories);
             pbLoading.Max := Length(Files) + pbLoading.Max;
             Files := nil;
-            ThreadRicercaFileVers.Create(Percorso, PercorsoDestinazione, IncludeTrailingPathDelimiter('\\srvdb\e\OS1\OS1Svi\OS1_' + PrimaParteCartella + '\OS1_' + PrimaParteCartella  + '_Patch\' + Cartella));
+            CopiaCartella(Percorso, PercorsoDestinazione, '\\srvdb\e\OS1\OS1Svi\OS1_' + PrimaParteCartella + '\OS1_' + PrimaParteCartella  + '_Patch\' + Cartella);
         end;
     end;
 end;
@@ -374,10 +324,12 @@ var
     CartelleComplete : TStringList;
 begin
     CartelleComplete := TStringList.Create;
+    FCopiaEseguita := False;
     try
         Screen.Cursor := crHourGlass;
         SalvaUltimaistanza;
         btnSettings.Enabled := False;
+        btnConferma.Enabled := False;
         CartelleComplete := AnalizzaCheckConStringList(ListeTotaliReleases);
         AnalizzaCheckCliente(CartelleComplete);
     finally
@@ -388,6 +340,13 @@ begin
         ListeTotaliReleases.Free;
         Screen.Cursor := crDefault;
         pbLoading.Position := 0;
+        btnSettings.Enabled := True;
+        btnConferma.Enabled := True;
+    end;
+    if FCopiaEseguita then
+    begin
+        CancellaCustom;
+        ShowMessage('Completato!');
     end;
 end;
 
@@ -1441,38 +1400,6 @@ begin
 
 end;
 
-procedure TfCreaRelease.TControlloTimer(Sender: TObject);
-var
-    Terzo: Integer;
-begin
-    if GiriTimer = 2 then
-    begin
-        Terzo := pbLoading.Max div 3;
-        pbLoading.Position := pbLoading.Position + Terzo;
-        if pbLoading.Position = pbLoading.Max then
-        begin
-            TControllo.Enabled := False;
-            btnSettings.Enabled := True;
-            btnConferma.Enabled := True;
-            CancellaCustom;
-            ShowMessage('Completato!');
-            pbLoading.Position := 0;
-        end;
-    end
-    else if ValoreProgressBar < pbLoading.Position then
-    begin
-        ValoreProgressBar := pbLoading.Position;
-    end
-    else
-    begin
-        GiriTimer := GiriTimer + 1;
-    end;
-
-
-
-
-end;
-
 procedure TfCreaRelease.TrasferisciInUnaStringList(ListDa, ListA: TStringList);
 var
     i : Integer;
@@ -1514,262 +1441,46 @@ begin
     end;
 end;
 
-{ ThreadRicercaFile }
-
-constructor ThreadRicercaFile.Create(PercorsoSorgente, PercorsoDestinazione : String);
-begin
-    inherited Create(False);  //False parte subito
-    FreeOnTerminate := True;  //Una volta finito libera la memoria
-    fCreaRelease.btnConferma.Enabled := False;
-    if not fCreaRelease.TControllo.Enabled then
-        fCreaRelease.TControllo.Enabled := True;
-    SorgenteThread := PercorsoSorgente;
-    DestinazioneThread := PercorsoDestinazione;
-    FileEsaminati := TStringList.Create;
-
-end;
-
-destructor ThreadRicercaFile.Destroy;
-begin
-  FileEsaminato := '';
-  FileEsaminati.Free;
-  inherited;
-end;
-
-procedure ThreadRicercaFile.Execute;
+procedure TfCreaRelease.CopiaCartella(const Sorgente, Destinazione, PatchPath: String);
 var
-  AllFiles: TArray<string>;
-  NumThreads, BlockSize, i, StartIdx, EndIdx: Integer;
-  ThreadFiles: TArray<string>;
-begin
-      try
-        AllFiles := TDirectory.GetFiles(SorgenteThread, '*.*', TSearchOption.soAllDirectories);
-        FFileCount := Length(AllFiles);
+    Contatore : Integer;
 
-        //TThread.Queue(nil, InitProgressBar);
-
-        // Decidi quanti thread vuoi usare (es. 4)
-        NumThreads := 2;
-        //fCreaRelease.pbLoading.Max := fCreaRelease.pbLoading.Max + FFileCount;
-        //fCreaRelease.pbLoading.Position := 0;
-        BlockSize := FFileCount div NumThreads;
-
-        for i := 0 to NumThreads - 1 do
+    procedure CopiaFiles(const Base, Dest : String);
+    var
+        FileName, DestPath : String;
+    begin
+        for FileName in TDirectory.GetFiles(Base, '*.*', TSearchOption.soAllDirectories) do
         begin
-          StartIdx := i * BlockSize;
-          if i = NumThreads - 1 then
-            EndIdx := FFileCount - StartIdx
-          else
-            EndIdx := BlockSize;
-
-          SetLength(ThreadFiles, EndIdx - StartIdx + 1);
-          ThreadFiles := Copy(AllFiles, StartIdx, EndIdx);
-          //Move(AllFiles[StartIdx], ThreadFiles[0], (EndIdx - StartIdx + 1) * SizeOf(string));
-          // Avvia thread di copia
-          TCopyFileThread.Create(ThreadFiles, SorgenteThread, DestinazioneThread);
+            // Percorso relativo rispetto alla cartella sorgente
+            DestPath := Dest + Copy(FileName, Length(Base) + 1, MaxInt);
+            ForceDirectories(ExtractFilePath(DestPath));
+            try
+                TFile.Copy(FileName, DestPath, True);
+            except
+                // errore di copia ignorato, si prosegue con il file successivo
+            end;
+            pbLoading.StepIt;
+            Inc(Contatore);
+            if Contatore mod 10 = 0 then
+                Application.ProcessMessages;
         end;
-
-      except
-        on E: Exception do
-          TThread.Queue(nil,
-            procedure
-            begin
-              ShowMessage('Errore: ' + E.Message);
-            end);
-      end;
-end;
-
-{ TCopyFileThread }
-
-constructor TCopyFileThread.Create(const Files: TArray<string>; const SourceBase, DestFolder: string);
-begin
-  inherited Create(False);
-  FreeOnTerminate := True;
-  FFiles := Files;
-  FSourceBase := IncludeTrailingPathDelimiter(SourceBase);   // deve finire con '\'
-  FDestFolder := IncludeTrailingPathDelimiter(DestFolder);
-end;
-
-procedure TCopyFileThread.Execute;
-var
-  FileName, RelativePath, DestPath, DestFolder: string;
-begin
-      for FileName in FFiles do
-      begin
-        if Terminated then Exit;
-
-        // Calcola il percorso relativo a partire da Bin
-        RelativePath := StringReplace(FileName, FSourceBase, '', [rfIgnoreCase]);
-
-        // Costruisce il percorso completo nella destinazione
-        DestPath := FDestFolder + RelativePath;
-        DestFolder := ExtractFilePath(DestPath);
-
-        // Crea la cartella se non esiste
-        if not DirectoryExists(DestFolder) then
-          ForceDirectories(DestFolder);
-
-        try
-          TFile.Copy(FileName, DestPath, True);
-        except
-          on E: Exception do
-          begin
-            // gestisci errore, logga o ignora
-          end;
-        end;
-        TThread.Queue(nil, StepProgressBar);
-      end;
-end;
-
-
-procedure TCopyFileThread.StepProgressBar;
-begin
-    fCreaRelease.pbLoading.StepIt;
-end;
-
-{ TCopyFileThreadVers }
-
-procedure TCopyFileThreadVers.CopyPatchContents;
-var
-  PatchFiles: TArray<string>;
-  SrcFile, RelativePath, DestPath, DestFolder: string;
-begin
-  PatchFiles := TDirectory.GetFiles(FPatchPath, '*.*', TSearchOption.soAllDirectories);
-
-  for SrcFile in PatchFiles do
-  begin
-    if Terminated then Exit;
-    //fCreaRelease.pbLoading.Max := fCreaRelease.pbLoading.Max + TotFile;
-    RelativePath := StringReplace(SrcFile, FPatchPath, '', [rfIgnoreCase]);
-    DestPath := FDestFolder + RelativePath;
-    DestFolder := ExtractFilePath(DestPath);
-
-    if not DirectoryExists(DestFolder) then
-      ForceDirectories(DestFolder);
-
-    try
-      TFile.Copy(SrcFile, DestPath, True); // forza sovrascrittura
-    except
-      // log se necessario
     end;
 
-    TThread.Queue(nil, StepProgressBarVers); // opzionale
-  end;
-end;
-
-constructor TCopyFileThreadVers.Create(const Files: TArray<string>; const SourceBase, DestFolder, PatchPath: string);
-begin
-  inherited Create(False);
-  FreeOnTerminate := True;
-  FFiles := Files;
-  FSourceBase := IncludeTrailingPathDelimiter(SourceBase);
-  FDestFolder := IncludeTrailingPathDelimiter(DestFolder);
-  fCreaRelease.PercorsoVersione := FDestFolder;
-  FPatchPath := IncludeTrailingPathDelimiter(PatchPath);
-end;
-
-procedure TCopyFileThreadVers.Execute;
 var
-  FileName, RelativePath, DestPath, DestFolder: string;
+    Base, Dest, Patch : String;
 begin
-  // Copia normale
-      for FileName in FFiles do
-      begin
-        if Terminated then Exit;
-
-        RelativePath := StringReplace(FileName, FSourceBase, '', [rfIgnoreCase]);
-        DestPath := FDestFolder + RelativePath;
-        DestFolder := ExtractFilePath(DestPath);
-
-        if not DirectoryExists(DestFolder) then
-          ForceDirectories(DestFolder);
-
-        try
-          TFile.Copy(FileName, DestPath, True);
-        except
-          // gestisci errore se vuoi
-        end;
-
-        TThread.Queue(nil, StepProgressBarVers);
-      end;
-
-      // Se presente, copia la patch
-      if DirectoryExists(FPatchPath) then
-        CopyPatchContents;
+    Contatore := 0;
+    Base := IncludeTrailingPathDelimiter(Sorgente);
+    Dest := IncludeTrailingPathDelimiter(Destinazione);
+    PercorsoVersione := Dest;
+    FCopiaEseguita := True;
+    CopiaFiles(Base, Dest);
+    // Se presente, copia la patch sopra la versione base
+    if PatchPath <> '' then
+    begin
+        Patch := IncludeTrailingPathDelimiter(PatchPath);
+        if DirectoryExists(Patch) then
+            CopiaFiles(Patch, Dest);
+    end;
 end;
-
-procedure TCopyFileThreadVers.StepProgressBarVers;
-begin
-    fCreaRelease.pbLoading.StepIt;
-end;
-
-{ ThreadRicercaFileVers }
-
-constructor ThreadRicercaFileVers.Create(PercorsoSorgenteVer,
-  PercorsoDestinazioneVer, Patch: String);
-begin
-    inherited Create(False);  //False parte subito
-    FreeOnTerminate := True;  //Una volta finito libera la memoria
-    fCreaRelease.btnConferma.Enabled := False;
-    if not fCreaRelease.TControllo.Enabled then
-        fCreaRelease.TControllo.Enabled := True;
-    SorgenteThreadVer := PercorsoSorgenteVer;
-    DestinazioneThreadVer := PercorsoDestinazioneVer;
-    FileEsaminatiVer := TStringList.Create;
-    FPatchPathVers := Patch;
-    //InitProgressBar;
-end;
-
-destructor ThreadRicercaFileVers.Destroy;
-begin
-  FileEsaminatoVer := '';
-  FileEsaminatiVer.Free;
-
-  inherited;
-end;
-
-procedure ThreadRicercaFileVers.Execute;
-var
-  AllFiles: TArray<string>;
-  NumThreads, BlockSize, i, StartIdx, EndIdx: Integer;
-  ThreadFiles: TArray<string>;
-begin
-      try
-        AllFiles := TDirectory.GetFiles(SorgenteThreadVer, '*.*', TSearchOption.soAllDirectories);
-        FFileCountVer := Length(AllFiles);
-
-        //TThread.Queue(nil, InitProgressBar);
-        //fCreaRelease.pbLoading.Max := fCreaRelease.pbLoading.Max + FFileCountVer;
-        // Decidi quanti thread vuoi usare (es. 4)
-        NumThreads := 2;
-        BlockSize := FFileCountVer div NumThreads;
-
-        for i := 0 to NumThreads - 1 do
-        begin
-          StartIdx := i * BlockSize;
-          if i = NumThreads - 1 then
-            EndIdx := FFileCountVer - StartIdx
-          else
-            EndIdx := BlockSize;
-
-          SetLength(ThreadFiles, EndIdx - StartIdx + 1);
-          ThreadFiles := Copy(AllFiles, StartIdx, EndIdx);
-          //Move(AllFiles[StartIdx], ThreadFiles[0], (EndIdx - StartIdx + 1) * SizeOf(string));
-
-          // Avvia thread di copia
-          TCopyFileThreadVers.Create(ThreadFiles, SorgenteThreadVer, DestinazioneThreadVer, FPatchPathVers);
-
-
-        end;
-
-      except
-        on E: Exception do
-          TThread.Queue(nil,
-            procedure
-            begin
-              ShowMessage('Errore: ' + E.Message);
-            end);
-      end;
-end;
-
 end.
